@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NLP-DL — ข้อสอบจำลอง 100 ข้อ + เฉลย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f8fc; --card:#ffffff; --ink:#191c22; --muted:#454b57; --dim:#767c89;
+  --blue:#0060aa; --green:#137a2f; --red:#ba1a1a; --orange:#d9640c; --purple:#6b3fc4;
+  --line:#e5e8f0; --mono:'Space Grotesk','JetBrains Mono',monospace;
+  --body:'Noto Sans Thai','Inter',-apple-system,sans-serif;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{ background:var(--bg); color:var(--ink); font-family:var(--body); line-height:1.5; padding:32px 18px 80px; -webkit-font-smoothing:antialiased; }
+.wrap{ max-width:880px; margin:0 auto; }
+header{ text-align:center; margin-bottom:6px; }
+h1{ font-size:clamp(23px,4vw,32px); font-weight:800; letter-spacing:-.5px; }
+.lede{ color:var(--muted); font-size:clamp(13px,2vw,16px); margin-top:6px; }
+.legend{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:10px; font-size:12.5px; color:var(--dim); }
+.legend span{ display:inline-flex; align-items:center; gap:5px; }
+.dot{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+.bar{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:18px 0 8px; position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:5; }
+.btn{ font-family:var(--body); font-size:14px; font-weight:600; cursor:pointer; border:1px solid var(--line); background:var(--card); color:var(--blue); padding:8px 16px; border-radius:9px; transition:.15s; }
+.btn:hover{ border-color:var(--blue); box-shadow:0 2px 12px rgba(0,96,170,.1); }
+.score{ text-align:center; font-size:13px; color:var(--dim); margin-bottom:18px; }
+.wk{ font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--blue); margin:28px 0 12px; padding-bottom:6px; border-bottom:2px solid var(--line); }
+.q{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin-bottom:14px; box-shadow:0 2px 20px rgba(25,28,34,.03); }
+.q-head{ display:flex; align-items:baseline; gap:9px; margin-bottom:7px; flex-wrap:wrap; }
+.q-num{ font-family:var(--mono); font-weight:700; font-size:15px; color:var(--ink); background:#eef2fb; min-width:32px; height:28px; padding:0 6px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+.tag{ font-family:var(--mono); font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:20px; letter-spacing:.5px; }
+.tag.calc{ background:rgba(0,96,170,.1); color:var(--blue); }
+.tag.tf{ background:rgba(107,63,196,.1); color:var(--purple); }
+.tag.mcq{ background:rgba(217,100,12,.1); color:var(--orange); }
+.tag.hot{ background:rgba(186,26,26,.1); color:var(--red); }
+.q-body{ font-size:clamp(14px,1.9vw,16px); color:var(--ink); }
+.q-body b{ color:var(--ink); }
+.q-body .stmt{ color:var(--muted); font-style:italic; }
+.given{ background:#f4f6fb; border-radius:9px; padding:9px 13px; margin-top:9px; font-size:14px; }
+.given .gl{ font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--dim); margin-bottom:3px; }
+.opts{ margin-top:8px; display:flex; flex-direction:column; gap:3px; font-size:14.5px; color:var(--muted); }
+code,.m{ font-family:var(--mono); background:#eef2fb; color:#0b2d52; padding:1px 5px; border-radius:5px; font-size:.92em; }
+details{ margin-top:11px; border-top:1px dashed var(--line); padding-top:9px; }
+summary{ cursor:pointer; font-weight:700; color:var(--green); font-size:14px; list-style:none; display:flex; align-items:center; gap:7px; user-select:none; }
+summary::-webkit-details-marker{ display:none; }
+summary::before{ content:'▶'; font-size:10px; transition:.2s; color:var(--green); }
+details[open] summary::before{ transform:rotate(90deg); }
+.sol{ margin-top:11px; }
+.step{ display:flex; gap:11px; margin-bottom:9px; }
+.step-n{ font-family:var(--mono); font-weight:700; font-size:12px; color:#fff; background:var(--green); min-width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+.step-t{ font-size:14px; color:var(--muted); }
+.step-t b{ color:var(--ink); }
+.calc-line{ font-family:var(--mono); font-size:13px; color:#0b2d52; background:#eef2fb; border-radius:7px; padding:6px 11px; margin:5px 0; display:block; overflow-x:auto; white-space:pre-wrap; }
+.ans{ border-radius:0 10px 10px 0; padding:10px 15px; margin-top:9px; font-size:15px; }
+.ans.correct{ background:#ecf9ee; border-left:4px solid var(--green); }
+.ans.wrong{ background:#fdf2f2; border-left:4px solid var(--red); }
+.ans .al{ font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:3px; }
+.ans.correct .al{ color:var(--green); } .ans.wrong .al{ color:var(--red); }
+.ans b{ color:var(--ink); }
+.foot{ text-align:center; color:var(--dim); font-size:13px; margin-top:40px; }
+@media print{ body{ background:#fff; padding:0; } .bar{ display:none; } .q{ break-inside:avoid; box-shadow:none; } details{ display:block; } details>summary{ display:none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>ข้อสอบจำลอง 100 ข้อ + เฉลยวิธีทำ</h1>
+  <p class="lede">NLP with Deep Learning · Weeks 1–7 · คำนวณ (เฉลยทีละ step) + True/False (พร้อมเหตุผล) + MCQ</p>
+  <div class="legend">
+    <span><span class="dot" style="background:#0060aa"></span>คำนวณ 40 ข้อ</span>
+    <span><span class="dot" style="background:#6b3fc4"></span>True/False 48 ข้อ</span>
+    <span><span class="dot" style="background:#d9640c"></span>MCQ 12 ข้อ</span>
+  </div>
+</header>
+<div class="bar">
+  <button class="btn" onclick="toggleAll(true)">เปิดเฉลยทั้งหมด</button>
+  <button class="btn" onclick="toggleAll(false)">ปิดเฉลยทั้งหมด</button>
+  <button class="btn" onclick="window.print()">พิมพ์ / PDF</button>
+</div>
+<p class="score">ทำเองก่อนแล้วค่อยกดดูเฉลย · ทุกตัวเลขตรงกับสไลด์/แล็บของคอร์ส</p>
+
+<!-- ================= WEEK 1 ================= -->
+<div class="wk">📘 Week 1 — Word Representation (ข้อ 1–14)</div>
+
+<div class="q"><div class="q-head"><span class="q-num">1</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">คลังมีคู่คำร่วม N=500 ครั้ง · count(w,c)=20, count(w)=50, count(c)=100 · จงหา PMI และ PPMI</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">P(w,c)=20/500=0.04 · P(w)=50/500=0.1 · P(c)=100/500=0.2</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t"><code>PMI=log₂[0.04/(0.1×0.2)]=log₂[0.04/0.02]=log₂2</code></span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>PMI=<b>1.0</b> · PPMI=max(1.0,0)=<b>1.0</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">2</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">ใช้ค่าเดิม แต่ count(w,c)=5 · จงหา PMI และ PPMI</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">P(w,c)=5/500=0.01 → ratio=0.01/0.02=0.5</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t"><code>log₂(0.5)=−1</code> → ติดลบ</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>PMI=<b>−1.0</b> · PPMI=max(−1,0)=<b>0</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">3</span><span class="tag calc">คำนวณ</span><span class="tag hot">Subword</span></div>
+<div class="q-body">คลัง hug:10, pug:5, pun:12, bun:4, hugs:5 · BPE จะ merge คู่ใดก่อน?</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">นับความถี่คู่ติดกัน<span class="calc-line">(u,g)=10+5+5=20 · (p,u)=5+12=17 · (u,n)=12+4=16 · (h,u)=10+5=15</span></span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>merge <b>(u,g)=20</b> (BPE เลือกคู่บ่อยสุด)</div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">4</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">WordPiece: (a,b) count(ab)=8,count(a)=8,count(b)=20 · (c,d) count(cd)=6,count(c)=6,count(d)=8 · จะ merge คู่ใด?</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t"><code>score=count(AB)/(count(A)·count(B))</code><span class="calc-line">(a,b)=8/(8×20)=8/160=0.050
+(c,d)=6/(6×8)=6/48=0.125</span></span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>merge <b>(c,d)=0.125</b> — แม้ (a,b) บ่อยกว่า (8&gt;6) แต่ WordPiece ดู likelihood</div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">5</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">Word2Vec: vocab V=10,000, embedding dim N=300 · เมทริกซ์ input embedding (W1) มีกี่ parameter?</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">W1 มีขนาด V×N<span class="calc-line">10,000 × 300 = 3,000,000</span></span></div>
+<div class="ans correct"><div class="al">คำตอบ</div><b>3,000,000</b> (3M) parameters</div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">6</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"One-hot vectors ของ motel และ hotel มี cosine similarity สูง เพราะเป็นที่พักเหมือนกัน"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>One-hot ตั้งฉากกัน → motel·hotel=0 → similarity=<b>0</b> เสมอ ไม่ว่าความหมายจะใกล้แค่ไหน</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">7</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"WordPiece ใช้ใน BERT และเลือก merge จากคู่ที่ปรากฏบ่อยที่สุด"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>WordPiece ใช้ใน BERT จริง แต่เลือกจาก <b>likelihood</b> (count(AB)/count(A)count(B)) ไม่ใช่ความถี่ — ความถี่คือ BPE</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">8</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"SentencePiece เข้ารหัสช่องว่างเป็นเมตะสัญลักษณ์ ▁ และเหมาะกับภาษาไทยที่ไม่มีเว้นวรรค"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — มองข้อความเป็น raw stream, ช่องว่าง = ▁, ไม่ต้อง pre-tokenization → ดีกับไทย/ญี่ปุ่น/จีน</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">9</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"CrossEntropyLoss ต้องการ input เป็น log-probabilities"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>CrossEntropyLoss รับ <b>raw logits</b> (ทำ LogSoftmax ให้ในตัว) — ตัวที่รับ log-probs คือ <b>NLLLoss</b></div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">10</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Skip-gram ทำนายคำบริบทจากคำกลาง ส่วน CBOW ทำนายคำกลางจากบริบท"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — Skip-gram: center→context (ดีกับคำหายาก) · CBOW: context→center (เร็วกว่า)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">11</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"SVD บนเมทริกซ์ Word-Word มีความซับซ้อน O(N³) จึงใช้ไม่ได้กับ vocab ล้านคำ"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — Word-Word มี M=N → O(MN²)=O(N³); intractable + static (เพิ่มคำใหม่ต้องคำนวณใหม่หมด)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">12</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"PPMI แก้ปัญหา log(0)=−∞ โดยแทนค่า PMI ที่ติดลบด้วย 0"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — PPMI(w,c)=max(PMI,0)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">13</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">ข้อใดอธิบาย Unigram LM tokenization (T5/LLaMA) ถูกต้อง?</div>
+<div class="opts">A. Bottom-up merge คู่ที่บ่อยสุด<br>B. Bottom-up merge คู่ที่ likelihood สูงสุด<br>C. Top-down เริ่ม vocab ใหญ่แล้ว prune แบบ probabilistic<br>D. เข้ารหัสช่องว่างเป็น ▁</div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">คำตอบ: C</div>Unigram = Top-down probabilistic pruning (A=BPE, B=WordPiece, D=SentencePiece)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">14</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Word2Vec และ GloVe เป็น static embeddings — คำ 'bank' (แม่น้ำ/เงิน) ได้เวกเตอร์เดียวกัน"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — static embedding (1 คำ = 1 เวกเตอร์); contextual embedding (BERT/GPT) ต่างหากที่เปลี่ยนตามบริบท</div></details></div>
+
+<!-- ================= WEEK 2 ================= -->
+<div class="wk">📗 Week 2 — RNN / LSTM / GRU (ข้อ 15–28)</div>
+
+<div class="q"><div class="q-head"><span class="q-num">15</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">ประโยค 3 คำ โมเดลให้ prob = [0.5, 0.25, 0.125] · จงหา perplexity</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t"><code>PPL=(Πp)^(−1/N)</code><span class="calc-line">Πp=0.5×0.25×0.125=0.015625=1/64
+PPL=(1/64)^(−1/3)=64^(1/3)=4</span></span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>PPL=<b>4</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">16</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">average cross-entropy loss J = 1.386 nats · จงหา perplexity</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t"><code>PPL=e^J=e^1.386</code> (1.386≈ln 4)</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>PPL≈<b>4.0</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">17</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">gradient g=[3,4], threshold τ=2.5 · จงหา gradient หลัง clipping</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">‖g‖=√(9+16)=5 &gt; 2.5 → ต้อง clip</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">scale=2.5/5=0.5 → g×0.5=[1.5, 2.0]</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div><b>[1.5, 2.0]</b> (‖·‖=2.5)</div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">18</span><span class="tag calc">คำนวณ</span><span class="tag hot">LSTM</span></div>
+<div class="q-body">f=0.5, i=0.8, o=0.6, candidate g=1.0, c₍ₜ₋₁₎=4.0 · จงหา cₜ และ hₜ</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t"><code>cₜ=f·c_prev+i·g</code>=0.5×4+0.8×1=2.0+0.8=<b>2.8</b></span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t"><code>hₜ=o·tanh(cₜ)</code>=0.6×tanh(2.8)=0.6×0.9926</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>cₜ=<b>2.8</b> · hₜ≈<b>0.596</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">19</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Gradient clipping เป็นวิธีมาตรฐานในการแก้ vanishing gradient"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>Clipping แก้ <b>exploding</b> gradient เท่านั้น (clip ค่าที่หายเป็น 0 ไม่ได้); vanishing แก้ด้วย LSTM/GRU gate + skip connection</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">20</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Cell state ของ LSTM อัปเดตด้วยการบวก (element-wise +) จึงเป็นทางด่วนให้ gradient ไหล"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — cₜ=fₜ⊙cₜ₋₁+iₜ⊙c̃ₜ ใช้การบวก ไม่ใช่คูณเมทริกซ์ → เหมือน residual/shortcut connection</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">21</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Xavier/Glorot initialization เหมาะกับ activation แบบ ReLU"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>Xavier เหมาะกับ <b>tanh/sigmoid</b>; ReLU ใช้ <b>He/Kaiming</b> (Var=2/n_in)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">22</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Bidirectional RNN ใช้กับงาน generation แบบเรียลไทม์ (autoregressive) ได้"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>BiRNN ต้องเห็น<b>ทั้งประโยค</b>ก่อน (forward+backward concat) → ใช้ generate ทีละคำเรียลไทม์ไม่ได้</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">23</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Parameter sharing ทำให้ RNN ใช้ W ชุดเดียวกันทุก timestep รับ input ยาวเท่าไหร่ก็ได้"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — W_hh, W_hx, W_S แชร์ทุก timestep → O(|h|²) ไม่ขึ้นกับความยาว</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">24</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">gate ใดใน LSTM ที่ใช้ activation แบบ tanh (ไม่ใช่ sigmoid)?</div>
+<div class="opts">A. Forget gate &nbsp; B. Input gate &nbsp; C. Candidate (c̃ₜ) &nbsp; D. Output gate</div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">คำตอบ: C</div>Candidate c̃ₜ=tanh(...); ส่วน forget/input/output gate ทั้ง 3 ใช้ sigmoid (σ)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">25</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">RNN: input dim=100, hidden dim=128 · จงหาจำนวน parameter ของชั้น recurrent (W_hh, W_hx, bias)</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">W_hh=128×128=16,384 · W_hx=128×100=12,800 · b=128</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">รวม=16,384+12,800+128=29,312</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div><b>29,312</b> parameters</div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">26</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"GRU มี cell state (cₜ) แยกต่างหากเหมือน LSTM"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>GRU <b>ลบ cell state</b> ใช้แค่ hidden state; มี 2 gate (reset + update) แทน 3 gate ของ LSTM</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">27</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Perplexity ยิ่งสูงแปลว่าโมเดลยิ่งดี"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>ยิ่ง<b>ต่ำ</b>ยิ่งดี — PPL=k แปลว่าโมเดลงงเท่ากับต้องเดามั่วจาก k คำ</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">28</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Teacher forcing คือการป้อน prediction ของโมเดลเองกลับเข้าไปตอนเทรน"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>Teacher forcing ป้อน <b>ground-truth</b> (คำตอบจริง); การป้อน prediction ตัวเองคือตอน inference ซึ่งทำให้เกิด exposure bias</div></details></div>
+
+<!-- ================= WEEK 3 ================= -->
+<div class="wk">📙 Week 3 — Seq2Seq & Attention (ข้อ 29–42)</div>
+
+<div class="q"><div class="q-head"><span class="q-num">29</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">candidate = "the the the the the" (5 คำ) · reference มี "the" 3 ครั้ง · จงหา unigram clipped precision</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">clipped count = min(5, 3) = 3</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">precision = 3/5 = 0.6</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div><b>3/5 = 0.6</b> (ถ้าไม่ clip จะได้ 5/5=1.0)</div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">30</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">candidate length c=12, reference r=10 · จงหา Brevity Penalty (BP)</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">c(12) &gt; r(10) → BP = 1 (ไม่ถูกลงโทษ)</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>BP = <b>1</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">31</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">candidate c=6, reference r=9 · จงหา BP</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">c(6) &lt; r(9) → BP = exp(1 − r/c)<span class="calc-line">= exp(1 − 9/6) = exp(−0.5) ≈ 0.6065</span></span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>BP ≈ <b>0.607</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">32</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">BLEU-4: BP=1, p₁=0.7, p₂=0.5, p₃=0.4, p₄=0.2, wₙ=1/4</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">Σ¼lnpₙ = 0.25(ln0.7+ln0.5+ln0.4+ln0.2)<span class="calc-line">=0.25(−0.357−0.693−0.916−1.609)=0.25(−3.576)=−0.894</span></span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">BLEU = BP×exp(−0.894) = 1×0.409</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>BLEU ≈ <b>0.409</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">33</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">logits z=[3,1] · จงหา softmax ที่ T=1 และ T=2</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">T=1: e³=20.09, e¹=2.72, sum=22.81 → [0.881, 0.119]</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">T=2: z/T=[1.5,0.5] → e^1.5=4.48, e^0.5=1.65, sum=6.13 → [0.731, 0.269]</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>T=1→<b>[0.881,0.119]</b> (คม), T=2→<b>[0.731,0.269]</b> (แบนลง)</div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">34</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"BLEU เป็น metric แบบ recall ส่วน ROUGE เป็นแบบ precision"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>สลับกัน! <b>BLEU = precision</b> (แปล) · <b>ROUGE = recall</b> (สรุป); ROUGE-L ใช้ LCS</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">35</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Bahdanau attention ใช้ additive score (vᵀtanh(W₁s+W₂h))"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — Bahdanau = additive; Luong = dot-product (จำ: Bahd<b>a</b>nau = <b>A</b>dditive)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">36</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Luong attention คำนวณ context vector ก่อน แล้วค่อยป้อนเข้า RNN cell"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>นั่นคือ <b>Bahdanau</b> (attention→RNN, ใช้ sₜ₋₁); Luong = RNN ก่อน → sₜ → attention → concat</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">37</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Beam search ที่ width k=5 ต้องรัน 5 โมเดลพร้อมกัน"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>ใช้ <b>1 โมเดล</b> ประเมิน k เส้นทาง (batch size = k); เพิ่ม k = RAM/compute มากขึ้น แต่ parameter ไม่เพิ่ม</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">38</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Information bottleneck เกิดเพราะ Seq2Seq บีบทั้งประโยคเป็น context vector ตัวเดียว"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — ประโยคยาวข้อมูลต้นเจือจาง; attention แก้โดยเก็บทุก encoder state</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">39</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">ROUGE-L วัดความคล้ายด้วยอะไร?</div>
+<div class="opts">A. n-gram precision &nbsp; B. Longest Common Subsequence &nbsp; C. dot-product &nbsp; D. brevity penalty</div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">คำตอบ: B</div>ROUGE-L = LCS (จับลำดับโดยไม่ต้องติดกัน)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">40</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">attention scores=[2,2] · v₁=[4,0], v₂=[0,2] · จงหา context vector</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">softmax([2,2])=[0.5, 0.5]</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">context=0.5[4,0]+0.5[0,2]=[2, 1]</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>context = <b>[2, 1]</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">41</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Temperature T&gt;1 ทำให้ distribution คมขึ้น (มั่นใจมากขึ้น)"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>T&gt;1 ทำให้ distribution <b>แบนลง</b> (สุ่ม/มั่วขึ้น); T&lt;1 ต่างหากที่คมขึ้น</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">42</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">Beam search: เส้นทางมี prob 0.5 และ 0.4 · จงหา score (log prob รวม)</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">Score=Σ log P = ln0.5 + ln0.4<span class="calc-line">=−0.693 + (−0.916) = −1.609</span></span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>Score ≈ <b>−1.609</b> (ใช้ log กัน underflow)</div>
+</div></details></div>
+
+<!-- ================= WEEK 4 ================= -->
+<div class="wk">📕 Week 4 — Transformer Encoder (ข้อ 43–56)</div>
+
+<div class="q"><div class="q-head"><span class="q-num">43</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">q=[1,2], k₁=[1,1], k₂=[2,0], v₁=[1,0], v₂=[0,1], dₖ=2 · จงหา context vector</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">scores ดิบ: q·k₁=3, q·k₂=2 → หาร √2: [2.121, 1.414]</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">softmax: e^2.121=8.34, e^1.414=4.11, sum=12.45 → [0.670, 0.330]</span></div>
+<div class="step"><span class="step-n">3</span><span class="step-t">context=0.670[1,0]+0.330[0,1]=[0.670, 0.330]</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>context ≈ <b>[0.67, 0.33]</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">44</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"เหตุที่หาร √dₖ ใน attention เพื่อคุม variance ให้ ≈1 กัน softmax อิ่มตัว (saturate)"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — dₖ ใหญ่ → dot-product variance โต → softmax เข้า flat region → gradient หาย</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">45</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">Positional encoding ที่ pos=0, d_model=4 · จงหาเวกเตอร์ PE</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">ทุกมุม = 0/... = 0 → sin(0)=0, cos(0)=1</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">คู่=sin, คี่=cos → [sin0, cos0, sin0, cos0]</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>PE(0) = <b>[0, 1, 0, 1]</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">46</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">Positional encoding ที่ pos=2, i=0, d=4 · จงหา PE(2,0) และ PE(2,1)</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">i=0 → 10000^0=1 → มุม=2/1=2 rad</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">PE(2,0)=sin(2)=0.909 · PE(2,1)=cos(2)=−0.416</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>PE(2,0)=<b>0.909</b> · PE(2,1)=<b>−0.416</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">47</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">Multi-head: d_model=768, h=12 · จงหา dₖ ต่อหัว</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">dₖ = d_model/h = 768/12 = 64</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>dₖ = <b>64</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">48</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">จงหาจำนวน parameter ของ attention ต่อ 1 layer เมื่อ d_model=768</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">4·d_model² (Wq,Wk,Wv,Wo)<span class="calc-line">= 4 × 768² = 4 × 589,824 = 2,359,296</span></span></div>
+<div class="ans correct"><div class="al">คำตอบ</div><b>2,359,296</b> ≈ 2.36M</div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">49</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">FFN: d_model=768, d_ff=3072 · จงหาจำนวน parameter (เฉพาะ weights W₁,W₂)</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">W₁=768×3072, W₂=3072×768 → 2×768×3072</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">= 4,718,592</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div><b>4,718,592</b> ≈ 4.7M (d_ff = 4×d_model)</div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">50</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Transformer ใช้ BatchNorm เป็นมาตรฐานใน Add & Norm"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>ใช้ <b>LayerNorm</b> (normalize ข้าม features ต่อ token, ไม่ขึ้นกับ batch); BatchNorm ไม่ดีกับ NLP (ประโยคยาวไม่เท่ากัน + padding)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">51</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Self-attention มี path length ระหว่างคำใดๆ = O(1) จึงแก้ vanishing gradient ระยะไกลได้"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — คำที่ 1 เชื่อมคำที่ 10,000 โดยตรง (ต่าง RNN ที่เป็น O(N))</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">52</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Positional encoding ถูกคูณ (multiply) เข้ากับ word embedding"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>ถูก <b>บวก (add)</b>: FinalInput = WordEmbedding + PositionalEncoding</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">53</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Memory complexity ของ self-attention คือ O(N²) — เพิ่มความยาว 2 เท่า memory เพิ่ม 4 เท่า"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — attention matrix ขนาด N×N</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">54</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Residual connection (x + Sublayer(x)) ทำให้ gradient ผ่านเส้นทาง residual = 1 ช่วยแก้ vanishing gradient"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — ResNet logic, bias สู่ identity function, gradient highway</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">55</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">LayerNorm ใน Transformer คำนวณ mean/variance ข้ามมิติใด?</div>
+<div class="opts">A. ข้าม batch dimension &nbsp; B. ข้าม feature dimension ต่อ token &nbsp; C. ข้าม sequence length &nbsp; D. ข้ามทุกมิติพร้อมกัน</div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">คำตอบ: B</div>ข้าม features (d_model) ต่อ token แยกกัน → batch-independent</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">56</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">d_model=512, h=8, dₖ=64 · พิสูจน์ว่า params ของ multi-head (3 หัว×8 + Wo) = 4·d²</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">ต่อหัว Wq+Wk+Wv = 3×(512×64)=98,304 · ×8 heads = 786,432</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">+ Wo (512×512)=262,144 → รวม 1,048,576 = 4×512²</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div><b>1,048,576 = 4·d_model²</b> ✓</div>
+</div></details></div>
+
+<!-- ================= WEEK 5 ================= -->
+<div class="wk">📓 Week 5 — Transformer Decoder & KV Cache ⭐ (ข้อ 57–72)</div>
+
+<div class="q"><div class="q-head"><span class="q-num">57</span><span class="tag calc">คำนวณ</span><span class="tag hot">⭐ KV</span></div>
+<div class="q-body">KV cache MHA: B=4, seq=2048, n_kv_heads=32, head_dim=128, layers=32, FP16 (2B) · จงหา (MB)</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t"><code>2×B×seq×n_kv×hd×layers×bytes</code><span class="calc-line">2×4×2048×32×128×32×2 = 4,294,967,296 bytes</span></span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">÷1024² = 4096 MB</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>MHA = <b>4096 MB = 4 GB</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">58</span><span class="tag calc">คำนวณ</span><span class="tag hot">⭐ KV</span></div>
+<div class="q-body">ใช้ค่าเดิม แต่ GQA n_kv_heads=8 · จงหาขนาด cache และเทียบ MHA</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">cache ∝ n_kv_heads → GQA = 4096 × (8/32) = 1024 MB</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>GQA = <b>1024 MB</b> → เล็กลง <b>4 เท่า</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">59</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">KV cache: B=1, seq=1024, d_model=4096, layers=32, FP16 · จงหา (MB)</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t"><code>2×prec×layers×d_model×n_ctx×B</code><span class="calc-line">2×2×32×4096×1024×1 = 536,870,912 bytes</span></span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">÷1024² = 512 MB</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div><b>512 MB</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">60</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">โมเดล 13B params โหลด FP16 · จงหาขนาด static weights</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">13×10⁹ × 2 bytes = 26×10⁹ bytes ≈ 26 GB</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div><b>26 GB</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">61</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">โมเดล 7B params โหลดแบบ 4-bit (0.5 bytes/param) · จงหาขนาด static weights</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">7×10⁹ × 0.5 bytes = 3.5×10⁹ bytes ≈ 3.5 GB</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div><b>3.5 GB</b> (quantize ช่วยประหยัด 4 เท่าจาก FP16)</div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">62</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">static weights 14 GB + KV cache 512 MB · จงหา VRAM รวมโดยประมาณ</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">Total = 14 GB + 0.5 GB = 14.5 GB (+ activations)</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>≈ <b>14.5 GB</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">63</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"KV cache เปลี่ยน attention จาก matrix-matrix (GEMM) เป็น matrix-vector (GEMV)"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — query เหลือ token เดียว (B×1×dₖ) → GEMV</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">64</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"KV cache ทำให้ bottleneck เปลี่ยนจาก compute-bound เป็น memory-bound"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — per-token O(t²)→O(t); คอขวดย้ายไปที่ memory bandwidth (ขน K/V ผ่าน bus)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">65</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"GQA (Grouped-Query Attention) เพิ่มขนาด KV cache เมื่อเทียบกับ MHA"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>GQA/MQA <b>ลด</b> KV cache (ลด n_kv_heads จาก H เหลือ G)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">66</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Causal mask ใส่ค่า −∞ ในตำแหน่งอนาคต หลัง (after) การทำ softmax"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>ใส่ −∞ <b>ก่อน (before)</b> softmax → softmax แปลง −∞ เป็นน้ำหนัก 0</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">67</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"MQA (Multi-Query Attention) ใช้ Query หลายหัว แต่แชร์ Key/Value เพียงหัวเดียว"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — MQA = many Q, 1 K/V → cache เล็กสุด (quality ตกเล็กน้อย)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">68</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">distribution [0.4,0.3,0.15,0.1,0.05] · Top-k k=2 เก็บ token ใด และ renormalize เท่าไหร่?</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">เก็บ 2 ตัวสูงสุด {0.4, 0.3}, sum=0.7</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">renorm: [0.4/0.7, 0.3/0.7]=[0.571, 0.429]</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>เก็บ 2 ตัว → <b>[0.571, 0.429]</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">69</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">distribution เดิม [0.4,0.3,0.15,0.1,0.05] · Top-p p=0.85 เก็บกี่ token?</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">cumsum: 0.4 → 0.7 → 0.85 (ถึง 0.85 ที่ตัวที่ 3)</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>เก็บ <b>3 token</b> {0.4, 0.3, 0.15} (adaptive ตามความมั่นใจ)</div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">70</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"ลำดับการกรอง logits คือ softmax → temperature → top-k → top-p"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>ลำดับที่ถูก: <b>temperature → top-k → top-p → softmax → sample</b></div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">71</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"ใน cross-attention ของ decoder: Query มาจาก decoder ส่วน Key/Value มาจาก encoder"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — Q=decoder ("กำลัง generate อะไร"), K/V=encoder ("บริบท source")</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">72</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">LLaMA-7B d_model=4096 · จงหาจำนวน attention parameter ต่อ 1 layer</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">4×d² = 4×4096² = 4×16,777,216</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div><b>67,108,864</b> ≈ 67.1M/layer</div>
+</div></details></div>
+
+<!-- ================= WEEK 6 ================= -->
+<div class="wk">📔 Week 6 — Encoder: BERT (ข้อ 73–86)</div>
+
+<div class="q"><div class="q-head"><span class="q-num">73</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">sequence 200 tokens, MLM mask 15% · แบ่งเป็น [MASK]/random/unchanged กี่ token?</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">mask = 200×0.15 = 30 tokens</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">80%→[MASK]=24 · 10%→random=3 · 10%→คงเดิม=3</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>[MASK]=<b>24</b>, random=<b>3</b>, unchanged=<b>3</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">74</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"BERT-Base มี 12 layers, 768 hidden, 110M parameters"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — Base: 12L/768H/12A/110M; Large: 24L/1024H/16A/340M</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">75</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"MLM (BERT) มี training signal density สูงกว่า CLM (GPT)"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>ตรงข้าม — MLM เรียนแค่ 15% (sparse); CLM ทุก token เป็น label = 100% (dense)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">76</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"NSP (Next Sentence Prediction) ทำนาย IsNext/NotNext โดยใช้ representation ของ [CLS]"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — 50% IsNext, 50% NotNext (B สุ่มจากเอกสารอื่น); ใช้ pooled [CLS]</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">77</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Fine-tuning คือการแช่แข็ง (freeze) ทุก weight แล้วใช้ embedding เป็น feature"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>นั่นคือ <b>Feature Extraction</b> (ELMo-style); Fine-tuning = อัปเดตทุก weight (BERT)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">78</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"RoBERTa ตัด NSP ออก และใช้ dynamic masking (สร้าง mask ใหม่ทุกครั้งที่ป้อน sequence)"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — RoBERTa: ตัด NSP + dynamic masking + data 16→160GB + batch 256→8000</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">79</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"DeBERTa ใช้ disentangled attention แยกเวกเตอร์ content กับ relative-position ออกจากกัน"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — Aᵢⱼ = QᶜKᶜ + QᶜKᵖ + KᶜQᵖ (content-to-content + content-to-position + position-to-content)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">80</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"SpanBERT mask token แบบสุ่มกระจายทีละตัว เหมือน BERT เดิม"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>SpanBERT mask เป็น <b>ช่วง (contiguous span)</b> + Span Boundary Objective (ทายจาก boundary tokens 2 ตัวนอก span)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">81</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Input embedding ของ BERT = Token + Segment + Position (บวกกัน 3 ชั้น)"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — E = E_token + E_segment + E_position</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">82</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">token [CLS] ใน BERT ใช้ทำอะไร?</div>
+<div class="opts">A. คั่นระหว่างสองประโยค &nbsp; B. pooled output สำหรับ sentence classification &nbsp; C. mask คำที่ต้องทาย &nbsp; D. padding</div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">คำตอบ: B</div>[CLS] อยู่ตำแหน่ง 0, pool ข้อมูลทั้ง sequence → classification ([SEP] คั่นประโยค)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">83</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">BERT-Base: B=32, T=128, H=768 · จงหาจำนวน scalar elements ต่อ 1 forward pass ต่อ layer</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">32 × 128 × 768 = 3,145,728</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>≈ <b>3.15 × 10⁶</b> elements</div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">84</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"BERT มี hardcoded position limit T_max = 512 เพราะใช้ learned position embeddings"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — T_max=512; runtime T dynamic ได้ (เช่น 128) เพื่อประหยัด memory</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">85</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Extractive QA (SQuAD) ทำนาย start และ end index ของ span โดยมี constraint j ≥ i"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — argmax(S·hᵢ + E·hⱼ) subject to j≥i (joint decoding ไม่ใช่ independent argmax)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">86</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Hugging Face `pipeline` ให้ raw hidden states เพื่อต่อ custom head เอง"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>`pipeline` = ระดับสูง (ห่อ preprocess+forward+softmax); ตัวที่ให้ raw hidden states คือ <b>AutoModel</b></div></details></div>
+
+<!-- ================= WEEK 7 ================= -->
+<div class="wk">📒 Week 7 — Decoder: GPT & Modern Causal Stack (ข้อ 87–100)</div>
+
+<div class="q"><div class="q-head"><span class="q-num">87</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">SwiGLU: in_dim=768, hidden=2048 · จงหาจำนวน parameter (ไม่มี bias)</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">3 เมทริกซ์ (W₁,W₂,W₃) → 3×in×hidden<span class="calc-line">= 3 × 768 × 2048 = 4,718,592</span></span></div>
+<div class="ans correct"><div class="al">คำตอบ</div><b>4,718,592</b> ≈ 4.7M</div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">88</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">SwiGLU parameter parity: d_model=3072 · จงหา hidden dim ตามกฎ 8/3×d</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">d_hidden = (8/3) × 3072 = 8192</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div><b>8192</b> (SwiGLU มี 3 matrices ต้องลด hidden เพื่อ parity กับ FFN 4d)</div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">89</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">RMSNorm: x=[2,2,2,2], γ=1, ε≈0 · จงหา output</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">mean(x²)=(4+4+4+4)/4=4 → RMS=√4=2</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">y=x/RMS=[2/2, 2/2, 2/2, 2/2]</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>y = <b>[1, 1, 1, 1]</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">90</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">RMSNorm: x=[3,4] (dim=2), γ=1 · จงหา output</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">mean(x²)=(9+16)/2=12.5 → RMS=√12.5=3.536</span></div>
+<div class="step"><span class="step-n">2</span><span class="step-t">y=[3/3.536, 4/3.536]=[0.848, 1.131]</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>y ≈ <b>[0.848, 1.131]</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">91</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">ตาม Chinchilla · โมเดล 30B params ต้องเทรนด้วยกี่ token?</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">20 tokens/param → 30×10⁹ × 20 = 600×10⁹</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div><b>600B tokens</b> (0.6T)</div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">92</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">ตาม Chinchilla · โมเดล 175B params ต้องการกี่ token?</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">175×10⁹ × 20 = 3,500×10⁹</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div><b>3.5T tokens</b></div>
+</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">93</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"Kaplan (2020) เป็นผู้เสนอ rule of thumb 20 tokens ต่อ 1 parameter"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>นั่นคือ <b>Chinchilla</b> (2022); Kaplan บอกให้ขยาย model size เร็วกว่า data (N∝C^0.73)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">94</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"RMSNorm ลบค่าเฉลี่ย (mean-centering) เหมือน LayerNorm"</span></div>
+<details><summary>เฉลย</summary><div class="ans wrong"><div class="al">False ✗</div>RMSNorm <b>ไม่ลบ mean</b> (normalize ด้วย RMS อย่างเดียว, ไม่มี bias) → เบา/เร็วกว่า LayerNorm</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">95</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"RoPE เข้ารหัสตำแหน่งด้วยการหมุน (rotate) เวกเตอร์ Q และ K ตามตำแหน่ง token"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — หมุนด้วย rotation matrix; dot product ขึ้นกับ relative distance (m−n) → extrapolate ดี</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">96</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"CLM (GPT) มี signal density = 100% เพราะทุก token เป็น prediction target"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — ต่างจาก MLM ที่เรียนแค่ ~15%</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">97</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">GPT-3 มีจำนวน parameter เท่าไหร่?</div>
+<div class="opts">A. 117M &nbsp; B. 1.5B &nbsp; C. 175B &nbsp; D. 70B</div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">คำตอบ: C</div>GPT-1=117M, GPT-2=1.5B, GPT-3=<b>175B</b></div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">98</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"GQA เป็นทางสายกลางระหว่าง MHA (quality) และ MQA (memory) — ใช้ใน LLaMA-2/3, Mistral"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — GQA: quality ~เท่า MHA, speed ~เท่า MQA</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">99</span><span class="tag tf">True/False</span></div>
+<div class="q-body"><span class="stmt">"CLM loss คำนวณโดยเลื่อน: logits[:-1] เทียบกับ labels[1:]"</span></div>
+<details><summary>เฉลย</summary><div class="ans correct"><div class="al">True ✓</div>ถูก — shift 1 ช่อง เพราะ logit ตำแหน่ง t ทำนาย token ตำแหน่ง t+1</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">100</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">MHA มี 32 KV heads, GQA มี 4 KV heads (config อื่นเท่ากัน) · KV cache เล็กลงกี่เท่า?</div>
+<details><summary>เฉลย</summary><div class="sol">
+<div class="step"><span class="step-n">1</span><span class="step-t">cache ∝ n_kv_heads → ratio = 32/4 = 8</span></div>
+<div class="ans correct"><div class="al">คำตอบ</div>เล็กลง <b>8 เท่า</b></div>
+</div></details></div>
+
+<p class="foot">100 ข้อ · คำนวณ 40 + True/False 48 + MCQ 12 · ครอบคลุมทุกสัปดาห์ตามสัดส่วนข้อสอบจริง · ขอให้สอบผ่าน 🍀</p>
+</div>
+<script>function toggleAll(open){ document.querySelectorAll('details').forEach(d => d.open = open); }</script>
+</body>
+</html>
