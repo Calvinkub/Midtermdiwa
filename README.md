@@ -45,6 +45,7 @@ NLP/
 │   ├── nlp_dl_06_lab_solution.py # DeBERTa fine-tuning + VRAM tricks
 │   └── nlp_dl_07_lab_solution.py # RMSNorm · SwiGLU · RoPE · GQA · KV Cache
 └── prep/                     # 📌 สื่อเตรียมสอบ (เริ่มที่นี่)
+    ├── SLIDES-DETAILED-NOTES.md  # 📖 สรุปละเอียดทุกสไลด์ (Weeks 1-7) จากสไลด์จริง ทุกสูตร/ตัวเลข
     ├── SLIDES-TEACH.html         # 🖥️ สไลด์สอน 43 หน้า ครบ 7 สัปดาห์ (เปิดในเบราว์เซอร์)
     ├── CALC-DRILLS.html          # ✏️ โจทย์คำนวณ 20 ข้อ + เฉลยทีละ step (กดเปิด/ปิดเฉลยได้)
     ├── CHEAT-SHEET.html          # ชีตสรุป A4 × 2 หน้า (พร้อมพิมพ์)
