@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="html-slides v3.0">
+<title>NLP with Deep Learning — ติวมิดเทอม (7 สัปดาห์)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   THEME: Editorial Light (verbatim)
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+:root{
+  --font-body:'Inter',-apple-system,sans-serif;
+  --font-mono:'Space Grotesk','JetBrains Mono',monospace;
+  --bg:#f9f9ff; --bg-card:#ffffff; --bg-card-hover:#f2f3fc; --surface-container:#ecedf6;
+  --text:#191c22; --text-muted:#414752; --text-dim:#747a87;
+  --accent-blue:#0060aa; --accent-blue-container:#58a6ff; --accent-green:#006e21;
+  --accent-orange:#e8590c; --accent-red:#ba1a1a; --accent-purple:#733fc4;
+  --accent-purple-container:#aa78ff; --accent-yellow:#c48f00;
+  --border:rgba(192,199,212,0.15); --border-hover:rgba(192,199,212,0.35); --outline-variant:#c0c7d4;
+}
+html,body{ background:var(--bg)!important; color:var(--text)!important; }
+.particle{ background:rgba(0,96,170,0.06)!important; }
+.branding{ color:var(--text-dim)!important; } .branding-icon{ border-color:var(--text-dim)!important; }
+.progress-bar{ background:linear-gradient(90deg,var(--accent-blue),var(--accent-blue-container),var(--accent-purple))!important; }
+.slide-counter{ color:var(--text-dim)!important; } .nav-hints{ color:var(--text-dim)!important; }
+.nav-hints kbd{ background:rgba(0,0,0,0.03)!important; border:1px solid rgba(192,199,212,0.25)!important; border-radius:6px!important; color:var(--text-dim)!important; }
+.slide-nav-dot{ background:rgba(192,199,212,0.3)!important; }
+.slide-nav-dot.active{ background:var(--accent-blue)!important; box-shadow:0 0 12px rgba(0,96,170,0.25)!important; }
+.slide-nav-dot:hover{ background:rgba(0,96,170,0.3)!important; }
+.gradient-text{ background:linear-gradient(135deg,var(--accent-blue),var(--accent-purple))!important; -webkit-background-clip:text!important; -webkit-text-fill-color:transparent!important; background-clip:text!important; }
+.slide-tag{ font-family:'Space Grotesk',sans-serif!important; color:var(--accent-blue)!important; }
+.subtitle{ color:var(--text-muted)!important; }
+.table-wrap thead th{ background:var(--bg-card-hover)!important; color:var(--text-muted)!important; border-bottom:1px solid var(--border)!important; }
+.table-wrap tbody td{ color:var(--text)!important; border-bottom:1px solid var(--border)!important; }
+.table-wrap tbody tr:hover{ background:var(--bg-card-hover)!important; }
+.table-wrap,.code-window{ box-shadow:0 2px 32px rgba(25,28,34,0.04)!important; }
+.code-window{ background:#1e1e2e!important; border:1px solid rgba(0,0,0,0.08)!important; border-radius:12px!important; box-shadow:0 8px 48px rgba(25,28,34,0.12)!important; }
+.code-titlebar{ background:rgba(255,255,255,0.04)!important; border-bottom:1px solid rgba(255,255,255,0.06)!important; }
+.deck::before{ content:''; position:fixed; inset:0; background:radial-gradient(ellipse at 80% 10%,rgba(115,63,196,0.03) 0%,transparent 40%),radial-gradient(ellipse at 10% 90%,rgba(0,96,170,0.025) 0%,transparent 40%); pointer-events:none; z-index:0; }
+.deck::after{ content:''; position:fixed; top:10%; bottom:10%; left:61.8%; width:1px; background:linear-gradient(to bottom,transparent,rgba(192,199,212,0.12),transparent); pointer-events:none; z-index:0; }
+.slide.active .anim-1{ animation:fadeInUp .35s cubic-bezier(.22,1,.36,1) .05s both!important; }
+.slide.active .anim-2{ animation:fadeInUp .35s cubic-bezier(.22,1,.36,1) .15s both!important; }
+.slide.active .anim-3{ animation:fadeInUp .4s cubic-bezier(.22,1,.36,1) .25s both!important; }
+.slide.active .anim-4{ animation:fadeInUp .35s cubic-bezier(.22,1,.36,1) .35s both!important; }
+.slide.active .anim-5{ animation:fadeInUp .35s cubic-bezier(.22,1,.36,1) .45s both!important; }
+
+/* ============================================================
+   COMPONENTS (base, condensed to what this deck uses)
+   ============================================================ */
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ height:100%; font-family:var(--font-body); overflow:hidden; -webkit-font-smoothing:antialiased; }
+.deck{ position:relative; width:100vw; height:100vh; }
+.slide{ position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center;
+  padding:clamp(28px,4vh,44px) clamp(32px,5vw,64px); opacity:0; pointer-events:none;
+  transition:opacity .45s cubic-bezier(.4,0,.2,1); overflow:hidden; z-index:1; }
+.slide.active{ opacity:1; pointer-events:auto; }
+.particles{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.particle{ position:absolute; width:2px; height:2px; border-radius:50%; animation:floatP linear infinite; }
+@keyframes floatP{ 0%{ transform:translateY(100vh) translateX(0); opacity:0; } 10%{ opacity:.8; } 90%{ opacity:.8; } 100%{ transform:translateY(-10vh) translateX(25px); opacity:0; } }
+.branding{ position:fixed; top:20px; right:28px; z-index:100; font-size:12px; font-weight:600; display:flex; align-items:center; gap:8px; }
+.branding-icon{ width:20px; height:20px; border:2px solid; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; }
+.progress-bar{ position:fixed; bottom:0; left:0; height:3px; z-index:100; transition:width .4s ease; }
+.slide-counter{ position:fixed; bottom:18px; right:28px; font-size:12px; font-weight:500; z-index:100; font-variant-numeric:tabular-nums; }
+.nav-hints{ position:fixed; bottom:18px; left:28px; font-size:11px; z-index:100; }
+.nav-hints kbd{ display:inline-flex; align-items:center; justify-content:center; min-width:22px; height:20px; padding:0 5px; font-size:10px; margin:0 2px; }
+.slide-nav{ position:fixed; right:14px; top:50%; transform:translateY(-50%); z-index:100; display:flex; flex-direction:column; gap:6px; }
+.slide-nav-dot{ width:6px; height:6px; border-radius:50%; cursor:pointer; transition:all .3s ease; }
+.slide-nav-dot.active{ transform:scale(1.6); }
+.slide-tag{ font-size:clamp(12px,1.2vw,14px); font-weight:600; letter-spacing:2.5px; text-transform:uppercase; margin-bottom:14px; }
+h1{ font-size:clamp(34px,5vw,62px); font-weight:900; line-height:1.1; letter-spacing:-1px; margin-bottom:18px; text-align:center; }
+h2{ font-size:clamp(26px,3.4vw,46px); font-weight:800; line-height:1.15; letter-spacing:-.5px; margin-bottom:12px; text-align:center; }
+.subtitle{ font-size:clamp(16px,1.8vw,23px); font-weight:400; line-height:1.5; text-align:center; max-width:820px; }
+.rainbow-line{ width:200px; height:2px; background:linear-gradient(90deg,var(--accent-blue),var(--accent-purple),var(--accent-green),var(--accent-yellow),var(--accent-orange)); border-radius:2px; margin:18px 0; }
+.highlight-blue{ color:var(--accent-blue); } .highlight-green{ color:var(--accent-green); } .highlight-orange{ color:var(--accent-orange); }
+.highlight-purple{ color:var(--accent-purple); } .highlight-red{ color:var(--accent-red); } .highlight-yellow{ color:var(--accent-yellow); }
+@keyframes fadeInUp{ from{ opacity:0; transform:translateY(28px); } to{ opacity:1; transform:translateY(0); } }
+@keyframes scaleReveal{ 0%{ opacity:0; transform:scale(.85); } 100%{ opacity:1; transform:scale(1); } }
+/* Table */
+.table-wrap{ width:100%; max-width:940px; margin-top:20px; background:var(--bg-card); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+.table-wrap table{ width:100%; border-collapse:collapse; font-size:clamp(12px,1.25vw,15.5px); }
+.table-wrap thead th{ padding:11px 16px; text-align:left; font-weight:600; font-size:clamp(11px,1.05vw,13px); text-transform:uppercase; letter-spacing:.04em; }
+.table-wrap tbody td{ padding:10px 16px; vertical-align:top; }
+.table-wrap tbody tr:last-child td{ border-bottom:none; }
+/* Code window */
+.code-window{ width:100%; max-width:800px; overflow:hidden; margin-top:18px; text-align:left; }
+.code-titlebar{ display:flex; align-items:center; gap:8px; padding:10px 14px; }
+.code-dot{ width:11px; height:11px; border-radius:50%; } .code-dot.red{ background:#ff5f56; } .code-dot.yellow{ background:#ffbd2e; } .code-dot.green{ background:#27c93f; }
+.code-filename{ font-size:clamp(11px,1vw,13px); color:#9aa0b4; font-family:var(--font-mono); margin-left:8px; }
+.code-body{ padding:16px 20px; font-family:var(--font-mono); font-size:clamp(12px,1.15vw,14.5px); line-height:1.65; overflow-x:auto; white-space:pre; text-align:left; color:#c8ccd8; }
+.code-body .cm{ color:#6b7089; font-style:italic; } .code-body .kw{ color:#c678dd; } .code-body .fn{ color:#61afef; } .code-body .str{ color:#98c379; } .code-body .nm{ color:#d19a66; }
+
+/* ============================================================
+   CUSTOM TEACHING STYLES
+   ============================================================ */
+:root{ --font-body:'Noto Sans Thai','Inter',-apple-system,sans-serif; }
+.teach{ width:100%; max-width:880px; text-align:left; display:flex; flex-direction:column; gap:clamp(8px,1.7vh,16px); }
+.th-head{ font-size:clamp(25px,3.3vw,42px); font-weight:800; letter-spacing:-.5px; line-height:1.12; }
+.th-sub{ font-size:clamp(14px,1.4vw,18px); color:var(--text-dim); margin-top:-4px; }
+.blist{ list-style:none; display:flex; flex-direction:column; gap:clamp(6px,1.3vh,12px); }
+.blist li{ font-size:clamp(14px,1.45vw,19px); line-height:1.5; color:var(--text-muted); padding-left:1.4em; position:relative; }
+.blist li::before{ content:'▸'; position:absolute; left:0; color:var(--accent-blue); font-weight:700; }
+.blist li strong{ color:var(--text); font-weight:700; }
+.blist li .k{ color:var(--accent-red); font-weight:700; }
+.blist.tight li{ font-size:clamp(13px,1.35vw,17px); }
+.formula{ font-family:var(--font-mono); background:#eef2fb; border-left:3px solid var(--accent-blue); border-radius:0 10px 10px 0;
+  padding:clamp(9px,1.5vh,15px) clamp(14px,2vw,22px); font-size:clamp(14px,1.55vw,20px); color:#0b2d52; text-align:center; letter-spacing:.3px; }
+.formula.sm{ font-size:clamp(12px,1.25vw,16px); text-align:left; }
+.worked{ background:#fff; border:1px solid var(--border); border-left:3px solid var(--accent-green); border-radius:0 10px 10px 0;
+  padding:clamp(9px,1.5vh,15px) clamp(14px,2vw,20px); box-shadow:0 2px 24px rgba(25,28,34,.04); }
+.worked .wl{ font-family:var(--font-mono); font-size:clamp(10px,1vw,12.5px); font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent-green); margin-bottom:5px; }
+.worked p{ font-size:clamp(12.5px,1.3vw,16.5px); color:var(--text-muted); line-height:1.5; }
+.worked b{ color:var(--text); }
+.twocol{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(12px,1.8vw,22px); width:100%; }
+@media (max-width:700px){ .twocol{ grid-template-columns:1fr; } }
+.mini{ background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:clamp(11px,1.7vh,17px) clamp(13px,1.8vw,20px); box-shadow:0 2px 24px rgba(25,28,34,.04); }
+.mini h4{ font-size:clamp(14px,1.45vw,18.5px); font-weight:700; margin-bottom:5px; }
+.mini p{ font-size:clamp(12.5px,1.25vw,16px); color:var(--text-muted); line-height:1.45; }
+.mini p+p{ margin-top:5px; }
+.mini.blue{ border-left:3px solid var(--accent-blue); } .mini.purple{ border-left:3px solid var(--accent-purple); }
+.mini.green{ border-left:3px solid var(--accent-green); } .mini.red{ border-left:3px solid var(--accent-red); } .mini.orange{ border-left:3px solid var(--accent-orange); }
+.pill{ display:inline-block; font-family:var(--font-mono); font-size:clamp(10px,.95vw,12px); font-weight:700; padding:3px 10px; border-radius:20px; background:rgba(232,89,12,.1); color:var(--accent-orange); letter-spacing:.5px; vertical-align:middle; }
+.pill.hot{ background:rgba(186,26,26,.1); color:var(--accent-red); }
+.divider{ text-align:center; display:flex; flex-direction:column; align-items:center; }
+.divider .dnum{ font-family:var(--font-mono); font-size:clamp(64px,13vw,150px); font-weight:700; line-height:1; color:var(--accent-blue-container); opacity:.28; }
+.divider .dttl{ font-size:clamp(30px,4.5vw,60px); font-weight:900; letter-spacing:-1px; margin-top:calc(-.15em); }
+.divider .dsub{ font-size:clamp(14px,1.6vw,20px); color:var(--text-muted); margin-top:12px; max-width:640px; }
+.divider .dmeta{ font-family:var(--font-mono); font-size:clamp(12px,1.2vw,15px); color:var(--text-dim); margin-top:14px; letter-spacing:.5px; }
+.kbd-inline{ font-family:var(--font-mono); background:#eef2fb; color:var(--accent-blue); padding:1px 6px; border-radius:5px; font-size:.9em; font-weight:600; }
+.note{ font-size:clamp(12px,1.2vw,15px); color:var(--text-dim); font-style:italic; }
+</style>
+</head>
+<body>
+<div class="particles" id="particles"></div>
+<div class="branding"><span class="branding-icon">N</span> NLP·DL 2026</div>
+
+<div class="deck" id="deck">
+
+  <!-- 0 · TITLE -->
+  <div class="slide active" data-slide="0">
+    <div class="slide-tag anim-1">ติวสอบกลางภาค · Weeks 1–7</div>
+    <h1 class="anim-2">Natural Language Processing<br><span class="gradient-text">with Deep Learning</span></h1>
+    <p class="subtitle anim-3">สอนเข้าใจครบทั้ง 7 สัปดาห์ — Word Vectors → RNN → Attention → Transformer → BERT → GPT<br>เน้น "เข้าใจ + คำนวณเป็น" ตามแนวข้อสอบจริง</p>
+    <div class="rainbow-line anim-4"></div>
+    <p class="dmeta anim-5" style="font-family:var(--font-mono);color:var(--text-dim);font-size:14px;">80 ข้อ · 40% · 3 ชม. · ⭐ KV Cache · LSTM · Subword</p>
+    <script type="application/json" class="slide-notes">{"title":"ภาพรวมคอร์ส","script":"สวัสดีครับ วันนี้เราจะติวเนื้อหา NLP with Deep Learning ครบทั้ง 7 สัปดาห์ ตั้งแต่การแทนคำเป็นเวกเตอร์ ไปจนถึง GPT เน้นให้เข้าใจหลักการและคำนวณเป็น","notes":["ครอบคลุม Weeks 1-7","เน้นเข้าใจ + คำนวณ ไม่ใช่ท่องจำ","หัวข้อหนัก: KV Cache, LSTM, Subword"]}</script>
+  </div>
+
+  <!-- 1 · HOW THE EXAM WORKS -->
+  <div class="slide" data-slide="1">
+    <div class="teach">
+      <div class="slide-tag anim-1">อ่านก่อนเริ่ม</div>
+      <div class="th-head anim-1">ข้อสอบวัด "เข้าใจ + คำนวณ" ไม่ใช่ท่องจำ</div>
+      <ul class="blist anim-2">
+        <li>เอาชีต A4 เขียนมือเข้าได้ → อาจารย์เลย <strong>ลดข้อท่องนิยาม</strong> เพิ่มข้อ <strong>คำนวณหลายขั้น</strong> และข้อ "ข้อใดผิด"</li>
+        <li><strong>~18 ข้อเป็นการคำนวณ</strong> กระจายทุกสัปดาห์ · ตอนที่ 2 (15 ข้อ) เกือบทั้งหมดคือคำนวณ ต้องแสดงวิธีคิด</li>
+        <li><strong>~22 ข้อเป็นแบบ "ข้อใดถูก/ผิด"</strong> ต้องอ่านครบ 5 ตัวเลือก — ข้อ "ผิด" คือจุดพลาดบ่อยสุด</li>
+      </ul>
+      <div class="twocol anim-3">
+        <div class="mini red"><h4>⭐ หัวข้อออกหนัก</h4><p>KV Cache (W5) = 5 ข้อ · LSTM Gates (W2) = 3 ข้อ · Subword (W1) = 3 ข้อ</p></div>
+        <div class="mini blue"><h4>กลยุทธ์</h4><p>ทำ MCQ เร็วๆก่อน แล้วค่อยกลับมาข้อคำนวณ · 3 ชม./80 ข้อ ≈ 2 นาที/ข้อ</p></div>
+      </div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"ข้อสอบวัดอะไร","script":"ข้อสอบนี้เน้นความเข้าใจและการคำนวณ เพราะเอาชีต A4 เข้าห้องได้ อาจารย์เลยตัดข้อท่องจำออก เพิ่มข้อคำนวณและข้อวิเคราะห์ว่าข้อความไหนผิด","notes":["~18 ข้อคำนวณ","~22 ข้อ ถูก/ผิด — ข้อผิดพลาดบ่อย","หัวข้อหนัก KV Cache 5 ข้อ"]}</script>
+  </div>
+
+  <!-- 2 · WEEK 1 DIVIDER -->
+  <div class="slide" data-slide="2">
+    <div class="divider">
+      <div class="dnum bounce-1">01</div>
+      <div class="dttl">Word Representation</div>
+      <div class="dsub">ทำยังไงให้คอมพิวเตอร์ "เข้าใจ" ความหมายของคำ — จาก One-Hot สู่เวกเตอร์หนาแน่น</div>
+      <div class="dmeta">One-Hot · PMI/PPMI · Word2Vec · Subword · SentencePiece</div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"สัปดาห์ 1: Word Representation","script":"เริ่มที่สัปดาห์แรก การแทนความหมายของคำ เป้าหมายคือเปลี่ยนคำให้เป็นตัวเลขที่จับความหมายได้","notes":["จาก One-Hot ไป dense vectors","PMI, Word2Vec, Subword tokenization"]}</script>
+  </div>
+
+  <!-- 3 · One-hot / WordNet / SVD -->
+  <div class="slide" data-slide="3">
+    <div class="teach">
+      <div class="slide-tag anim-1">W1 · การแทนคำ + ลดมิติ</div>
+      <div class="th-head anim-1">ทำไม One-Hot ไม่พอ?</div>
+      <div class="twocol anim-2">
+        <div class="mini red"><h4>One-Hot</h4><p>เวกเตอร์ยาวเท่า vocab มี 1 ตัวเดียว → <strong>ตั้งฉากกันหมด</strong> วัดความเหมือนไม่ได้ (cat กับ dog ห่างเท่า cat กับ car)</p></div>
+        <div class="mini orange"><h4>WordNet</h4><p>พจนานุกรมทำมือ → ตกยุค, ขาดคำใหม่/นัยความหมาย, ต้องใช้แรงคนดูแล</p></div>
+      </div>
+      <ul class="blist anim-3">
+        <li><strong>Co-occurrence Matrix:</strong> นับว่าคำไหนอยู่ใกล้กันในหน้าต่าง (window) → เมทริกซ์ใหญ่มากและ sparse</li>
+        <li><strong>SVD / LSA:</strong> แยกเมทริกซ์ (factorize) บีบให้เหลือมิติน้อยแบบ dense — แต่ช้า O(n²·m) และเพิ่มคำใหม่ยาก</li>
+      </ul>
+      <div class="worked anim-4"><div class="wl">แนวคิดหลัก</div><p>"You shall know a word by the company it keeps" — ความหมายของคำ = บริบทที่มันปรากฏ (Distributional Hypothesis)</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"One-Hot / WordNet / SVD","script":"One-Hot ทำให้ทุกคำตั้งฉากกัน วัดความเหมือนไม่ได้ WordNet ก็ทำมือ ตกยุค เราเลยไปทางนับ co-occurrence แล้วบีบมิติด้วย SVD","notes":["One-Hot: orthogonal, ไม่มี similarity","WordNet: manual, ตกยุค","SVD/LSA บีบ co-occurrence เป็น dense","Distributional Hypothesis"]}</script>
+  </div>
+
+  <!-- 4 · PMI/PPMI -->
+  <div class="slide" data-slide="4">
+    <div class="teach">
+      <div class="slide-tag anim-1">W1 · Co-occurrence · PMI</div>
+      <div class="th-head anim-1">PMI / PPMI — วัดว่าสองคำ "คู่กันผิดปกติ" แค่ไหน</div>
+      <div class="formula anim-2">PMI(w,c) = log₂ [ P(w,c) / ( P(w)·P(c) ) ]</div>
+      <ul class="blist tight anim-3">
+        <li>P(w,c) = โอกาสที่คู่นี้ปรากฏด้วยกัน · P(w),P(c) = โอกาสแต่ละคำ · &gt;0 = คู่กันบ่อยกว่าบังเอิญ</li>
+        <li><span class="k">PMI Bug:</span> ถ้าไม่เคยคู่กันเลย P(w,c)=0 → log(0) = −∞</li>
+      </ul>
+      <div class="formula anim-3">PPMI(w,c) = max( PMI(w,c), 0 )  ← ตัดค่าลบทิ้ง</div>
+      <div class="worked anim-4"><div class="wl">ตัวอย่างคำนวณ</div><p>P(w,c)=0.1, P(w)=0.2, P(c)=0.25 → 0.1 / (0.2×0.25) = 0.1/0.05 = 2 → PMI = log₂2 = <b>1.0</b> → PPMI = <b>1.0</b></p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"PMI / PPMI","script":"PMI วัดว่าสองคำปรากฏด้วยกันบ่อยกว่าที่ควรเป็นแค่ไหน ปัญหาคือถ้าไม่เคยคู่กันจะได้ลบอนันต์ เลยใช้ PPMI ตัดค่าลบเป็นศูนย์","notes":["PMI = log2[P(w,c)/(P(w)P(c))]","PPMI = max(PMI,0) แก้ปัญหา log 0","ตัวอย่าง: ได้ PMI = 1.0"]}</script>
+  </div>
+
+  <!-- 5 · Word2Vec -->
+  <div class="slide" data-slide="5">
+    <div class="teach">
+      <div class="slide-tag anim-1">W1 · Word2Vec</div>
+      <div class="th-head anim-1">Word2Vec: เดาบริบท → ได้เวกเตอร์หนาแน่น</div>
+      <div class="twocol anim-2">
+        <div class="mini blue"><h4>Skip-gram</h4><p>ให้คำ<strong>กลาง</strong> → เดา<strong>บริบท</strong>รอบๆ · ดีกับคำหายาก · ช้ากว่า</p></div>
+        <div class="mini purple"><h4>CBOW</h4><p>ให้<strong>บริบท</strong> → เดาคำ<strong>กลาง</strong> · เร็วกว่า · smooth กว่า</p></div>
+      </div>
+      <div class="formula anim-3 sm">Objective (Skip-gram): maximize  Σ_t Σ_{−m≤j≤m, j≠0}  log P( w_{t+j} | w_t )</div>
+      <ul class="blist tight anim-4">
+        <li>P(o|c) = softmax ของ dot-product เวกเตอร์ → หาร normalize ทั้ง vocab (แพง)</li>
+        <li><strong>Negative Sampling:</strong> แทนที่จะ softmax ทั้ง vocab → สุ่มคำ "ผิด" ไม่กี่ตัวมาเทียบ → เร็วขึ้นมาก</li>
+      </ul>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"Word2Vec","script":"Word2Vec เรียนเวกเตอร์จากงานเดาบริบท Skip-gram ให้คำกลางเดารอบข้าง CBOW ทำกลับกัน ตัว objective คือ maximize log-likelihood ของบริบท และใช้ negative sampling ให้เร็ว","notes":["Skip-gram: center→context (คำหายากดี)","CBOW: context→center (เร็ว)","Negative sampling แทน full softmax"]}</script>
+  </div>
+
+  <!-- 6 · Subword tokenization (HEAVY) -->
+  <div class="slide" data-slide="6">
+    <div class="teach">
+      <div class="slide-tag anim-1">W1 · Subword Tokenization <span class="pill hot">ออก 3 ข้อ</span></div>
+      <div class="th-head anim-1">BPE vs WordPiece vs Unigram</div>
+      <div class="table-wrap anim-2">
+        <table>
+          <thead><tr><th>วิธี</th><th>กฎการสร้าง vocab</th><th>ใช้ใน</th></tr></thead>
+          <tbody>
+            <tr><td><strong>BPE</strong></td><td>รวมคู่ที่ <span class="highlight-blue">ปรากฏบ่อยที่สุด</span> ทีละคู่ (greedy, นับความถี่)</td><td>GPT-2</td></tr>
+            <tr><td><strong>WordPiece</strong></td><td>รวมคู่ที่ได้ <span class="highlight-purple">likelihood สูงสุด</span> = count(AB)/(count(A)·count(B))</td><td>BERT</td></tr>
+            <tr><td><strong>Unigram</strong></td><td>เริ่มจาก vocab ใหญ่ แล้ว <span class="highlight-green">ตัด (prune)</span> ให้ corpus likelihood สูงสุด (น่าจะเป็น)</td><td>T5, mBART</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="blist tight anim-3">
+        <li><span class="k">กับดักข้อสอบ:</span> "WordPiece รวมคู่ที่บ่อยที่สุด" = <strong>ผิด</strong> (นั่นคือ BPE) · WordPiece ใช้ likelihood</li>
+        <li>ทั้งหมดแก้ปัญหา OOV (คำหลุด vocab) โดยตัดคำเป็นชิ้นย่อย เช่น "unhappiness" → un + happi + ness</li>
+      </ul>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"Subword Tokenization","script":"หัวข้อนี้ออก 3 ข้อ ต้องแยกให้ออก BPE รวมคู่ที่บ่อยที่สุด WordPiece รวมคู่ที่ likelihood สูงสุดใช้ใน BERT ส่วน Unigram เริ่มใหญ่แล้วตัดลง กับดักที่เจอบ่อยคือสลับ BPE กับ WordPiece","notes":["BPE = คู่บ่อยสุด (GPT-2)","WordPiece = likelihood สูงสุด (BERT)","Unigram = prune down","กับดัก: อย่าสลับ BPE/WordPiece"]}</script>
+  </div>
+
+  <!-- 7 · SentencePiece + Loss -->
+  <div class="slide" data-slide="7">
+    <div class="teach">
+      <div class="slide-tag anim-1">W1 · SentencePiece · Loss Functions</div>
+      <div class="th-head anim-1">SentencePiece + ภาษาไทย · NLL vs CrossEntropy</div>
+      <div class="twocol anim-2">
+        <div class="mini blue"><h4>SentencePiece</h4><p>มองข้อความเป็น <strong>สตรีมดิบ</strong> เข้ารหัสช่องว่างเป็น <span class="kbd-inline">▁</span> → ภาษาอิสระ, ย้อนกลับได้</p><p>เหมาะกับ <strong>ภาษาไทย</strong> ที่ไม่มีเว้นวรรคระหว่างคำ</p></div>
+        <div class="mini green"><h4>NLL vs CrossEntropy</h4><p><strong>CrossEntropy = LogSoftmax + NLLLoss</strong></p><p>CE รับ <strong>logits</strong> ดิบ · NLLLoss รับ <strong>log-probabilities</strong> (ผ่าน log_softmax มาแล้ว)</p></div>
+      </div>
+      <div class="worked anim-3"><div class="wl">กับดักข้อสอบ</div><p>"CrossEntropyLoss รับค่า log-probabilities" = <b>ผิด</b> → CE รับ logits เอง (มันทำ LogSoftmax ให้ในตัว), NLLLoss ต่างหากที่รับ log-probs</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"SentencePiece / Loss","script":"SentencePiece มองข้อความเป็นสตรีมดิบ เข้ารหัสช่องว่าง เหมาะกับภาษาไทยที่ไม่มีเว้นวรรค ส่วน Loss ต้องจำว่า CrossEntropy เท่ากับ LogSoftmax บวก NLLLoss รับ logits ดิบ","notes":["SentencePiece: ช่องว่าง=▁, ดีกับไทย","CE = LogSoftmax + NLL","CE รับ logits, NLL รับ log-probs"]}</script>
+  </div>
+
+  <!-- 8 · WEEK 2 DIVIDER -->
+  <div class="slide" data-slide="8">
+    <div class="divider">
+      <div class="dnum bounce-1">02</div>
+      <div class="dttl">RNN / LSTM / GRU</div>
+      <div class="dsub">โมเดลที่ "จำ" ลำดับได้ — และวิธีแก้ปัญหา gradient หายไปกับข้อมูลยาวๆ</div>
+      <div class="dmeta">Param Sharing · BPTT · Perplexity · LSTM Gates ⭐ · BiRNN</div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"สัปดาห์ 2: RNN/LSTM/GRU","script":"สัปดาห์สอง โมเดลที่ประมวลผลลำดับ RNN LSTM GRU และหัวใจคือ LSTM gates ที่ออก 3 ข้อ","notes":["โมเดลลำดับ","LSTM gates = หัวข้อหนัก"]}</script>
+  </div>
+
+  <!-- 9 · Why RNN + param sharing -->
+  <div class="slide" data-slide="9">
+    <div class="teach">
+      <div class="slide-tag anim-1">W2 · ก่อน RNN · Parameter Sharing</div>
+      <div class="th-head anim-1">ทำไมต้อง RNN?</div>
+      <ul class="blist anim-2">
+        <li><strong>N-gram:</strong> จำได้แค่ n คำก่อนหน้า · sparsity สูง · เก็บตารางใหญ่มหาศาล</li>
+        <li><strong>Fixed-Window NLM:</strong> หน้าต่างคงที่ · <strong>ไม่แชร์น้ำหนัก</strong> · ยาวขึ้นต้องเทรนใหม่</li>
+      </ul>
+      <div class="formula anim-3">hₜ = tanh( W_hh·hₜ₋₁ + W_xh·xₜ + b )</div>
+      <ul class="blist tight anim-4">
+        <li><span class="highlight-blue">Parameter Sharing:</span> ใช้ W ชุด<strong>เดียวกัน</strong>ทุก timestep → รับ input ยาวเท่าไหร่ก็ได้ + พารามิเตอร์น้อย</li>
+        <li>hₜ = "ความจำ" สะสมจากอดีต ส่งต่อไปเรื่อยๆ</li>
+      </ul>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"Why RNN + Parameter Sharing","script":"N-gram กับ fixed-window จำบริบทได้จำกัดและไม่แชร์น้ำหนัก RNN แก้ด้วยการใช้ W ชุดเดียวซ้ำทุก timestep ทำให้รับ input ยาวเท่าไหร่ก็ได้","notes":["N-gram/fixed-window จำกัด","RNN: ht=tanh(W_hh h + W_xh x + b)","แชร์ W ทุก timestep"]}</script>
+  </div>
+
+  <!-- 10 · Init / shapes / perplexity -->
+  <div class="slide" data-slide="10">
+    <div class="teach">
+      <div class="slide-tag anim-1">W2 · Init · Task Shapes · Perplexity</div>
+      <div class="th-head anim-1">3 เรื่องสั้นที่ต้องรู้</div>
+      <div class="twocol anim-2">
+        <div class="mini blue"><h4>Weight Init</h4><p><strong>Xavier/Glorot</strong> → tanh / sigmoid<br><strong>He/Kaiming</strong> → ReLU (var = 2/n_in)</p></div>
+        <div class="mini purple"><h4>สถาปัตยกรรมตามงาน</h4><p>Many-to-one = classification · Many-to-many = tagging/seq2seq · One-to-many = captioning</p></div>
+      </div>
+      <div class="formula anim-3">Perplexity = e^J   (J = average cross-entropy loss)</div>
+      <div class="worked anim-4"><div class="wl">ตัวอย่าง + ความหมาย</div><p>ถ้า loss J = 2.0 → PPL = e² ≈ <b>7.39</b> · PPL = k แปลว่าโมเดล "งง" เท่ากับต้องเดามั่วจาก k คำที่โอกาสเท่ากัน · <b>ยิ่งต่ำยิ่งดี</b></p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"Init / Shapes / Perplexity","script":"Xavier ใช้กับ tanh sigmoid He ใช้กับ ReLU สถาปัตยกรรมก็เลือกตามงาน และ perplexity คือ e ยกกำลัง loss ยิ่งต่ำยิ่งดี PPL เท่ากับ k คือโมเดลงงเท่ากับเดาจาก k คำ","notes":["Xavier→tanh, He→ReLU","many-to-one/many/one-to-many","PPL = e^J, ยิ่งต่ำยิ่งดี"]}</script>
+  </div>
+
+  <!-- 11 · BPTT + gradients -->
+  <div class="slide" data-slide="11">
+    <div class="teach">
+      <div class="slide-tag anim-1">W2 · BPTT · Vanishing/Exploding</div>
+      <div class="th-head anim-1">gradient หาย vs ระเบิด — แก้คนละทาง</div>
+      <ul class="blist anim-2">
+        <li><strong>BPTT:</strong> คลี่ RNN ตามเวลาแล้ว backprop → ต้องคูณ W ซ้ำๆหลายครั้ง</li>
+        <li><span class="highlight-red">Vanishing</span> (‖W‖&lt;1): gradient เล็กลงจนหาย → เรียนบริบทไกลไม่ได้ → แก้ด้วย <strong>LSTM/GRU gates + skip connection</strong></li>
+        <li><span class="highlight-orange">Exploding</span> (‖W‖&gt;1): gradient โตระเบิด → แก้ด้วย <strong>Gradient Clipping</strong></li>
+      </ul>
+      <div class="formula anim-3">Gradient Clipping:  ถ้า ‖g‖ &gt; τ  →  g ← g · ( τ / ‖g‖ )</div>
+      <div class="worked anim-4"><div class="wl">กับดักข้อสอบ</div><p>"Gradient clipping แก้ปัญหา vanishing gradient" = <b>ผิด</b> → clipping แก้ <b>exploding</b> เท่านั้น (vanishing ต้องใช้ gate/skip)</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"BPTT / Gradients","script":"BPTT คูณ W ซ้ำหลายครั้ง ทำให้ gradient หายหรือระเบิด vanishing แก้ด้วย gate หรือ skip connection ส่วน exploding แก้ด้วย gradient clipping อย่าสลับกัน","notes":["Vanishing→gate/skip","Exploding→clipping","กับดัก: clipping ไม่แก้ vanishing"]}</script>
+  </div>
+
+  <!-- 12 · LSTM gates (HEAVY) -->
+  <div class="slide" data-slide="12">
+    <div class="teach">
+      <div class="slide-tag anim-1">W2 · LSTM Gates <span class="pill hot">ออก 3 ข้อ</span></div>
+      <div class="th-head anim-1">LSTM: 3 ประตู + ทางด่วน gradient</div>
+      <div class="twocol anim-2">
+        <ul class="blist tight" style="gap:6px">
+          <li><strong>Forget f = σ:</strong> ทิ้งอะไรจาก cell เก่า</li>
+          <li><strong>Input i = σ:</strong> รับข้อมูลใหม่แค่ไหน</li>
+          <li><strong>Candidate g = tanh:</strong> ข้อมูลใหม่คืออะไร</li>
+          <li><strong>Output o = σ:</strong> เปิดอะไรออกเป็น hₜ</li>
+        </ul>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="formula sm">cₜ = fₜ ⊙ cₜ₋₁ + iₜ ⊙ gₜ</div>
+          <div class="formula sm">hₜ = oₜ ⊙ tanh(cₜ)</div>
+        </div>
+      </div>
+      <div class="worked anim-3"><div class="wl">หัวใจ: Cell State cₜ</div><p><b>"ทางด่วน gradient"</b> — cell state ถูกอัปเดตด้วยการ <b>บวก (+)</b> ไม่ใช่คูณเมทริกซ์ → gradient ไหลข้าม timestep ไกลๆได้โดยไม่หาย (คล้าย residual connection)</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"LSTM Gates","script":"LSTM มี 3 ประตู forget input output ทั้งหมดใช้ sigmoid ยกเว้น candidate ใช้ tanh cell state อัปเดตด้วยการบวกจึงเป็นทางด่วนให้ gradient ไหลไกลได้ นี่คือเหตุผลที่ LSTM แก้ vanishing ได้","notes":["forget/input/output = σ, candidate = tanh","c = f⊙c_prev + i⊙g","h = o⊙tanh(c)","cell state บวก = ทางด่วน gradient"]}</script>
+  </div>
+
+  <!-- 13 · GRU / BiRNN / teacher forcing -->
+  <div class="slide" data-slide="13">
+    <div class="teach">
+      <div class="slide-tag anim-1">W2 · GRU · BiRNN · Teacher Forcing</div>
+      <div class="th-head anim-1">อีก 3 กลไกท้ายสัปดาห์ 2</div>
+      <div class="twocol anim-2">
+        <div class="mini green"><h4>GRU</h4><p>2 ประตู (reset + update) · ไม่มี cell state แยก · พารามิเตอร์น้อยกว่า LSTM เทรนเร็วกว่า</p></div>
+        <div class="mini blue"><h4>Bidirectional RNN</h4><p>อ่านทั้งไป-กลับ แล้ว concat · ต้องเห็น<strong>ทั้งประโยค</strong> → ใช้กับงาน generation แบบเรียลไทม์ไม่ได้</p></div>
+      </div>
+      <div class="worked anim-3"><div class="wl">Teacher Forcing & Exposure Bias</div><p><b>Teacher Forcing:</b> ตอนเทรน ป้อน "คำตอบจริง" ก่อนหน้าเข้าไป → เทรนเร็ว เสถียร<br><b>Exposure Bias:</b> ตอนใช้จริงโมเดลเห็น<b>คำที่ตัวเองทำนาย</b> → เกิด train/test mismatch ผิดพลาดสะสม</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"GRU / BiRNN / Teacher Forcing","script":"GRU เบากว่า LSTM มี 2 ประตู BiRNN อ่านสองทางแต่ต้องเห็นทั้งประโยค teacher forcing ป้อนคำตอบจริงตอนเทรนแต่ทำให้เกิด exposure bias ตอนใช้งานจริง","notes":["GRU: reset+update, เบากว่า","BiRNN: ต้องเห็นทั้งประโยค","Teacher forcing → exposure bias"]}</script>
+  </div>
+
+  <!-- 14 · WEEK 3 DIVIDER -->
+  <div class="slide" data-slide="14">
+    <div class="divider">
+      <div class="dnum bounce-1">03</div>
+      <div class="dttl">Seq2Seq &amp; Attention</div>
+      <div class="dsub">วัดผลการแปล/สรุป และจุดกำเนิดของ Attention ที่ปฏิวัติวงการ</div>
+      <div class="dmeta">BLEU · ROUGE · Beam Search · Attention · Bahdanau vs Luong</div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"สัปดาห์ 3: Seq2Seq & Attention","script":"สัปดาห์สาม การวัดผลด้วย BLEU ROUGE วิธี decode และหัวใจคือ attention ที่นำไปสู่ transformer","notes":["metrics: BLEU/ROUGE","decoding","attention เกิดที่นี่"]}</script>
+  </div>
+
+  <!-- 15 · BLEU -->
+  <div class="slide" data-slide="15">
+    <div class="teach">
+      <div class="slide-tag anim-1">W3 · BLEU <span class="pill">คำนวณ</span></div>
+      <div class="th-head anim-1">BLEU — วัดคุณภาพการแปล (เน้น precision)</div>
+      <div class="formula anim-2">BLEU = BP · exp( Σₙ wₙ · ln pₙ )</div>
+      <ul class="blist tight anim-3">
+        <li><strong>pₙ = clipped precision:</strong> นับ n-gram ตรงกับ reference ได้ไม่เกินจำนวนที่มีจริง → กัน "the the the the"</li>
+        <li><strong>Brevity Penalty (BP):</strong> ลงโทษคำแปลสั้นเกินไป</li>
+      </ul>
+      <div class="formula anim-3 sm">BP = 1  ถ้า c &gt; r ,   มิฉะนั้น  BP = exp( 1 − r/c )   (c=ความยาวคำแปล, r=reference)</div>
+      <div class="worked anim-4"><div class="wl">ตัวอย่าง BP</div><p>คำแปลยาว c=8, reference r=10 → c&lt;r → BP = exp(1 − 10/8) = exp(−0.25) ≈ <b>0.779</b> · จุดอ่อน: BLEU ไม่เข้าใจความหมาย ("huge" vs "massive" = 0)</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"BLEU","script":"BLEU วัดการแปลด้วย n-gram precision แบบ clipped กัน model โกงด้วยการพูดซ้ำ แล้วคูณ brevity penalty ลงโทษคำแปลสั้น จำสูตร BP ให้ได้ ถ้าสั้นกว่า reference จะโดนหัก","notes":["BLEU = BP·exp(Σ wn ln pn)","clipped precision กันพูดซ้ำ","BP=exp(1−r/c) เมื่อ c<r","ไม่เข้าใจ semantic"]}</script>
+  </div>
+
+  <!-- 16 · ROUGE + decoding -->
+  <div class="slide" data-slide="16">
+    <div class="teach">
+      <div class="slide-tag anim-1">W3 · ROUGE · Decoding</div>
+      <div class="th-head anim-1">ROUGE-L + วิธีเลือกคำถัดไป</div>
+      <div class="twocol anim-2">
+        <div class="mini green"><h4>ROUGE (สรุปข้อความ)</h4><p>เน้น <strong>recall</strong> (ตรงข้าม BLEU) · <strong>ROUGE-L</strong> ใช้ <strong>LCS</strong> (Longest Common Subsequence) จับลำดับ ไม่ต้องติดกัน</p></div>
+        <div class="mini blue"><h4>Greedy vs Beam</h4><p><strong>Greedy:</strong> เลือก argmax ทุกก้าว (สายตาสั้น) · <strong>Beam Search:</strong> เก็บ top-k เส้นทางไว้พร้อมกัน</p></div>
+      </div>
+      <ul class="blist tight anim-3">
+        <li><strong>Length Normalization:</strong> หารคะแนนด้วย (ความยาว)^α → กัน beam ชอบประโยคสั้นเกินไป</li>
+        <li><span class="k">จำ:</span> BLEU=precision/แปล · ROUGE=recall/สรุป</li>
+      </ul>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"ROUGE / Decoding","script":"ROUGE เน้น recall ใช้กับงานสรุป ROUGE-L ใช้ LCS การ decode มี greedy ที่สายตาสั้น กับ beam search ที่เก็บหลายเส้นทาง และต้อง normalize ความยาวกัน beam ชอบประโยคสั้น","notes":["ROUGE=recall, ROUGE-L=LCS","Greedy=argmax, Beam=top-k","Length norm กันประโยคสั้น"]}</script>
+  </div>
+
+  <!-- 17 · Temperature + scheduled sampling -->
+  <div class="slide" data-slide="17">
+    <div class="teach">
+      <div class="slide-tag anim-1">W3 · Temperature · Scheduled Sampling</div>
+      <div class="th-head anim-1">Temperature คุมความ "มั่ว" ของโมเดล</div>
+      <div class="formula anim-2">pᵢ = softmax( zᵢ / T )</div>
+      <ul class="blist anim-3">
+        <li><strong>T &lt; 1:</strong> distribution คมขึ้น → มั่นใจ/ซ้ำเดิม (T→0 ≈ greedy argmax)</li>
+        <li><strong>T &gt; 1:</strong> distribution แบนลง → สุ่ม/สร้างสรรค์/หลากหลาย</li>
+      </ul>
+      <div class="worked anim-4"><div class="wl">Scheduled Sampling (Teacher Forcing Ratio)</div><p>ค่อยๆลดการป้อนคำตอบจริง แล้วเพิ่มการป้อน<b>คำที่โมเดลทำนายเอง</b>ระหว่างเทรน → ลด exposure bias ให้โมเดลชินกับ input ตอน inference</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"Temperature / Scheduled Sampling","script":"temperature หารก่อน softmax ค่าต่ำทำให้คมและมั่นใจ ค่าสูงทำให้แบนและมั่ว scheduled sampling ค่อยๆให้โมเดลใช้คำที่ตัวเองทำนายตอนเทรนเพื่อลด exposure bias","notes":["p=softmax(z/T)","T<1 คม, T>1 มั่ว","Scheduled sampling ลด exposure bias"]}</script>
+  </div>
+
+  <!-- 18 · Attention (why + math) -->
+  <div class="slide" data-slide="18">
+    <div class="teach">
+      <div class="slide-tag anim-1">W3 · Information Bottleneck → Attention</div>
+      <div class="th-head anim-1">ทำไมต้องมี Attention?</div>
+      <ul class="blist anim-2">
+        <li><span class="k">Information Bottleneck:</span> seq2seq เดิมบีบทั้งประโยคเป็น context vector <strong>ตัวเดียว</strong> → ประโยคยาวข้อมูลหาย</li>
+        <li><strong>Attention:</strong> ให้ decoder "มองย้อน" ไปที่ทุก hidden state ของ encoder แล้วถ่วงน้ำหนักเอง</li>
+      </ul>
+      <div class="twocol anim-3">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="formula sm">eₜᵢ = score(sₜ, hᵢ)</div>
+          <div class="formula sm">αₜ = softmax(eₜ)</div>
+          <div class="formula sm">contextₜ = Σᵢ αₜᵢ · hᵢ</div>
+        </div>
+        <div class="mini purple"><h4>Q / K / V (ใน seq2seq)</h4><p><strong>Query</strong> = decoder state (สₜ)<br><strong>Key/Value</strong> = encoder states (hᵢ)<br>→ "ถามว่าตอนนี้ควรสนใจคำไหน"</p></div>
+      </div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"Attention","script":"seq2seq เดิมบีบทั้งประโยคเป็น context เดียว ข้อมูลหายเมื่อประโยคยาว attention แก้โดยให้ decoder มองทุก hidden state ของ encoder แล้วถ่วงน้ำหนัก query คือ decoder key value คือ encoder","notes":["Info bottleneck: context เดียวไม่พอ","α=softmax(score), context=Σα·h","Q=decoder, K/V=encoder"]}</script>
+  </div>
+
+  <!-- 19 · Bahdanau vs Luong -->
+  <div class="slide" data-slide="19">
+    <div class="teach">
+      <div class="slide-tag anim-1">W3 · Bahdanau vs Luong</div>
+      <div class="th-head anim-1">Attention สองสำนัก</div>
+      <div class="table-wrap anim-2">
+        <table>
+          <thead><tr><th></th><th>Bahdanau (2015)</th><th>Luong (2015)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>score</strong></td><td><span class="highlight-purple">Additive</span> vᵀ·tanh(W[s;h])</td><td><span class="highlight-blue">Multiplicative</span> sᵀh (dot-product)</td></tr>
+            <tr><td><strong>ใช้ state</strong></td><td>sₜ₋₁ (คำนวณ<strong>ก่อน</strong> decode)</td><td>sₜ (คำนวณ<strong>หลัง</strong> decode)</td></tr>
+            <tr><td><strong>จุดเด่น</strong></td><td>เรียน alignment ยืดหยุ่น</td><td>เร็ว/ง่ายกว่า (แค่ dot)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="worked anim-3"><div class="wl">กับดักข้อสอบ</div><p>"Bahdanau ใช้ dot-product" = <b>ผิด</b> → Bahdanau = <b>additive</b>, Luong = dot-product · จำง่ายๆ: Bahd<b>a</b>nau = <b>A</b>dditive</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"Bahdanau vs Luong","script":"Bahdanau เป็น additive ใช้ tanh คำนวณก่อน decode ใช้ state ก่อนหน้า Luong เป็น dot-product ง่ายกว่าเร็วกว่าคำนวณหลัง จำ Bahdanau = Additive","notes":["Bahdanau=additive, s_{t-1}, ก่อน","Luong=dot-product, s_t, หลัง","จำ: Bahdanau=Additive"]}</script>
+  </div>
+
+  <!-- 20 · WEEK 4 DIVIDER -->
+  <div class="slide" data-slide="20">
+    <div class="divider">
+      <div class="dnum bounce-1">04</div>
+      <div class="dttl">Transformer Encoder</div>
+      <div class="dsub">"Attention is All You Need" — ทิ้ง RNN ไปเลย ประมวลผลขนานได้ทั้งประโยค</div>
+      <div class="dmeta">Self-Attention · √dₖ · Positional Encoding · Multi-Head · LayerNorm</div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"สัปดาห์ 4: Transformer Encoder","script":"สัปดาห์สี่ transformer encoder หัวใจของทุกอย่างในยุคนี้ self-attention ประมวลผลขนานได้","notes":["ทิ้ง RNN","self-attention ขนานได้"]}</script>
+  </div>
+
+  <!-- 21 · Why not RNN/CNN -->
+  <div class="slide" data-slide="21">
+    <div class="teach">
+      <div class="slide-tag anim-1">W4 · ทำไมเลิกใช้ RNN / CNN</div>
+      <div class="th-head anim-1">ปัญหาของ RNN และ CNN</div>
+      <div class="twocol anim-2">
+        <div class="mini red"><h4>RNN — Sequential Trap</h4><p>ต้องคำนวณทีละ timestep → <strong>ขนานไม่ได้</strong> · ระยะทางระหว่างคำไกล = O(n) → บริบทไกลจางหาย</p></div>
+        <div class="mini orange"><h4>CNN — Receptive Field</h4><p>เห็นได้แค่หน้าต่างเล็กๆ ต้องซ้อนหลายชั้นกว่าจะครอบคลุมประโยคยาว</p></div>
+      </div>
+      <div class="worked anim-3"><div class="wl">Transformer แก้ยังไง</div><p>Self-attention เชื่อมทุกคำถึงกันโดยตรง → ระยะทาง = <b>O(1)</b> · คำนวณ<b>ขนานทั้งประโยค</b>พร้อมกัน · แลกมาด้วยต้นทุน <b>O(T²)</b></p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"Why not RNN/CNN","script":"RNN ประมวลผลทีละก้าว ขนานไม่ได้ ระยะทางไกล CNN เห็นแค่หน้าต่างเล็ก transformer เชื่อมทุกคำถึงกันตรงๆ ระยะทาง O(1) ขนานได้ แต่แลกกับต้นทุน O(T กำลังสอง)","notes":["RNN: sequential, ขนานไม่ได้","CNN: receptive field จำกัด","Transformer: path O(1), ขนาน, O(T²)"]}</script>
+  </div>
+
+  <!-- 22 · Self-attention + scaled dot product -->
+  <div class="slide" data-slide="22">
+    <div class="teach">
+      <div class="slide-tag anim-1">W4 · Self-Attention · Scaled Dot-Product</div>
+      <div class="th-head anim-1">หัวใจ Transformer + ทำไมต้องหาร √dₖ</div>
+      <div class="formula anim-2">Attention(Q,K,V) = softmax( Q·Kᵀ / √dₖ ) · V</div>
+      <ul class="blist tight anim-3">
+        <li>Q, K, V = projection จาก input <strong>ตัวเดียวกัน</strong> (self) · QKᵀ = คะแนนความเข้ากันของทุกคู่คำ</li>
+        <li>softmax → น้ำหนัก (%) ว่าแต่ละคำควรสนใจคำอื่นแค่ไหน แล้วเอาไปถ่วง V</li>
+      </ul>
+      <div class="worked anim-4"><div class="wl">ทำไมหาร √dₖ</div><p>เมื่อ dₖ ใหญ่ dot-product มี variance โตตาม dₖ → ค่าใหญ่มากทำให้ softmax <b>อิ่มตัว</b> (gradient ≈ 0) · หาร √dₖ ดึง variance กลับมา ≈ 1 → เทรนได้ลื่น</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"Self-Attention / √dk","script":"self-attention เอา Q K V จาก input เดียวกัน คูณ QK transpose ได้คะแนน แล้ว softmax ถ่วง V เหตุที่หาร root dk เพราะ dot product variance โตตาม dk ทำให้ softmax อิ่มตัว gradient หาย หารแล้ว variance กลับมาเป็นหนึ่ง","notes":["softmax(QKᵀ/√dk)·V","Q,K,V จาก input เดียวกัน","หาร √dk คุม variance≈1 กัน softmax อิ่มตัว"]}</script>
+  </div>
+
+  <!-- 23 · Positional encoding + code -->
+  <div class="slide" data-slide="23">
+    <div class="teach">
+      <div class="slide-tag anim-1">W4 · Positional Encoding <span class="pill">คำนวณ</span></div>
+      <div class="th-head anim-1">ฉีด "ลำดับ" กลับเข้าไป (sin/cos)</div>
+      <ul class="blist tight anim-2">
+        <li>Self-attention ไม่มีแนวคิดเรื่องลำดับ → ต้อง<strong>บวก</strong> positional encoding เข้ากับ word embedding</li>
+      </ul>
+      <div class="twocol anim-3">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="formula sm">PE(pos, 2i)&nbsp;&nbsp;= sin( pos / 10000^(2i/d) )</div>
+          <div class="formula sm">PE(pos, 2i+1) = cos( pos / 10000^(2i/d) )</div>
+        </div>
+        <div class="mini blue"><h4>ทำไม sin/cos</h4><p>ค่าถูกบีบใน [−1,1] · แต่ละมิติมีความถี่ต่างกัน → โมเดลเรียน<strong>ตำแหน่งสัมพัทธ์</strong>ได้ · ขยายไป seq ยาวกว่าตอนเทรนได้</p></div>
+      </div>
+      <div class="note anim-4">FinalInput = WordEmbedding + PositionalEncoding</div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"Positional Encoding","script":"attention ไม่รู้ลำดับ เราเลยบวก positional encoding ที่สร้างจาก sin cos ความถี่ต่างกันในแต่ละมิติ ค่าอยู่ระหว่างลบหนึ่งถึงหนึ่ง ทำให้โมเดลเรียนตำแหน่งสัมพัทธ์ได้","notes":["บวกเข้ากับ embedding","PE(pos,2i)=sin, 2i+1=cos","หลายความถี่ → เรียน relative position"]}</script>
+  </div>
+
+  <!-- 24 · Multi-head + residual + norm -->
+  <div class="slide" data-slide="24">
+    <div class="teach">
+      <div class="slide-tag anim-1">W4 · Multi-Head · Residual · LayerNorm</div>
+      <div class="th-head anim-1">ประกอบร่าง Encoder Block</div>
+      <ul class="blist anim-2">
+        <li><strong>Multi-Head:</strong> รัน attention h หัวขนานกัน แต่ละหัวมองคนละแบบ · <span class="kbd-inline">dₖ = d_model / h</span> (512/8 = 64) แล้ว concat → คูณ Wₒ</li>
+        <li><strong>Residual:</strong> x + Sublayer(x) → gradient ไหลลื่น ไม่หาย</li>
+      </ul>
+      <div class="worked anim-3"><div class="wl">LayerNorm vs BatchNorm (ออกบ่อย!)</div><p><b>LayerNorm</b> normalize ข้าม <b>features</b> ของแต่ละ token → <b>ไม่ขึ้นกับ batch size</b> เหมาะกับ NLP ที่ประโยคยาวไม่เท่ากัน · <b>BatchNorm</b> normalize ข้าม batch → ใช้กับ NLP ไม่ดี</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"Multi-Head / Residual / Norm","script":"multi-head รัน attention หลายหัวขนาน แต่ละหัวมิติ d model หารด้วยจำนวนหัว residual ช่วย gradient ที่สำคัญคือ transformer ใช้ LayerNorm ไม่ใช่ BatchNorm เพราะ normalize ข้าม feature ไม่ขึ้นกับ batch","notes":["dk = d_model/h (512/8=64)","Residual: x+Sublayer(x)","LayerNorm ข้าม features ไม่ขึ้น batch"]}</script>
+  </div>
+
+  <!-- 25 · FFN + param count + complexity -->
+  <div class="slide" data-slide="25">
+    <div class="teach">
+      <div class="slide-tag anim-1">W4 · FFN · Param Counting <span class="pill">คำนวณ</span></div>
+      <div class="th-head anim-1">Feed-Forward + นับพารามิเตอร์</div>
+      <ul class="blist tight anim-2">
+        <li><strong>FFN:</strong> W₂·ReLU(W₁x+b₁)+b₂ ทำแยกทีละตำแหน่ง (position-wise) · มักตั้ง d_ff = 4·d_model</li>
+        <li><strong>Shape Invariance:</strong> shape output = shape input เสมอ → ต่อ block ซ้อนกันได้เรื่อยๆ</li>
+      </ul>
+      <div class="formula anim-3">Attention params / layer = 4 · d_model²   (Wq, Wk, Wv, Wo)</div>
+      <div class="worked anim-4"><div class="wl">ตัวอย่าง + Complexity</div><p>LLaMA-7B d_model=4096 → 4·4096² ≈ <b>67.1M</b> พารามิเตอร์ (แค่ attention ชั้นเดียว!) · Memory ของ attention = <b>O(T²)</b> (เมทริกซ์ T×T)</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"FFN / Param Counting","script":"FFN เป็น position-wise สองชั้น ปกติ d_ff เท่ากับสี่เท่า d model shape ไม่เปลี่ยนจึงต่อกันได้ พารามิเตอร์ attention ต่อชั้นเท่ากับสี่ d model กำลังสอง และ memory เป็น O(T กำลังสอง)","notes":["FFN position-wise, d_ff=4·d_model","Shape invariance","attn params/layer = 4·d_model²","memory O(T²)"]}</script>
+  </div>
+
+  <!-- 26 · WEEK 5 DIVIDER -->
+  <div class="slide" data-slide="26">
+    <div class="divider">
+      <div class="dnum bounce-1">05</div>
+      <div class="dttl">Transformer Decoder</div>
+      <div class="dsub">การสร้างข้อความทีละคำ และวิศวกรรมเบื้องหลังที่ทำให้เร็ว: KV Cache ⭐</div>
+      <div class="dmeta">Causal Mask · Cross-Attention · KV Cache (5 ข้อ!) · VRAM · Top-k/Top-p</div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"สัปดาห์ 5: Transformer Decoder","script":"สัปดาห์ห้า decoder และหัวข้อที่ออกหนักที่สุดในข้อสอบคือ KV cache ห้าข้อ ต้องเข้าใจให้ลึก","notes":["decoder สร้างทีละคำ","KV Cache = 5 ข้อ หนักสุด"]}</script>
+  </div>
+
+  <!-- 27 · Causal mask + train vs infer + cross-attn -->
+  <div class="slide" data-slide="27">
+    <div class="teach">
+      <div class="slide-tag anim-1">W5 · Causal Mask · Train vs Inference</div>
+      <div class="th-head anim-1">Decoder ห้ามแอบดูอนาคต</div>
+      <ul class="blist anim-2">
+        <li><strong>Causal / Look-ahead Mask:</strong> ใส่ −∞ ในสามเหลี่ยมบน <strong>ก่อน softmax</strong> → คำที่ตำแหน่ง t มองได้แค่ ≤ t (ห้ามเห็นคำถัดไป)</li>
+        <li><strong>Cross-Attention:</strong> Q จาก <strong>decoder</strong>, K/V จาก <strong>encoder</strong> (ต่างจาก self-attention ที่มาจากที่เดียวกัน)</li>
+      </ul>
+      <div class="twocol anim-3">
+        <div class="mini green"><h4>Training</h4><p>ขนานทั้งประโยค · teacher forcing · คำนวณทุกตำแหน่งพร้อมกัน (เพราะมี mask)</p></div>
+        <div class="mini orange"><h4>Inference</h4><p>autoregressive ทีละคำ · ป้อน output กลับเข้าไปเป็น input รอบถัดไป → ช้า</p></div>
+      </div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"Causal Mask / Cross-Attention","script":"decoder ใช้ causal mask ใส่ลบอนันต์ก่อน softmax ห้ามมองอนาคต cross attention เอา query จาก decoder key value จาก encoder ตอนเทรนขนานได้ ตอน inference ต้องทีละคำ","notes":["Causal mask: −∞ สามเหลี่ยมบน ก่อน softmax","Cross-attn: Q=decoder, K/V=encoder","Train ขนาน, Inference ทีละคำ"]}</script>
+  </div>
+
+  <!-- 28 · KV Cache concept (HEAVY) -->
+  <div class="slide" data-slide="28">
+    <div class="teach">
+      <div class="slide-tag anim-1">W5 · KV Cache — หลักการ <span class="pill hot">⭐ ออก 5 ข้อ</span></div>
+      <div class="th-head anim-1">KV Cache: แลกหน่วยความจำ เพื่อความเร็ว</div>
+      <ul class="blist anim-2">
+        <li><strong>ความจริง:</strong> K, V ของ token เก่า<strong>ไม่เคยเปลี่ยน</strong> → เก็บ (cache) ไว้ ไม่ต้องคำนวณใหม่ทุกรอบ</li>
+        <li>คำนวณเฉพาะ kₜ, vₜ ของ token ใหม่ แล้ว concat ต่อท้าย cache</li>
+        <li>ต้นทุนต่อ token: <span class="highlight-red">O(t²) → O(t)</span> (รวมทั้งหมด O(N²) → เบาลงมาก)</li>
+      </ul>
+      <div class="worked anim-3"><div class="wl">GEMM → GEMV · Compute → Memory Bound</div><p>Query เหลือแค่ token เดียว (B×1×dₖ) → เปลี่ยนจากคูณเมทริกซ์-เมทริกซ์ (<b>GEMM</b>) เป็นเมทริกซ์-เวกเตอร์ (<b>GEMV</b>) · คอขวดย้ายจากการคำนวณ ไปเป็น<b>การขนย้ายข้อมูล K/V ผ่าน memory bus</b></p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"KV Cache หลักการ","script":"หัวข้อสำคัญที่สุด KV cache เก็บ key value ของ token เก่าที่ไม่เปลี่ยน ไม่ต้องคำนวณซ้ำ ต้นทุนต่อ token ลดจาก O t กำลังสองเป็น O t เปลี่ยนจาก GEMM เป็น GEMV และคอขวดย้ายจาก compute ไปเป็น memory bound","notes":["cache K,V ของ token เก่า","O(t²)→O(t) ต่อ token","GEMM→GEMV","compute-bound → memory-bound"]}</script>
+  </div>
+
+  <!-- 29 · KV Cache calc (HEAVY) -->
+  <div class="slide" data-slide="29">
+    <div class="teach">
+      <div class="slide-tag anim-1">W5 · KV Cache — คำนวณขนาด <span class="pill hot">⭐</span></div>
+      <div class="th-head anim-1">คำนวณหน่วยความจำ KV Cache</div>
+      <div class="formula anim-2 sm">KV bytes = 2 · precision · n_layers · d_model · n_ctx · B&nbsp;&nbsp;&nbsp;(×2 = เก็บทั้ง K และ V)</div>
+      <div class="formula anim-2 sm">แบบใน Lab:  2 · B · seq · n_kv_heads · head_dim · n_layers · bytes</div>
+      <div class="worked anim-3"><div class="wl">ตัวอย่างจาก Lab (B=4, seq=2048, head_dim=128, layers=32, FP16=2B)</div>
+        <p><b>MHA</b> (32 heads) = 2·4·2048·32·128·32·2 / 1024² = <b>8192 MB</b><br>
+        <b>GQA</b> (8 heads) &nbsp;= <b>2048 MB</b> → เล็กลง <b>4 เท่า</b> (เพราะ n_kv_heads ลด 32→8)</p></div>
+      <div class="note anim-4">Static weights = params × bytes → LLaMA-7B FP16 = 7×10⁹ × 2 ≈ 14 GB</div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"KV Cache คำนวณ","script":"สูตร KV cache คือสองคูณ precision คูณจำนวนชั้น คูณ d model คูณ context คูณ batch สองมาจากเก็บทั้ง K และ V ในแล็บใช้ n kv heads คูณ head dim ตัวอย่าง MHA ได้แปดพัน GQA ได้สองพัน เล็กลงสี่เท่า","notes":["KV=2·prec·L·d·n·B","×2 = K และ V","MHA 8192MB vs GQA 2048MB","static = params×bytes (7B≈14GB)"]}</script>
+  </div>
+
+  <!-- 30 · VRAM + top-k/top-p -->
+  <div class="slide" data-slide="30">
+    <div class="teach">
+      <div class="slide-tag anim-1">W5 · VRAM Planning · Sampling</div>
+      <div class="th-head anim-1">วางแผน VRAM + กรอง logits</div>
+      <div class="twocol anim-2">
+        <div class="mini red"><h4>VRAM = Static + Cache</h4><p>Static weights คงที่ · KV cache <strong>โตเรื่อยๆ</strong>ตาม n_ctx และ batch → context ยาว/batch ใหญ่ = <strong>CUDA OOM</strong></p></div>
+        <div class="mini blue"><h4>Top-k vs Top-p</h4><p><strong>Top-k:</strong> เก็บ k ตัวที่ prob สูงสุด (จำนวนคงที่)<br><strong>Top-p (nucleus):</strong> เก็บเซตเล็กสุดที่ prob สะสม ≥ p (ปรับตาม)</p></div>
+      </div>
+      <div class="formula anim-3 sm">ลำดับการกรอง:  temperature → top-k → top-p → softmax → sample (multinomial)</div>
+      <div class="note anim-4">Top-p ยืดหยุ่นกว่า: distribution แบน→เก็บหลายตัว, distribution คม→เก็บน้อยตัว</div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"VRAM / Sampling","script":"VRAM เท่ากับ static บวก KV cache ที่โตตาม context และ batch จนอาจ OOM การ sample มี top-k เก็บจำนวนคงที่ top-p เก็บตาม prob สะสม ลำดับคือ temperature top-k top-p แล้วค่อย sample","notes":["VRAM = static + KV cache → OOM","Top-k คงที่, Top-p สะสม≥p","ลำดับ: temp→top-k→top-p→sample"]}</script>
+  </div>
+
+  <!-- 31 · WEEK 6 DIVIDER -->
+  <div class="slide" data-slide="31">
+    <div class="divider">
+      <div class="dnum bounce-1">06</div>
+      <div class="dttl">Encoder — BERT</div>
+      <div class="dsub">Pre-train แบบ self-supervised แล้ว fine-tune — โมเดลเข้าใจภาษาแบบสองทิศทาง</div>
+      <div class="dmeta">MLM · NSP · [CLS]/[SEP] · RoBERTa · DeBERTa · SpanBERT</div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"สัปดาห์ 6: BERT","script":"สัปดาห์หก BERT ตัว encoder ที่ pretrain ด้วย MLM และ NSP แล้ว fine-tune ต่อ เข้าใจภาษาสองทิศทาง","notes":["self-supervised pretrain","MLM + NSP","bidirectional"]}</script>
+  </div>
+
+  <!-- 32 · BERT setup -->
+  <div class="slide" data-slide="32">
+    <div class="teach">
+      <div class="slide-tag anim-1">W6 · Self-Supervised · Input</div>
+      <div class="th-head anim-1">BERT เตรียมตัวยังไง</div>
+      <ul class="blist anim-2">
+        <li><strong>Self-Supervised:</strong> สร้าง label จากข้อมูลเอง (pretext task) ไม่ต้องมีคน label · <strong>Transfer Learning:</strong> pretrain ทีเดียว → fine-tune ได้หลายงาน</li>
+        <li><strong>Input Embedding = Token + Segment + Position</strong> (บวกกันสามชั้น)</li>
+      </ul>
+      <div class="twocol anim-3">
+        <div class="mini blue"><h4>[CLS]</h4><p>token แรกสุด · pooled output ของมันใช้ทำ <strong>classification</strong>ของทั้งประโยค</p></div>
+        <div class="mini purple"><h4>[SEP]</h4><p>คั่นระหว่างสองประโยค (สำหรับงานที่รับ input คู่ เช่น NSP, QA)</p></div>
+      </div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"BERT setup","script":"BERT ใช้ self-supervised สร้าง label เอง แล้ว transfer ไปงานอื่น input embedding เป็นผลรวมของ token segment position CLS ใช้ classify SEP คั่นประโยค","notes":["self-supervised + transfer learning","embedding = token+segment+position","[CLS]=classification, [SEP]=คั่น"]}</script>
+  </div>
+
+  <!-- 33 · MLM + NSP -->
+  <div class="slide" data-slide="33">
+    <div class="teach">
+      <div class="slide-tag anim-1">W6 · MLM · NSP</div>
+      <div class="th-head anim-1">งาน Pre-train ของ BERT</div>
+      <div class="worked anim-2"><div class="wl">MLM — กฎ 15%</div><p>สุ่ม mask <b>15%</b> ของ token · ในจำนวนนั้น: <b>80% → [MASK]</b>, <b>10% → คำสุ่ม</b>, <b>10% → คงเดิม</b><br>(10% คงเดิม/สุ่ม เพื่อให้ตอน fine-tune ที่ไม่มี [MASK] โมเดลไม่ตกใจ) · น้อยกว่า 15% = signal อ่อน, มากกว่า = บริบทหายเกิน</p></div>
+      <ul class="blist tight anim-3">
+        <li><strong>MLM ให้บริบท 2 ทิศทาง</strong> (เห็นทั้งซ้ายและขวาของคำที่ mask)</li>
+        <li><strong>NSP (Next Sentence Prediction):</strong> ทายว่าประโยค B ต่อจาก A จริงไหม (IsNext / NotNext) ใช้ [CLS]</li>
+      </ul>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"MLM / NSP","script":"MLM สุ่ม mask สิบห้าเปอร์เซ็นต์ ในนั้นแปดสิบเป็น MASK สิบเป็นคำสุ่ม สิบคงเดิม เพื่อลด mismatch ตอน fine-tune MLM ให้บริบทสองทิศทาง NSP ทายว่าประโยคต่อกันไหม","notes":["mask 15%: 80/10/10","10% คงเดิม/สุ่ม กัน mismatch","MLM bidirectional","NSP: IsNext/NotNext ใช้ [CLS]"]}</script>
+  </div>
+
+  <!-- 34 · Fine-tune vs feature + BERT vs ELMo -->
+  <div class="slide" data-slide="34">
+    <div class="teach">
+      <div class="slide-tag anim-1">W6 · Fine-Tuning vs Feature Extraction</div>
+      <div class="th-head anim-1">ใช้โมเดล pretrain ยังไง</div>
+      <div class="twocol anim-2">
+        <div class="mini green"><h4>Fine-Tuning</h4><p>อัปเดต<strong>ทุกน้ำหนัก</strong>ให้เข้ากับงานใหม่ (แนวทางหลักของ BERT)</p></div>
+        <div class="mini orange"><h4>Feature Extraction</h4><p><strong>แช่แข็ง</strong>โมเดล ใช้ embedding เป็น feature ป้อนโมเดลอื่น (แนว ELMo)</p></div>
+      </div>
+      <div class="worked anim-3"><div class="wl">BERT vs ELMo</div><p><b>BERT</b> = Transformer สองทิศทางลึก เชื่อมโยงบริบทซ้าย-ขวาพร้อมกันในทุกชั้น · <b>ELMo</b> = LSTM สองตัว (ไป+กลับ) แยกกันเทรนแล้วเอา output มา <b>concat</b> (ตื้นกว่า)</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"Fine-tune vs Feature / BERT vs ELMo","script":"fine-tuning อัปเดตทุกน้ำหนัก feature extraction แช่แข็งแล้วใช้ embedding BERT เป็น transformer สองทิศทางลึก ELMo เป็น LSTM สองตัวแยกกันแล้ว concat ตื้นกว่า","notes":["Fine-tune: อัปเดตทุกน้ำหนัก","Feature: แช่แข็ง (ELMo)","BERT=deep bidirectional, ELMo=concat LSTM"]}</script>
+  </div>
+
+  <!-- 35 · BERT variants -->
+  <div class="slide" data-slide="35">
+    <div class="teach">
+      <div class="slide-tag anim-1">W6 · RoBERTa · DeBERTa · SpanBERT · HF</div>
+      <div class="th-head anim-1">ตระกูล BERT (ตัวเลือกลวงเพียบ)</div>
+      <div class="table-wrap anim-2">
+        <table>
+          <thead><tr><th>โมเดล</th><th>จุดเปลี่ยนสำคัญ</th></tr></thead>
+          <tbody>
+            <tr><td><strong>RoBERTa</strong></td><td>ตัด NSP ทิ้ง · <span class="highlight-blue">dynamic masking</span> · data เยอะขึ้น เทรนนานขึ้น batch ใหญ่ขึ้น</td></tr>
+            <tr><td><strong>DeBERTa</strong></td><td><span class="highlight-purple">Disentangled Attention</span> — แยกเวกเตอร์ content กับ relative-position ออกจากกัน</td></tr>
+            <tr><td><strong>SpanBERT</strong></td><td>mask เป็น<span class="highlight-green">ช่วง (span)</span> ต่อเนื่อง + Span Boundary Objective (ทายจากขอบ)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="blist tight anim-3">
+        <li><strong>SQuAD / Extractive QA:</strong> ทาย <strong>start</strong> และ <strong>end</strong> ของ span คำตอบในบริบท</li>
+        <li><strong>HF:</strong> <span class="kbd-inline">pipeline</span> = ใช้ระดับสูงบรรทัดเดียว · <span class="kbd-inline">AutoModel</span> = ได้ hidden states ดิบ ต่อ head เอง</li>
+      </ul>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"BERT variants","script":"RoBERTa ตัด NSP ใช้ dynamic masking data เยอะขึ้น DeBERTa ใช้ disentangled attention แยก content กับ position SpanBERT mask เป็นช่วง SQuAD ทาย start end ส่วน HuggingFace pipeline ระดับสูง AutoModel ได้ hidden state ดิบ","notes":["RoBERTa: ตัด NSP + dynamic mask","DeBERTa: disentangled attention","SpanBERT: mask span + SBO","SQuAD: ทาย start/end","pipeline vs AutoModel"]}</script>
+  </div>
+
+  <!-- 36 · WEEK 7 DIVIDER -->
+  <div class="slide" data-slide="36">
+    <div class="divider">
+      <div class="dnum bounce-1">07</div>
+      <div class="dttl">Decoder — GPT</div>
+      <div class="dsub">โมเดลสร้างข้อความยุคใหม่ และเทคนิคที่ทำให้ LLM ทำงานได้จริง</div>
+      <div class="dmeta">CLM · RoPE · RMSNorm · SwiGLU · MQA/GQA · Scaling Laws</div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"สัปดาห์ 7: GPT","script":"สัปดาห์สุดท้าย GPT และสถาปัตยกรรม LLM สมัยใหม่ RoPE RMSNorm SwiGLU และ scaling laws","notes":["CLM","modern stack: RoPE/RMSNorm/SwiGLU","scaling laws"]}</script>
+  </div>
+
+  <!-- 37 · CLM + evolution -->
+  <div class="slide" data-slide="37">
+    <div class="teach">
+      <div class="slide-tag anim-1">W7 · CLM · Signal Density · Evolution</div>
+      <div class="th-head anim-1">GPT: ทายคำถัดไป (Causal LM)</div>
+      <ul class="blist anim-2">
+        <li><strong>CLM:</strong> ทาย token ถัดไป ใช้ causal mask · Loss = เลื่อน logits/labels 1 ช่อง (<span class="kbd-inline">logits[:-1]</span> เทียบ <span class="kbd-inline">labels[1:]</span>)</li>
+        <li><span class="highlight-blue">Signal Density:</span> ทุก token เป็น label = สัญญาณ<strong>หนาแน่น</strong> · ต่างจาก MLM ที่เรียนแค่ ~15% (เบาบาง)</li>
+        <li><strong>GPT-1 → 2 → 3:</strong> ยิ่งขยาย ยิ่งเกิด <strong>In-Context Learning</strong> — เรียนจาก prompt ได้เลยไม่ต้องอัปเดตน้ำหนัก (zero/few-shot)</li>
+      </ul>
+      <div class="worked anim-3"><div class="wl">Open vs Closed</div><p><b>Open weights</b> (LLaMA, Mistral) โหลดน้ำหนักมาเองได้ · <b>Closed</b> (GPT-4) เข้าถึงผ่าน API เท่านั้น</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"CLM / Evolution","script":"GPT ทายคำถัดไปด้วย causal mask loss เลื่อนหนึ่งช่อง signal density สูงเพราะทุก token เป็น label ต่างจาก MLM ที่เรียนแค่สิบห้าเปอร์เซ็นต์ พอขยายขนาดก็เกิด in-context learning","notes":["CLM: ทายคำถัดไป, loss เลื่อน 1","signal density สูงกว่า MLM","GPT-3 → in-context learning","open vs closed weights"]}</script>
+  </div>
+
+  <!-- 38 · Modern stack code -->
+  <div class="slide" data-slide="38">
+    <div class="teach">
+      <div class="slide-tag anim-1">W7 · RoPE · RMSNorm · SwiGLU</div>
+      <div class="th-head anim-1">สถาปัตยกรรม LLM สมัยใหม่</div>
+      <div class="twocol anim-2">
+        <div class="mini blue"><h4>RoPE</h4><p>หมุน Q,K ด้วยมุมตามตำแหน่ง → เข้ารหัส<strong>ตำแหน่งสัมพัทธ์</strong> ขยาย context ได้ดี</p></div>
+        <div class="mini green"><h4>RMSNorm</h4><p>y = x / √(mean(x²)+ε) · γ<br><strong>ไม่ลบค่าเฉลี่ย</strong> ไม่มี bias → เบา/เร็วกว่า LayerNorm</p></div>
+      </div>
+      <div class="formula anim-3 sm">SwiGLU(x) = ( SiLU(x·W₁) ⊙ x·W₃ ) · W₂&nbsp;&nbsp;&nbsp;→ 3 เมทริกซ์, params = 3·in·hidden</div>
+      <div class="worked anim-4"><div class="wl">Modern Decoder Block (จาก lab)</div><p>x = x + Attention(<b>RMSNorm</b>(x)) → x = x + <b>SwiGLU</b>(RMSNorm(x)) · SiLU(x) = x·σ(x)</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"RoPE / RMSNorm / SwiGLU","script":"LLM สมัยใหม่ใช้ RoPE หมุน Q K ตามตำแหน่งเข้ารหัสตำแหน่งสัมพัทธ์ RMSNorm ไม่ลบค่าเฉลี่ยจึงเบากว่า LayerNorm SwiGLU ใช้สามเมทริกซ์กับ SiLU","notes":["RoPE: หมุนตามตำแหน่ง, relative","RMSNorm: ไม่ลบ mean, เบากว่า","SwiGLU = (SiLU(xW1)⊙xW3)W2"]}</script>
+  </div>
+
+  <!-- 39 · MQA/GQA + scaling laws -->
+  <div class="slide" data-slide="39">
+    <div class="teach">
+      <div class="slide-tag anim-1">W7 · MQA/GQA · Scaling Laws</div>
+      <div class="th-head anim-1">ลด KV Cache + กฎการขยายขนาด</div>
+      <ul class="blist anim-2">
+        <li><strong>MHA:</strong> ทุก query head มี K,V ของตัวเอง · <strong>MQA:</strong> ใช้ KV head <strong>เดียว</strong>ร่วมกัน (cache เล็กสุด) · <strong>GQA:</strong> query แบ่งกลุ่ม แชร์ KV head (ทางสายกลาง — LLaMA-2/3)</li>
+        <li>ทั้งคู่<strong>ลด KV cache</strong> ตาม n_kv_heads (เชื่อมกับ ⭐ ตัวอย่าง: 32→8 heads = เล็กลง 4 เท่า)</li>
+      </ul>
+      <div class="worked anim-3"><div class="wl">Kaplan vs Chinchilla (กับดัก!)</div><p><b>Kaplan (2020):</b> ขยาย<b>โมเดล</b>ให้เร็วกว่า data · <b>Chinchilla (2022):</b> ขยายโมเดลกับ data <b>เท่าๆกัน</b> — rule of thumb <b>~20 tokens ต่อ 1 parameter</b> (โมเดล 70B ต้องการ ~1.4T tokens)</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"MQA/GQA / Scaling Laws","script":"MQA ใช้ KV head เดียว GQA แบ่งกลุ่มแชร์ ทั้งคู่ลด KV cache ส่วน scaling laws Kaplan บอกขยายโมเดลเร็วกว่า data Chinchilla แก้เป็นขยายเท่าๆกัน ยี่สิบ token ต่อพารามิเตอร์ อย่าจำสลับ","notes":["MQA=1 KV head, GQA=grouped","ลด KV cache ตาม n_kv_heads","Kaplan: model เร็วกว่า","Chinchilla: เท่ากัน, 20 tok/param"]}</script>
+  </div>
+
+  <!-- 40 · ICL mechanism -->
+  <div class="slide" data-slide="40">
+    <div class="teach">
+      <div class="slide-tag anim-1">W7 · In-Context Learning · Context Extension</div>
+      <div class="th-head anim-1">กลไกเบื้องหลัง LLM ยุคใหม่</div>
+      <ul class="blist anim-2">
+        <li><strong>In-Context Learning:</strong> โมเดลจับ pattern จากตัวอย่างใน prompt แล้วทำตามได้ทันที (induction heads / function vectors) — <strong>ไม่มีการอัปเดตน้ำหนัก</strong></li>
+        <li><strong>Context Extension:</strong> ขยายความยาว context ที่รับได้ (เช่น RoPE scaling) ให้ยาวกว่าตอนเทรน</li>
+        <li><strong>Omnimodal:</strong> รับ-สร้างได้หลายรูปแบบ (ข้อความ + ภาพ + เสียง) ในโมเดลเดียว</li>
+      </ul>
+      <div class="worked anim-3"><div class="wl">จาก Lab 7 (Task 10)</div><p>ดึง "function vector" จาก few-shot prompt แล้ว<b>บวกเข้า residual stream</b>ของ zero-shot prompt → เปลี่ยนพฤติกรรมโมเดลได้ = หลักฐานว่า ICL ทำงานผ่านการบวกเวกเตอร์ในชั้นกลาง</p></div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"In-Context Learning","script":"in-context learning โมเดลจับ pattern จาก prompt ทำตามได้โดยไม่อัปเดตน้ำหนัก ผ่าน induction head หรือ function vector context extension ขยายความยาว omnimodal รับหลายรูปแบบ","notes":["ICL: เรียนจาก prompt ไม่อัปเดตน้ำหนัก","function vectors / induction heads","context extension (RoPE scaling)","omnimodal"]}</script>
+  </div>
+
+  <!-- 41 · TRAPS recap -->
+  <div class="slide" data-slide="41">
+    <div class="teach">
+      <div class="slide-tag anim-1">สรุปกับดัก "ข้อใดผิด"</div>
+      <div class="th-head anim-1">10 กับดักที่พลาดบ่อยสุด</div>
+      <div class="twocol anim-2">
+        <ul class="blist tight" style="gap:6px">
+          <li>"WordPiece รวมคู่<span class="k">บ่อยสุด</span>" → นั่นคือ BPE</li>
+          <li>"Clipping แก้ <span class="k">vanishing</span>" → แก้ exploding</li>
+          <li>"Transformer ใช้ <span class="k">BatchNorm</span>" → LayerNorm</li>
+          <li>"Bahdanau ใช้ <span class="k">dot-product</span>" → additive</li>
+          <li>"BLEU เน้น <span class="k">recall</span>" → precision</li>
+        </ul>
+        <ul class="blist tight" style="gap:6px">
+          <li>"MLM mask <span class="k">50%</span>" → 15% (80/10/10)</li>
+          <li>"GQA <span class="k">เพิ่ม</span> KV cache" → ลด</li>
+          <li>"RMSNorm <span class="k">ลบค่าเฉลี่ย</span>" → ไม่ลบ</li>
+          <li>"<span class="k">Kaplan</span> = 20 tok/param" → Chinchilla</li>
+          <li>"CrossEntropy รับ <span class="k">log-probs</span>" → รับ logits</li>
+        </ul>
+      </div>
+    </div>
+    <script type="application/json" class="slide-notes">{"title":"กับดัก ข้อใดผิด","script":"นี่คือสิบกับดักที่พลาดบ่อยสุด ส่วนใหญ่มาจากการสลับคุณสมบัติของคู่ที่คล้ายกัน อ่านข้อ ข้อใดผิด ให้ช้าๆ แล้วหาประโยคที่สลับคุณสมบัติ","notes":["ข้อผิดมักสลับคุณสมบัติของคู่ที่คล้ายกัน","BPE/WordPiece, clipping, LayerNorm","MLM 15%, GQA ลด cache, Kaplan/Chinchilla"]}</script>
+  </div>
+
+  <!-- 42 · CLOSING -->
+  <div class="slide" data-slide="42">
+    <div class="slide-tag anim-1">พร้อมสอบแล้ว</div>
+    <h2 class="anim-2">จำ 3 อย่างนี้เข้าห้องสอบ</h2>
+    <div class="twocol anim-3" style="max-width:820px;margin-top:8px">
+      <div class="mini blue"><h4>1 · คำนวณให้คล่อง</h4><p>PMI · BLEU · Perplexity · KV Cache · param counting — แสดงวิธีคิดเสมอ (ตอนที่ 2)</p></div>
+      <div class="mini red"><h4>2 · ระวังข้อ "ผิด"</h4><p>อ่านครบ 5 ตัวเลือก หาประโยคที่สลับคุณสมบัติของคู่ที่คล้ายกัน</p></div>
+    </div>
+    <div class="mini green anim-4" style="max-width:820px;margin-top:16px"><h4>3 · หัวข้อหนักต้องแม่น ⭐</h4><p>KV Cache (5 ข้อ) · LSTM Gates (3 ข้อ) · Subword (3 ข้อ) — ทวนให้ขึ้นใจก่อนนอน</p></div>
+    <div class="rainbow-line anim-5"></div>
+    <p class="subtitle anim-5" style="font-size:clamp(18px,2vw,26px);font-weight:700;">ขอให้สอบผ่านนะครับ 🍀</p>
+    <script type="application/json" class="slide-notes">{"title":"สรุป + ให้กำลังใจ","script":"สามอย่างที่ต้องจำ หนึ่งคำนวณให้คล่องและแสดงวิธีคิด สองระวังข้อที่ให้หาข้อผิด สามหัวข้อหนัก KV cache LSTM subword ต้องแม่น ขอให้สอบผ่าน","notes":["คำนวณคล่อง + แสดงวิธีคิด","ระวังข้อ ผิด","หัวข้อหนัก: KV/LSTM/Subword"]}</script>
+  </div>
+
+</div>
+
+<div class="progress-bar" id="progress"></div>
+<div class="slide-counter" id="counter"></div>
+<div class="nav-hints"><kbd>←</kbd><kbd>→</kbd> เปลี่ยนสไลด์ · <kbd>F</kbd> เต็มจอ</div>
+<div class="slide-nav" id="slideNav"></div>
+
+<script>
+/* ============================================================
+   SLIDES RUNTIME (verbatim from skill)
+   ============================================================ */
+const pc = document.getElementById('particles');
+for (let i = 0; i < 35; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random()*100+'%';
+  p.style.animationDuration = (8+Math.random()*14)+'s';
+  p.style.animationDelay = Math.random()*10+'s';
+  p.style.width = p.style.height = (1+Math.random()*2)+'px';
+  pc.appendChild(p);
+}
+const slides = document.querySelectorAll('.slide');
+const progress = document.getElementById('progress');
+const counter = document.getElementById('counter');
+const slideNav = document.getElementById('slideNav');
+let current = 0;
+const total = slides.length;
+slides.forEach((_, i) => {
+  const dot = document.createElement('div');
+  dot.className = 'slide-nav-dot' + (i===0?' active':'');
+  dot.addEventListener('click', () => goTo(i));
+  slideNav.appendChild(dot);
+});
+function updateUI() {
+  progress.style.width = ((current+1)/total*100)+'%';
+  counter.textContent = `${current+1} / ${total}`;
+  document.querySelectorAll('.slide-nav-dot').forEach((d,i) => d.classList.toggle('active', i===current));
+}
+function goTo(index) {
+  if (index<0 || index>=total || index===current) return;
+  current = index;
+  slides.forEach((s,i) => s.classList.toggle('active', i===current));
+  updateUI();
+  showSpeakerNotes(current);
+}
+function next() { goTo(current+1); }
+function prev() { goTo(current-1); }
+document.addEventListener('keydown', (e) => {
+  if (e.key==='ArrowRight'||e.key===' '||e.key==='PageDown') { e.preventDefault(); next(); }
+  if (e.key==='ArrowLeft'||e.key==='PageUp') { e.preventDefault(); prev(); }
+  if (e.key==='Home') { e.preventDefault(); goTo(0); }
+  if (e.key==='End') { e.preventDefault(); goTo(total-1); }
+  if (e.key==='f'||e.key==='F') { if(!document.fullscreenElement){document.documentElement.requestFullscreen();}else{document.exitFullscreen();} }
+});
+let touchStart = 0;
+document.addEventListener('touchstart', (e) => { touchStart=e.touches[0].clientX; });
+document.addEventListener('touchend', (e) => {
+  const diff = touchStart - e.changedTouches[0].clientX;
+  if (Math.abs(diff)>50) { diff>0 ? next() : prev(); }
+});
+let wheelCD = false;
+document.addEventListener('wheel', (e) => {
+  if (wheelCD) return; wheelCD = true;
+  setTimeout(() => wheelCD=false, 600);
+  if (e.deltaY>0||e.deltaX>0) next(); else prev();
+}, {passive:true});
+updateUI();
+function showSpeakerNotes(index) {
+  const slide = slides[index];
+  const notesEl = slide.querySelector('script.slide-notes');
+  console.clear();
+  if (notesEl) {
+    try {
+      const n = JSON.parse(notesEl.textContent);
+      const title = n.title || 'Slide ' + (index + 1);
+      const script = n.script || '';
+      const notes = n.notes || [];
+      var parts = ['\n%c📋 Slide ' + (index+1) + '/' + total + ': ' + title + '\n'];
+      var styles = ['font-size:16px;font-weight:bold;color:#0060aa;'];
+      if (script) { parts.push('\n%c' + script + '\n'); styles.push('font-size:14px;color:#e8590c;line-height:1.6;'); }
+      if (notes.length) { notes.forEach(function(note){ parts.push('\n  %c• %c' + note); styles.push('color:#006e21;font-size:14px;'); styles.push('color:#006e21;font-size:14px;'); }); parts.push('\n'); }
+      console.log.apply(console, [parts.join('')].concat(styles));
+    } catch(e) {}
+  }
+}
+setTimeout(function() { showSpeakerNotes(0); }, 500);
+</script>
+</body>
+</html>

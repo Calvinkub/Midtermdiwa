@@ -45,6 +45,7 @@ NLP/
 │   ├── nlp_dl_06_lab_solution.py # DeBERTa fine-tuning + VRAM tricks
 │   └── nlp_dl_07_lab_solution.py # RMSNorm · SwiGLU · RoPE · GQA · KV Cache
 └── prep/                     # 📌 สื่อเตรียมสอบ (เริ่มที่นี่)
+    ├── SLIDES-TEACH.html         # 🖥️ สไลด์สอน 43 หน้า ครบ 7 สัปดาห์ (เปิดในเบราว์เซอร์)
     ├── CHEAT-SHEET.html          # ชีตสรุป A4 × 2 หน้า (พร้อมพิมพ์)
     ├── STUDY-PLAN.md            # แผนอ่านหนังสือ + drill การคำนวณ
     └── midterm-nlp-prep.skill.md # สกิลติวแบบถาม-ตอบ (active recall)
@@ -53,6 +54,10 @@ NLP/
 ---
 
 ## 🚀 เริ่มยังไง (Quick start)
+
+0. **ดูสไลด์สอน** — เปิด [`NLP/prep/SLIDES-TEACH.html`](NLP/prep/SLIDES-TEACH.html) ในเบราว์เซอร์
+   - 43 สไลด์ ครบ 7 สัปดาห์ · กด `←` `→` เปลี่ยนสไลด์ · `F` เต็มจอ
+   - Speaker notes: เปิด DevTools (F12) จะเห็นสคริปต์อธิบายแต่ละสไลด์ใน console
 
 1. **เปิดชีตสรุป** — เปิด [`NLP/prep/CHEAT-SHEET.html`](NLP/prep/CHEAT-SHEET.html) ในเบราว์เซอร์
    - พิมพ์ด้วย `Cmd/Ctrl + P` → เลือกขนาด **A4** → เปิด *Background graphics* → ได้พอดี 2 หน้า
