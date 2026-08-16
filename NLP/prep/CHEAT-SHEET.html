@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NLP-DL Midterm Cheat Sheet (A4 ×2)</title>
+<style>
+  :root{ --ink:#111; --muted:#555; --line:#bbb; --hl:#c0392b; --box:#f4f4f2; --blue:#1a4f8b; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:#888; color:var(--ink);
+    font-family:"Helvetica Neue",Arial,"Noto Sans Thai",sans-serif; }
+  .page{ width:210mm; min-height:297mm; background:#fff; margin:8mm auto; padding:7mm 7mm 6mm;
+    box-shadow:0 0 6px rgba(0,0,0,.4); }
+  .cols{ column-count:3; column-gap:5mm; column-fill:auto; height:281mm; }
+  h1{ font-size:12.5pt; margin:0 0 1mm; letter-spacing:.2px; }
+  h1 small{ font-weight:400; font-size:7pt; color:var(--muted); }
+  section{ break-inside:avoid; margin:0 0 2.2mm; padding:1.2mm 1.6mm; border:0.4pt solid var(--line);
+    border-radius:1.5mm; background:#fff; }
+  section.hot{ border:0.9pt solid var(--hl); background:#fff9f8; }
+  h2{ font-size:8pt; margin:0 0 1mm; color:var(--blue); text-transform:uppercase; letter-spacing:.3px;
+    border-bottom:0.4pt solid var(--line); padding-bottom:.4mm; }
+  h2 .n{ color:var(--hl); font-weight:800; }
+  .star{ color:var(--hl); }
+  p,ul,li,td,th,div{ font-size:6.6pt; line-height:1.28; }
+  ul{ margin:.5mm 0; padding-left:3mm; }
+  li{ margin:.2mm 0; }
+  b{ color:#000; } .k{ color:var(--hl); font-weight:700; } .g{ color:var(--blue); font-weight:700; }
+  .f{ font-family:"Cambria Math","Georgia",serif; background:var(--box); padding:.3mm 1mm;
+    border-radius:1mm; display:inline-block; margin:.3mm 0; font-size:6.7pt; }
+  .fb{ display:block; text-align:center; margin:.6mm 0; }
+  .ex{ background:#eef4fb; border-left:1.4pt solid var(--blue); padding:.6mm 1.2mm; margin:.6mm 0;
+    border-radius:0 1mm 1mm 0; }
+  .ex b{ color:var(--blue); }
+  table{ border-collapse:collapse; width:100%; margin:.4mm 0; }
+  td,th{ border:0.3pt solid var(--line); padding:.3mm .8mm; text-align:left; vertical-align:top; }
+  th{ background:var(--box); font-size:6.2pt; }
+  .tag{ font-size:5.6pt; background:var(--hl); color:#fff; padding:.2mm 1mm; border-radius:1mm;
+    vertical-align:middle; }
+  .foot{ font-size:5.6pt; color:var(--muted); text-align:center; margin-top:1mm; }
+  @media print{
+    html,body{ background:#fff; }
+    .page{ margin:0; box-shadow:none; width:auto; min-height:auto; }
+    @page{ size:A4; margin:6mm; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================ PAGE 1 ============================ -->
+<div class="page">
+  <h1>NLP with Deep Learning — Midterm Cheat Sheet <small>Weeks 1–4 · formulas + worked examples · pick the BEST / spot the WRONG</small></h1>
+  <div class="cols">
+
+    <!-- WEEK 1 -->
+    <section>
+      <h2><span class="n">W1 ·</span> Word Representation</h2>
+      <ul>
+        <li><b>One-hot:</b> sparse, orthogonal → <b>no</b> similarity. <b>WordNet:</b> manual, misses nuance/new words. <b>SVD/LSA:</b> factorize co-occurrence → dense; expensive, hard to add words.</li>
+        <li><b>Co-occurrence matrix:</b> count words within window; symmetric, huge, sparse.</li>
+      </ul>
+    </section>
+    <section>
+      <h2><span class="n">W1 ·</span> PMI / PPMI</h2>
+      <span class="f fb">PMI(w,c) = log₂ [ P(w,c) / (P(w)·P(c)) ]</span>
+      <span class="f fb">PPMI = max(PMI, 0)</span>
+      <p>PMI bug: never co-occur → log(0) = −∞. PPMI clips negatives to 0.</p>
+      <div class="ex"><b>Ex.</b> P(w,c)=0.1, P(w)=0.2, P(c)=0.25 → 0.1/(0.05)=2 → PMI=log₂2=<b>1.0</b>.</div>
+    </section>
+    <section>
+      <h2><span class="n">W1 ·</span> Word2Vec</h2>
+      <ul>
+        <li><b>Skip-gram:</b> center → predict context (better for rare words).</li>
+        <li><b>CBOW:</b> context → predict center (faster, smoother).</li>
+        <li>Objective: maximize <span class="f">Σ log P(context | center)</span>, softmax over vocab; use <b>negative sampling</b> to avoid full-vocab softmax.</li>
+      </ul>
+    </section>
+    <section class="hot">
+      <h2><span class="n">W1 ·</span> Subword Tokenization <span class="tag">3Q</span></h2>
+      <table>
+        <tr><th>Method</th><th>Merge / build rule</th></tr>
+        <tr><td><b>BPE</b></td><td>merge <b>most frequent</b> adjacent pair (greedy, count-based)</td></tr>
+        <tr><td><b>WordPiece</b><br>(BERT)</td><td>merge pair max <b>likelihood</b> <span class="f">count(AB)/(count(A)·count(B))</span></td></tr>
+        <tr><td><b>Unigram</b></td><td>start big vocab, <b>prune</b> to max corpus likelihood (probabilistic)</td></tr>
+      </table>
+      <p class="k">Trap: "WordPiece merges the most frequent pair" = WRONG (that's BPE).</p>
+    </section>
+    <section>
+      <h2><span class="n">W1 ·</span> SentencePiece / Loss</h2>
+      <ul>
+        <li><b>SentencePiece:</b> treats raw text as a stream, encodes spaces as <b>▁</b> → language-agnostic, reversible, great for <b>Thai</b> (no word spaces).</li>
+        <li><b>CrossEntropyLoss = LogSoftmax + NLLLoss.</b> CE takes raw <b>logits</b>; NLLLoss takes <b>log-probabilities</b>.</li>
+      </ul>
+    </section>
+
+    <!-- WEEK 2 -->
+    <section>
+      <h2><span class="n">W2 ·</span> Before RNN / RNN basics</h2>
+      <ul>
+        <li><b>N-gram:</b> sparsity + storage blow-up, fixed context. <b>Fixed-window NLM:</b> no weight sharing, fixed input size, no long context.</li>
+        <li><b>RNN:</b> <span class="f">hₜ=tanh(W_hh·hₜ₋₁ + W_xh·xₜ + b)</span>. <b>Same weights shared</b> across all timesteps → handles variable length, fewer params.</li>
+        <li><b>GRU:</b> reset + update gate; fewer params than LSTM, no separate cell state.</li>
+      </ul>
+    </section>
+    <section>
+      <h2><span class="n">W2 ·</span> Init · Task shapes · PPL</h2>
+      <ul>
+        <li><b>Xavier/Glorot</b> → tanh/sigmoid (var=2/(n_in+n_out)). <b>He/Kaiming</b> → ReLU (var=2/n_in).</li>
+        <li><b>Many-to-one:</b> classification. <b>Many-to-many:</b> tagging / seq2seq. <b>One-to-many:</b> captioning.</li>
+      </ul>
+      <span class="f fb">Perplexity = e^J  (J = avg cross-entropy loss)</span>
+      <div class="ex"><b>Ex.</b> loss J=2.0 → PPL=e²≈<b>7.39</b>. PPL k ⇒ as confused as guessing among k words. Lower = better.</div>
+    </section>
+    <section>
+      <h2><span class="n">W2 ·</span> BPTT · Gradients</h2>
+      <ul>
+        <li><b>BPTT:</b> unroll through time, backprop; repeated ×W causes <b>vanishing</b> (‖W‖&lt;1) or <b>exploding</b> (‖W‖&gt;1) gradients.</li>
+        <li><b>Exploding → Gradient clipping:</b> if <span class="f">‖g‖&gt;τ, g←g·τ/‖g‖</span>.</li>
+        <li><b>Vanishing → LSTM/GRU gates + additive cell state / skip connections.</b></li>
+      </ul>
+    </section>
+    <section class="hot">
+      <h2><span class="n">W2 ·</span> LSTM Gates <span class="tag">3Q</span></h2>
+      <p><b>f</b>orget=σ · <b>i</b>nput=σ · <b>o</b>utput=σ · candidate <b>g</b>=tanh</p>
+      <span class="f fb">cₜ = fₜ⊙cₜ₋₁ + iₜ⊙gₜ</span>
+      <span class="f fb">hₜ = oₜ⊙tanh(cₜ)</span>
+      <ul>
+        <li><b>Cell state cₜ</b> = "gradient superhighway": info updated by <b>addition</b> (not matrix mult) → gradients flow far.</li>
+        <li>Forget=what to drop from cₜ₋₁; Input=what new to write; Output=what to expose as hₜ.</li>
+      </ul>
+    </section>
+    <section>
+      <h2><span class="n">W2 ·</span> BiRNN · Teacher Forcing</h2>
+      <ul>
+        <li><b>Bidirectional RNN:</b> concat forward+backward states → needs the <b>whole</b> sequence; can't be used for causal/online generation.</li>
+        <li><b>Teacher forcing:</b> feed ground-truth prev token in training (fast, stable). <b>Exposure bias:</b> at test the model sees its <b>own</b> outputs → train/test mismatch, errors compound.</li>
+      </ul>
+    </section>
+
+    <!-- WEEK 3 -->
+    <section>
+      <h2><span class="n">W3 ·</span> BLEU</h2>
+      <span class="f fb">BLEU = BP · exp( Σ wₙ·ln pₙ )</span>
+      <span class="f fb">BP = 1 if c&gt;r, else exp(1 − r/c)</span>
+      <p>pₙ = <b>clipped</b> n-gram precision (count each n-gram at most as many times as in reference → stops "the the the"). c=candidate len, r=reference len. Precision-oriented (MT). No semantics: "huge"≠"massive".</p>
+      <div class="ex"><b>Ex.</b> c=8, r=10 → BP=exp(1−10/8)=exp(−0.25)≈<b>0.779</b>.</div>
+    </section>
+    <section>
+      <h2><span class="n">W3 ·</span> ROUGE · Decoding</h2>
+      <ul>
+        <li><b>ROUGE:</b> recall-oriented (summarization). <b>ROUGE-L:</b> based on <b>Longest Common Subsequence</b> (order-aware, no fixed n).</li>
+        <li><b>Greedy:</b> argmax each step (myopic). <b>Beam search:</b> keep top-k hypotheses.</li>
+        <li><b>Length normalization:</b> divide score by lengthᵃ so beam doesn't favor short outputs.</li>
+      </ul>
+    </section>
+    <section>
+      <h2><span class="n">W3 ·</span> Temperature · Sched. Sampling</h2>
+      <span class="f fb">pᵢ = softmax(zᵢ / T)</span>
+      <p><b>T&lt;1</b> sharper/greedier; <b>T&gt;1</b> flatter/random; T→0 ≈ argmax.</p>
+      <p><b>Scheduled sampling</b> (teacher-forcing ratio): gradually feed model's own predictions during training to reduce exposure bias.</p>
+    </section>
+    <section>
+      <h2><span class="n">W3 ·</span> Attention (why + math)</h2>
+      <ul>
+        <li><b>Info bottleneck:</b> a single fixed context vector can't hold a long sentence → attention lets decoder look at all encoder states.</li>
+      </ul>
+      <span class="f fb">eₜᵢ = score(sₜ, hᵢ);  αₜ = softmax(eₜ)</span>
+      <span class="f fb">contextₜ = Σᵢ αₜᵢ·hᵢ</span>
+      <p><b>Q/K/V in seq2seq:</b> Query = decoder state; Keys/Values = encoder states.</p>
+    </section>
+    <section>
+      <h2><span class="n">W3 ·</span> Bahdanau vs Luong</h2>
+      <table>
+        <tr><th></th><th>Bahdanau</th><th>Luong</th></tr>
+        <tr><td>score</td><td><b>additive</b> vᵀtanh(W[s;h])</td><td><b>dot</b> sᵀh (multiplicative)</td></tr>
+        <tr><td>state</td><td>sₜ₋₁ (before)</td><td>sₜ (after)</td></tr>
+      </table>
+    </section>
+
+    <!-- WEEK 4 -->
+    <section>
+      <h2><span class="n">W4 ·</span> Why drop RNN / CNN</h2>
+      <ul>
+        <li><b>RNN sequential trap:</b> can't parallelize over time; long dependency path = O(n).</li>
+        <li><b>CNN:</b> limited receptive field, needs many layers for long range.</li>
+        <li><b>Transformer:</b> path length O(1), fully parallel; cost = O(T²) attention.</li>
+      </ul>
+    </section>
+    <section>
+      <h2><span class="n">W4 ·</span> Self-Attention + √dₖ</h2>
+      <span class="f fb">Attn = softmax( QKᵀ / √dₖ ) · V</span>
+      <p>Q,K,V = linear projections of the <b>same</b> input. Divide by <b>√dₖ</b>: as dₖ grows, dot products grow (var ∝ dₖ) → softmax saturates; scaling keeps variance ≈1, gradients healthy.</p>
+    </section>
+    <section>
+      <h2><span class="n">W4 ·</span> Positional Encoding</h2>
+      <span class="f fb">PE(pos,2i)=sin(pos/10000^{2i/d})</span>
+      <span class="f fb">PE(pos,2i+1)=cos(pos/10000^{2i/d})</span>
+      <p><b>Added</b> to word embeddings (order has no meaning in attention otherwise). Bounded [−1,1]; different wavelengths per dim let model learn relative positions.</p>
+    </section>
+    <section>
+      <h2><span class="n">W4 ·</span> Multi-Head · Residual · Norm</h2>
+      <ul>
+        <li><b>Multi-head:</b> run attention h times in parallel; each head <span class="f">dₖ=d_model/h</span> (512/8=<b>64</b>); concat → <span class="f">W_O</span>. Cost ≈ single head.</li>
+        <li><b>Residual:</b> <span class="f">x + Sublayer(x)</span> → gradient flow.</li>
+        <li><b>LayerNorm</b> normalizes over <b>features</b> per token → batch-independent, good for variable-length. <b>BatchNorm</b> normalizes over the <b>batch</b> (bad for NLP).</li>
+      </ul>
+    </section>
+    <section>
+      <h2><span class="n">W4 ·</span> FFN · Params · Complexity</h2>
+      <ul>
+        <li><b>FFN:</b> position-wise <span class="f">W₂·ReLU(W₁x+b₁)+b₂</span>, usually d_ff=4·d_model. <b>Shape invariance:</b> output shape = input shape.</li>
+        <li><b>Attention params / layer = 4·d_model²</b> (Wq,Wk,Wv,Wo). LLaMA-7B d=4096 → 4·4096²≈<b>67.1M</b>/layer.</li>
+        <li><b>Memory complexity O(T²)</b> (attention matrix T×T).</li>
+      </ul>
+    </section>
+
+  </div>
+  <div class="foot">Page 1 / 2 · red-bordered = extra-heavy · ~18 Q are calculations, show substitution for partial credit</div>
+</div>
+
+<!-- ============================ PAGE 2 ============================ -->
+<div class="page">
+  <h1>NLP with Deep Learning — Midterm Cheat Sheet <small>Weeks 5–7 · KV Cache ⭐ · BERT · GPT · confusable pairs</small></h1>
+  <div class="cols">
+
+    <!-- WEEK 5 -->
+    <section>
+      <h2><span class="n">W5 ·</span> Causal Mask · Train vs Infer</h2>
+      <ul>
+        <li><b>Causal / look-ahead mask:</b> add −∞ to upper triangle <b>before softmax</b> so a token can't attend to future tokens.</li>
+        <li><b>Training:</b> parallel, teacher-forced, all positions at once. <b>Inference:</b> autoregressive, one token at a time (feed output back).</li>
+        <li><b>Cross-attention:</b> Q from <b>decoder</b>, K/V from <b>encoder</b> (self-attn: all from same seq).</li>
+      </ul>
+    </section>
+    <section class="hot">
+      <h2><span class="star">⭐</span> <span class="n">W5 ·</span> KV Cache <span class="tag">5Q</span></h2>
+      <ul>
+        <li><b>Idea:</b> past tokens' K,V never change → cache them, only compute kₜ,vₜ for the new token. Avoids recomputing the whole prefix.</li>
+        <li><b>Cost:</b> per-token attention drops <span class="f">O(t²)→O(t)</span> (O(N²) overall).</li>
+        <li><b>GEMM→GEMV:</b> Qₜ is a single row (B×1×dₖ) → matrix-<b>vector</b> mult, not matrix-matrix.</li>
+        <li><b>Compute-bound → Memory-bound:</b> arithmetic intensity = FLOPs/Bytes drops; bottleneck becomes moving K/V over memory bus.</li>
+      </ul>
+      <span class="f fb">KV bytes = 2·precision·n_layers·d_model·n_ctx·B</span>
+      <p style="margin:.4mm 0">(×2 = K and V). Lab form: <span class="f">2·B·seq·n_kv_heads·head_dim·n_layers·bytes</span>.</p>
+      <div class="ex"><b>Ex (lab).</b> B=4, seq=2048, head_dim=128, layers=32, FP16(2B):<br>
+      MHA 32 heads → 2·4·2048·32·128·32·2 /1024² = <b>8192 MB</b>.<br>
+      GQA 8 heads → <b>2048 MB</b> (4× smaller cache).</div>
+    </section>
+    <section>
+      <h2><span class="n">W5 ·</span> VRAM Planning</h2>
+      <span class="f fb">Static = params × bytes</span>
+      <p>LLaMA-7B FP16: 7e9×2 ≈ <b>14 GB</b> locked. <b>Total VRAM = static weights + KV cache</b>. Long context (n_ctx) & big batch (B) inflate cache → <b>CUDA OOM</b>.</p>
+    </section>
+    <section>
+      <h2><span class="n">W5 ·</span> Decoding: Top-k / Top-p</h2>
+      <ul>
+        <li><b>Top-k:</b> keep the k highest-prob tokens (fixed count).</li>
+        <li><b>Top-p / nucleus:</b> keep smallest set with <b>cumulative prob ≥ p</b> (adaptive count).</li>
+        <li><b>Filter order:</b> <span class="k">temperature → top-k → top-p → softmax → sample</span> (multinomial).</li>
+      </ul>
+    </section>
+
+    <!-- WEEK 6 -->
+    <section>
+      <h2><span class="n">W6 ·</span> BERT: Pretraining setup</h2>
+      <ul>
+        <li><b>Self-supervised:</b> labels come from the data itself (a <b>pretext task</b>). <b>Transfer learning:</b> pretrain once → fine-tune on many tasks.</li>
+        <li><b>Input embedding = Token + Segment + Position</b> (summed).</li>
+        <li><b>[CLS]:</b> first token; its pooled output → classification. <b>[SEP]:</b> separates two sentences.</li>
+      </ul>
+    </section>
+    <section class="hot">
+      <h2><span class="n">W6 ·</span> MLM · NSP</h2>
+      <ul>
+        <li><b>MLM — the 15% rule:</b> mask 15% of WordPiece tokens. Of those: <b>80% → [MASK], 10% → random token, 10% → unchanged</b> (so fine-tuning, which has no [MASK], isn't surprised).</li>
+        <li>&lt;15% too weak a signal (slow); &gt;15% destroys context.</li>
+        <li><b>NSP:</b> binary IsNext / NotNext — does sentence B follow A? (Uses [CLS].)</li>
+        <li>MLM = <b>bidirectional</b> context.</li>
+      </ul>
+    </section>
+    <section>
+      <h2><span class="n">W6 ·</span> Fine-tune vs Feature-extract</h2>
+      <ul>
+        <li><b>Fine-tuning:</b> update all weights (BERT default).</li>
+        <li><b>Feature extraction:</b> freeze model, use embeddings as features (ELMo-style).</li>
+        <li><b>BERT vs ELMo:</b> BERT = deep, jointly <b>bidirectional</b> Transformer; ELMo = shallow concat of two <b>independent</b> LSTMs.</li>
+      </ul>
+    </section>
+    <section>
+      <h2><span class="n">W6 ·</span> BERT variants</h2>
+      <table>
+        <tr><th>Model</th><th>Key change</th></tr>
+        <tr><td><b>RoBERTa</b></td><td>drop NSP, <b>dynamic</b> masking, more data / longer / bigger batch</td></tr>
+        <tr><td><b>DeBERTa</b></td><td><b>disentangled attention</b>: separate content + relative-position vectors</td></tr>
+        <tr><td><b>SpanBERT</b></td><td>mask contiguous <b>spans</b> + <b>span-boundary objective</b> (predict span from its edges)</td></tr>
+      </table>
+    </section>
+    <section>
+      <h2><span class="n">W6 ·</span> QA · HF · Probing</h2>
+      <ul>
+        <li><b>Extractive QA (SQuAD):</b> predict <b>start</b> and <b>end</b> logits of the answer span in the context.</li>
+        <li><b>HF pipeline:</b> high-level one-liner. <b>AutoModel:</b> raw hidden states → add your own head (extract [CLS] = <span class="f">last_hidden_state[:,0,:]</span>).</li>
+        <li><b>BERTology / probing:</b> analyze attention heads & layers → lower layers ≈ syntax, higher ≈ semantics.</li>
+      </ul>
+    </section>
+
+    <!-- WEEK 7 -->
+    <section>
+      <h2><span class="n">W7 ·</span> CLM · GPT evolution</h2>
+      <ul>
+        <li><b>CLM:</b> predict next token, causal mask. <b>Signal density:</b> every token is a label (dense) vs MLM's ~15% (sparse).</li>
+        <li>Loss = shift logits/labels by one: <span class="f">logits[:-1] vs labels[1:]</span>.</li>
+        <li><b>GPT-1→2→3:</b> ↑scale → zero/few-shot & <b>in-context learning</b> (learn from prompt, no weight update).</li>
+        <li><b>Open weights</b> (LLaMA) vs <b>closed</b> (GPT-4 API).</li>
+      </ul>
+    </section>
+    <section>
+      <h2><span class="n">W7 ·</span> RoPE · RMSNorm · SwiGLU</h2>
+      <ul>
+        <li><b>RoPE:</b> rotate Q,K by a position-dependent angle → encodes <b>relative</b> position, extrapolates to longer context.</li>
+      </ul>
+      <span class="f fb">RMSNorm: y = x/√(mean(x²)+ε) · γ</span>
+      <p>No mean-centering, no bias → cheaper than LayerNorm.</p>
+      <span class="f fb">SwiGLU = (SiLU(xW₁) ⊙ xW₃)·W₂</span>
+      <p>SiLU(x)=x·σ(x); <b>3 matrices</b>, params = 3·in·hidden.</p>
+    </section>
+    <section>
+      <h2><span class="n">W7 ·</span> MQA / GQA</h2>
+      <ul>
+        <li><b>MHA:</b> each query head has its own K,V head.</li>
+        <li><b>MQA:</b> <b>1</b> shared KV head → smallest cache, small quality hit.</li>
+        <li><b>GQA:</b> groups of query heads share a KV head → middle ground (LLaMA-2/3).</li>
+        <li>Both <b>shrink KV cache</b> ∝ n_kv_heads (see ⭐ example: 32→8 heads = 4× less).</li>
+      </ul>
+    </section>
+    <section>
+      <h2><span class="n">W7 ·</span> Scaling Laws · ICL</h2>
+      <ul>
+        <li><b>Kaplan (2020):</b> scale <b>model size faster</b> than data.</li>
+        <li><b>Chinchilla (2022):</b> scale model & data <b>equally</b> — rule of thumb <b>~20 tokens/param</b> (70B ⇒ ~1.4T tokens).</li>
+        <li><b>In-context learning:</b> induction heads / function vectors form task behavior at inference. <b>Context extension</b> via RoPE scaling; <b>omnimodal</b> = text+image+audio.</li>
+      </ul>
+    </section>
+
+    <!-- TRAPS -->
+    <section class="hot">
+      <h2><span class="n">★</span> "Spot the WRONG" traps</h2>
+      <ul>
+        <li>"WordPiece merges most <b>frequent</b> pair" → no, that's BPE.</li>
+        <li>"Clipping fixes <b>vanishing</b>" → no, exploding.</li>
+        <li>"BatchNorm is standard in Transformers" → no, LayerNorm.</li>
+        <li>"Bahdanau uses <b>dot-product</b>" → no, additive (Luong=dot).</li>
+        <li>"BLEU is <b>recall</b>-oriented" → no, precision (ROUGE=recall).</li>
+        <li>"MLM masks <b>50%</b>" → 15% (80/10/10).</li>
+        <li>"GQA <b>increases</b> KV cache" → decreases.</li>
+        <li>"RMSNorm subtracts the mean" → no (that's LayerNorm).</li>
+        <li>"Kaplan says 20 tokens/param" → that's Chinchilla.</li>
+        <li>"CrossEntropy takes log-probs" → no, logits (NLL takes log-probs).</li>
+      </ul>
+    </section>
+
+  </div>
+  <div class="foot">Page 2 / 2 · dₖ=d/h · attn params/layer=4d² · KV=2·prec·L·d·n·B · PPL=eᴶ · Chinchilla 20 tok/param · MLM 15%→80/10/10</div>
+</div>
+
+</body>
+</html>
