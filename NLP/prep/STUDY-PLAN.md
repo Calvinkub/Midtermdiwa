@@ -67,8 +67,8 @@ Sleep. A rested brain beats one more hour of cramming for a 3-hour exam.
    (the ×2 is for K and V). Lab form uses `n_kv_heads × head_dim` in place of d_model:
    `2 × B × seq × n_kv_heads × head_dim × n_layers × bytes`.
    **Worked (from lab):** B=4, seq=2048, head_dim=128, layers=32, FP16(2B).
-   - MHA (32 heads): 2·4·2048·32·128·32·2 / 1024² = **8192 MB**
-   - GQA (8 heads):  2·4·2048·8·128·32·2 / 1024² = **2048 MB** → 4× smaller cache.
+   - MHA (32 heads): 2·4·2048·32·128·32·2 / 1024² = **4096 MB**
+   - GQA (8 heads):  2·4·2048·8·128·32·2 / 1024² = **1024 MB** → 4× smaller cache.
 10. **SwiGLU params** = `3 × in × hidden` (W1, W2, W3). **RMSNorm:** `x / √(mean(x²)+ε) · γ`.
 11. **Chinchilla:** ≈ **20 tokens per parameter** → a 70B model wants ≈ 1.4T tokens.
 

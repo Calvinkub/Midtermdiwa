@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NLP-DL — โจทย์คำนวณ + เฉลยทีละ step</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f8fc; --card:#ffffff; --ink:#191c22; --muted:#454b57; --dim:#767c89;
+  --blue:#0060aa; --green:#137a2f; --red:#ba1a1a; --orange:#d9640c; --purple:#6b3fc4;
+  --line:#e5e8f0; --mono:'Space Grotesk','JetBrains Mono',monospace;
+  --body:'Noto Sans Thai','Inter',-apple-system,sans-serif;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{ background:var(--bg); color:var(--ink); font-family:var(--body); line-height:1.5;
+  padding:32px 18px 80px; -webkit-font-smoothing:antialiased; }
+.wrap{ max-width:860px; margin:0 auto; }
+header{ text-align:center; margin-bottom:8px; }
+h1{ font-size:clamp(24px,4vw,34px); font-weight:800; letter-spacing:-.5px; }
+.lede{ color:var(--muted); font-size:clamp(14px,2vw,17px); margin-top:6px; }
+.bar{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:18px 0 26px; }
+.btn{ font-family:var(--body); font-size:14px; font-weight:600; cursor:pointer; border:1px solid var(--line);
+  background:var(--card); color:var(--blue); padding:8px 16px; border-radius:9px; transition:.15s; }
+.btn:hover{ border-color:var(--blue); box-shadow:0 2px 12px rgba(0,96,170,.1); }
+.wk{ font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+  color:var(--blue); margin:30px 0 12px; padding-bottom:6px; border-bottom:2px solid var(--line); }
+.q{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px;
+  box-shadow:0 2px 20px rgba(25,28,34,.03); }
+.q-head{ display:flex; align-items:baseline; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
+.q-num{ font-family:var(--mono); font-weight:700; font-size:17px; color:var(--ink); background:#eef2fb;
+  width:30px; height:30px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+.tag{ font-family:var(--mono); font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; letter-spacing:.5px; }
+.tag.calc{ background:rgba(0,96,170,.1); color:var(--blue); }
+.tag.hot{ background:rgba(186,26,26,.1); color:var(--red); }
+.q-title{ font-weight:700; font-size:clamp(15px,2vw,18px); }
+.q-body{ color:var(--muted); font-size:clamp(14px,1.9vw,16.5px); margin-top:2px; }
+.q-body b{ color:var(--ink); }
+.given{ background:#f4f6fb; border-radius:9px; padding:10px 14px; margin-top:10px; font-size:14.5px; }
+.given .gl{ font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--dim); margin-bottom:4px; }
+code,.m{ font-family:var(--mono); background:#eef2fb; color:#0b2d52; padding:1px 6px; border-radius:5px; font-size:.92em; }
+details{ margin-top:12px; border-top:1px dashed var(--line); padding-top:10px; }
+summary{ cursor:pointer; font-weight:700; color:var(--green); font-size:14.5px; list-style:none; display:flex; align-items:center; gap:7px; user-select:none; }
+summary::-webkit-details-marker{ display:none; }
+summary::before{ content:'▶'; font-size:11px; transition:.2s; color:var(--green); }
+details[open] summary::before{ transform:rotate(90deg); }
+.sol{ margin-top:12px; }
+.step{ display:flex; gap:12px; margin-bottom:11px; }
+.step-n{ font-family:var(--mono); font-weight:700; font-size:13px; color:#fff; background:var(--green);
+  min-width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+.step-t{ font-size:14.5px; color:var(--muted); }
+.step-t b{ color:var(--ink); }
+.calc-line{ font-family:var(--mono); font-size:14px; color:#0b2d52; background:#eef2fb; border-radius:7px;
+  padding:7px 12px; margin:6px 0; display:block; overflow-x:auto; white-space:pre-wrap; }
+.ans{ background:#ecf9ee; border:1px solid rgba(19,122,47,.25); border-left:4px solid var(--green);
+  border-radius:0 10px 10px 0; padding:11px 16px; margin-top:10px; font-size:15.5px; }
+.ans .al{ font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--green); margin-bottom:3px; }
+.ans b{ color:var(--ink); font-size:1.08em; }
+.trap{ background:#fdf2f2; border-left:4px solid var(--red); border-radius:0 8px 8px 0; padding:9px 14px; margin-top:10px; font-size:14px; color:var(--muted); }
+.trap b{ color:var(--red); }
+.foot{ text-align:center; color:var(--dim); font-size:13px; margin-top:40px; }
+@media print{ body{ background:#fff; padding:0; } .bar{ display:none; } .q{ break-inside:avoid; box-shadow:none; } details{ display:block; } details>summary{ display:none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>โจทย์คำนวณ + เฉลยทีละ Step</h1>
+  <p class="lede">NLP with Deep Learning · Weeks 1–7 · ~18 ข้อคำนวณในข้อสอบ (ตอนที่ 2 ต้องแสดงวิธีคิด)<br>ลองทำเองก่อน แล้วค่อยกดดูเฉลย</p>
+</header>
+<div class="bar">
+  <button class="btn" onclick="toggleAll(true)">เปิดเฉลยทั้งหมด</button>
+  <button class="btn" onclick="toggleAll(false)">ปิดเฉลยทั้งหมด</button>
+  <button class="btn" onclick="window.print()">พิมพ์ / บันทึก PDF</button>
+</div>
+
+<!-- ===================== WEEK 1 ===================== -->
+<div class="wk">📘 Week 1 · Word Representation</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">1</span><span class="tag hot">ออกบ่อย</span><span class="q-title">PMI &amp; PPMI</span></div>
+  <div class="q-body">จากคลังข้อความมีคู่คำที่ปรากฏร่วมกันทั้งหมด <b>N = 1000</b> ครั้ง จงหา PMI และ PPMI ของคู่ (w, c)</div>
+  <div class="given"><div class="gl">กำหนดให้</div>(ก) count(w,c)=30, count(w)=100, count(c)=150 &nbsp;·&nbsp; (ข) count(w,c)=5, count(w)=100, count(c)=150</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">แปลง count เป็นความน่าจะเป็น (หารด้วย N)<span class="calc-line">(ก) P(w,c)=30/1000=0.03 · P(w)=0.1 · P(c)=0.15</span></span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">แทนในสูตร <code>PMI = log₂[ P(w,c) / (P(w)·P(c)) ]</code><span class="calc-line">= log₂[ 0.03 / (0.1 × 0.15) ] = log₂[ 0.03 / 0.015 ] = log₂(2)</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">log₂(2) = <b>1.0</b> → เป็นบวก → PPMI = max(1.0, 0) = 1.0</span></div>
+      <div class="step"><span class="step-n">4</span><span class="step-t">ข้อ (ข): P(w,c)=0.005 → ratio = 0.005/0.015 = 0.333 → log₂(0.333) = <b>−1.585</b><span class="calc-line">PMI ติดลบ → PPMI = max(−1.585, 0) = 0</span></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>(ก) PMI = <b>1.0</b>, PPMI = <b>1.0</b> &nbsp;·&nbsp; (ข) PMI = <b>−1.585</b>, PPMI = <b>0</b></div>
+    </div>
+  </details>
+</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">2</span><span class="tag hot">ออก 3 ข้อ</span><span class="q-title">BPE — การ merge ครั้งแรก</span></div>
+  <div class="q-body">คลังคำ (พร้อมความถี่) จงหาว่า BPE จะ merge คู่ไหนเป็นอันดับแรก</div>
+  <div class="given"><div class="gl">กำหนดให้</div>hug:10 · pug:5 · pun:12 · bun:4 · hugs:5 (แตกเป็นตัวอักษรก่อน)</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">BPE = รวมคู่ที่ <b>ปรากฏบ่อยที่สุด</b> → นับความถี่ของทุกคู่ที่ติดกัน (คูณความถี่ของคำ)</span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">ไล่นับคู่หลักๆ<span class="calc-line">(u,g): hug10 + pug5 + hugs5 = 20
+(p,u): pug5 + pun12       = 17
+(u,n): pun12 + bun4       = 16
+(h,u): hug10 + hugs5      = 15</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">คู่ที่บ่อยที่สุดคือ <b>(u, g) = 20</b> → merge เป็น token ใหม่ <code>ug</code></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>merge คู่ <b>(u, g)</b> → "ug" (ความถี่ 20)</div>
+      <div class="trap"><b>กับดัก:</b> ถ้าเป็น WordPiece จะ<b>ไม่</b>เลือกจากความถี่ แต่เลือกจาก likelihood (ดูข้อ 3)</div>
+    </div>
+  </details>
+</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">3</span><span class="tag calc">คำนวณ</span><span class="q-title">WordPiece — เลือกคู่ที่ score สูงสุด</span></div>
+  <div class="q-body">WordPiece merge คู่ที่ได้ <code>score = count(AB) / (count(A)·count(B))</code> สูงสุด จงหาว่าจะ merge คู่ไหน</div>
+  <div class="given"><div class="gl">กำหนดให้</div>(e,r): count(er)=6, count(e)=10, count(r)=6 · (s,t): count(st)=9, count(s)=9, count(t)=15 · (l,o): count(lo)=7, count(l)=7, count(o)=20</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">คำนวณ score ของแต่ละคู่<span class="calc-line">(e,r) = 6 / (10×6)  = 6/60  = 0.100
+(s,t) = 9 / (9×15)  = 9/135 = 0.067
+(l,o) = 7 / (7×20)  = 7/140 = 0.050</span></span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">เลือก score สูงสุด → <b>(e, r) = 0.100</b></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>WordPiece merge <b>(e, r)</b> — แม้ (s,t) จะ<b>บ่อยกว่า</b> (9 &gt; 6) ก็ตาม</div>
+      <div class="trap"><b>จุดสำคัญ:</b> BPE จะเลือก (s,t) เพราะบ่อยสุด แต่ WordPiece เลือก (e,r) เพราะ likelihood สูงสุด</div>
+    </div>
+  </details>
+</div>
+
+<!-- ===================== WEEK 2 ===================== -->
+<div class="wk">📗 Week 2 · RNN / LSTM / GRU</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">4</span><span class="tag hot">ออกบ่อย</span><span class="q-title">Perplexity</span></div>
+  <div class="q-body">(ก) โมเดลให้ความน่าจะเป็นของแต่ละคำในประโยค 3 คำ จงหา perplexity &nbsp; (ข) ถ้า average cross-entropy loss = 2.0 nats หา PPL</div>
+  <div class="given"><div class="gl">กำหนดให้</div>(ก) P = [0.5, 0.25, 0.125]</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">สูตร <code>PPL = (Π pᵢ)^(−1/N)</code> = exp( −(1/N) Σ ln pᵢ )</span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">คูณความน่าจะเป็น (N=3)<span class="calc-line">Π p = 0.5 × 0.25 × 0.125 = 0.015625 = 1/64</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">ยกกำลัง −1/3<span class="calc-line">PPL = (1/64)^(−1/3) = 64^(1/3) = 4</span></span></div>
+      <div class="step"><span class="step-n">4</span><span class="step-t">ข้อ (ข): <code>PPL = e^J</code> = e² ≈ <b>7.389</b> (ถ้า loss เป็น bits ใช้ 2^J แทน)</span></div>
+      <div class="ans"><div class="al">คำตอบ</div>(ก) PPL = <b>4</b> &nbsp;·&nbsp; (ข) PPL = e² ≈ <b>7.39</b> · จำ: ยิ่งต่ำยิ่งดี, PPL=k = งงเท่ากับเดาจาก k คำ</div>
+    </div>
+  </details>
+</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">5</span><span class="tag calc">คำนวณ</span><span class="q-title">Gradient Clipping</span></div>
+  <div class="q-body">gradient vector <b>g = [6, 8]</b> และ threshold <b>τ = 5</b> จงหา gradient หลัง clipping</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">หา norm<span class="calc-line">‖g‖ = √(6² + 8²) = √(36+64) = √100 = 10</span></span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">เช็คเงื่อนไข: 10 &gt; τ (=5) → ต้อง clip (ถ้า ≤ τ ไม่ต้องทำอะไร)</span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">สเกลด้วย <code>τ/‖g‖</code><span class="calc-line">g ← g × (5/10) = [6, 8] × 0.5 = [3, 4]</span></span></div>
+      <div class="step"><span class="step-n">4</span><span class="step-t">ตรวจ: ‖[3,4]‖ = √(9+16) = 5 ✓ (เท่ากับ τ พอดี)</span></div>
+      <div class="ans"><div class="al">คำตอบ</div>g_clipped = <b>[3, 4]</b> (norm = 5) · แก้ปัญหา <b>exploding</b> gradient เท่านั้น</div>
+    </div>
+  </details>
+</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">6</span><span class="tag hot">ออก 3 ข้อ</span><span class="q-title">LSTM — อัปเดต Cell State &amp; Hidden</span></div>
+  <div class="q-body">จงคำนวณ cell state ใหม่ (cₜ) และ hidden state (hₜ)</div>
+  <div class="given"><div class="gl">กำหนดให้</div>forget f=0.8 · input i=0.6 · output o=0.5 · candidate g=1.0 · cₜ₋₁=1.5</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">อัปเดต cell state <code>cₜ = fₜ⊙cₜ₋₁ + iₜ⊙gₜ</code><span class="calc-line">cₜ = (0.8 × 1.5) + (0.6 × 1.0) = 1.2 + 0.6 = 1.8</span></span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">คำนวณ hidden state <code>hₜ = oₜ⊙tanh(cₜ)</code><span class="calc-line">tanh(1.8) ≈ 0.9468</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">คูณด้วย output gate<span class="calc-line">hₜ = 0.5 × 0.9468 ≈ 0.4734</span></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>cₜ = <b>1.8</b> &nbsp;·&nbsp; hₜ ≈ <b>0.473</b> · (forget ตัดของเก่า, input เติมของใหม่ด้วยการ <b>บวก</b> = ทางด่วน gradient)</div>
+    </div>
+  </details>
+</div>
+
+<!-- ===================== WEEK 3 ===================== -->
+<div class="wk">📙 Week 3 · Seq2Seq &amp; Attention</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">7</span><span class="tag calc">คำนวณ</span><span class="q-title">Clipped Precision (BLEU)</span></div>
+  <div class="q-body">candidate = "the the the the the the the" (7 คำ) · reference = "the cat is on the mat" จงหา unigram clipped precision</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">นับ "the" ใน candidate = <b>7</b></span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">นับ "the" ที่มีจริงใน reference = <b>2</b> (max count)</span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">clip: นับได้ไม่เกินที่ reference มี → <code>min(7, 2) = 2</code></span></div>
+      <div class="step"><span class="step-n">4</span><span class="step-t">precision = clipped / total candidate<span class="calc-line">= 2 / 7 ≈ 0.286</span></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>Clipped precision = <b>2/7 ≈ 0.286</b> (ถ้าไม่ clip จะได้ 7/7=1.0 → นี่คือเหตุผลที่ต้อง clip กันโมเดลโกงด้วยการพูดซ้ำ)</div>
+    </div>
+  </details>
+</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">8</span><span class="tag hot">ออกบ่อย</span><span class="q-title">BLEU เต็มสูตร (BP + precisions)</span></div>
+  <div class="q-body">จงคำนวณ BLEU-4 (น้ำหนักเท่ากัน wₙ = 1/4)</div>
+  <div class="given"><div class="gl">กำหนดให้</div>ความยาว candidate c=9, reference r=10 · p₁=0.8, p₂=0.6, p₃=0.45, p₄=0.30</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">หา Brevity Penalty — เพราะ c(9) &lt; r(10) จึงใช้ exp<span class="calc-line">BP = exp(1 − r/c) = exp(1 − 10/9) = exp(−0.1111) ≈ 0.8949</span></span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">รวม log ของ precision (คูณน้ำหนัก 1/4)<span class="calc-line">Σ wₙ ln pₙ = 0.25×(ln0.8 + ln0.6 + ln0.45 + ln0.30)
+= 0.25×(−0.2231 −0.5108 −0.7985 −1.2040)
+= 0.25×(−2.7364) = −0.6841</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">exp กลับ<span class="calc-line">exp(−0.6841) ≈ 0.5045</span></span></div>
+      <div class="step"><span class="step-n">4</span><span class="step-t">คูณ BP<span class="calc-line">BLEU = 0.8949 × 0.5045 ≈ 0.4515</span></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>BLEU ≈ <b>0.451</b> (หรือ 45.1%)</div>
+    </div>
+  </details>
+</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">9</span><span class="tag calc">คำนวณ</span><span class="q-title">Temperature Softmax</span></div>
+  <div class="q-body">logits z = [2, 1, 0] จงหา distribution ที่ T=1 และ T=0.5 แล้วเปรียบเทียบ</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">สูตร <code>pᵢ = softmax(zᵢ/T) = e^(zᵢ/T) / Σ e^(zⱼ/T)</code></span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">T=1: e^z = [e², e¹, e⁰] = [7.389, 2.718, 1.0], รวม = 11.107<span class="calc-line">p = [0.665, 0.245, 0.090]</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">T=0.5: z/T = [4, 2, 0] → e^ = [54.60, 7.389, 1.0], รวม = 62.99<span class="calc-line">p = [0.867, 0.117, 0.016]</span></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>T=1 → <b>[0.665, 0.245, 0.090]</b> · T=0.5 → <b>[0.867, 0.117, 0.016]</b><br>T ต่ำ → distribution <b>คมขึ้น</b> (มั่นใจตัวที่ prob สูงมากขึ้น) · T สูง → แบนลง (มั่วขึ้น)</div>
+    </div>
+  </details>
+</div>
+
+<!-- ===================== WEEK 4 ===================== -->
+<div class="wk">📕 Week 4 · Transformer Encoder</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">10</span><span class="tag hot">ออกบ่อย</span><span class="q-title">Scaled Dot-Product Attention (เต็มขั้นตอน)</span></div>
+  <div class="q-body">คำนวณ context vector ของ 1 query</div>
+  <div class="given"><div class="gl">กำหนดให้</div>q=[1,1] · k₁=[1,0], k₂=[0,2] · v₁=[2,0], v₂=[0,4] · dₖ=2</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">คะแนนดิบ = q·kᵢ<span class="calc-line">q·k₁ = 1×1 + 1×0 = 1 · q·k₂ = 1×0 + 1×2 = 2</span></span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">หารด้วย √dₖ = √2 ≈ 1.414<span class="calc-line">scaled = [1/1.414, 2/1.414] = [0.707, 1.414]</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">softmax<span class="calc-line">e^0.707=2.028, e^1.414=4.113, รวม=6.141
+α = [0.330, 0.670]</span></span></div>
+      <div class="step"><span class="step-n">4</span><span class="step-t">context = Σ αᵢ·vᵢ<span class="calc-line">= 0.330×[2,0] + 0.670×[0,4] = [0.660, 2.679]</span></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>context ≈ <b>[0.66, 2.68]</b> · หาร √dₖ เพื่อคุม variance ให้ softmax ไม่อิ่มตัว</div>
+    </div>
+  </details>
+</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">11</span><span class="tag calc">คำนวณ</span><span class="q-title">Positional Encoding</span></div>
+  <div class="q-body">จงหาเวกเตอร์ positional encoding ที่ตำแหน่ง <b>pos=1</b> เมื่อ <b>d_model=4</b></div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">สูตร <code>PE(pos,2i)=sin(pos/10000^(2i/d))</code>, ดัชนีคี่ใช้ cos · d=4 มี i=0,1</span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">i=0 → เลขชี้กำลัง 2i/d = 0 → 10000⁰ = 1 → มุม = 1/1 = 1<span class="calc-line">PE(1,0)=sin(1)=0.8415 · PE(1,1)=cos(1)=0.5403</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">i=1 → 2i/d = 0.5 → 10000^0.5 = 100 → มุม = 1/100 = 0.01<span class="calc-line">PE(1,2)=sin(0.01)=0.0100 · PE(1,3)=cos(0.01)=1.0000</span></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>PE(pos=1) = <b>[0.842, 0.540, 0.010, 1.000]</b> · แต่ละมิติมีความถี่ต่างกัน (คู่=sin, คี่=cos)</div>
+    </div>
+  </details>
+</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">12</span><span class="tag calc">คำนวณ</span><span class="q-title">Multi-Head Dims + Attention Params</span></div>
+  <div class="q-body">d_model=512, จำนวนหัว h=8 · จงหา (ก) dₖ ต่อหัว (ข) จำนวนพารามิเตอร์ของ attention ต่อ 1 layer</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">มิติต่อหัว <code>dₖ = d_model / h</code> = 512 / 8 = <b>64</b></span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">มี 4 เมทริกซ์ Wq, Wk, Wv, Wo แต่ละตัวขนาด d_model×d_model<span class="calc-line">params = 4 × d_model² = 4 × 512² = 4 × 262,144</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">= <b>1,048,576</b> ≈ 1.05M พารามิเตอร์</span></div>
+      <div class="ans"><div class="al">คำตอบ</div>(ก) dₖ = <b>64</b> &nbsp;·&nbsp; (ข) <b>4·d² = 1,048,576</b> ≈ 1.05M · (LLaMA-7B d=4096 → 4·4096² ≈ 67.1M/layer)</div>
+    </div>
+  </details>
+</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">13</span><span class="tag calc">คำนวณ</span><span class="q-title">FFN Parameter Count</span></div>
+  <div class="q-body">Feed-Forward Network มี d_model=512, d_ff=2048 · จงหาจำนวนพารามิเตอร์ (นับ bias ด้วย)</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">FFN = 2 ชั้น linear: W₁ (d_model→d_ff) แล้ว W₂ (d_ff→d_model)</span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">น้ำหนัก<span class="calc-line">W₁ = 512×2048 = 1,048,576
+W₂ = 2048×512 = 1,048,576  → รวม = 2,097,152</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">bias: b₁ = 2048, b₂ = 512 → รวม 2,560<span class="calc-line">total = 2,097,152 + 2,560 = 2,099,712</span></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>≈ <b>2.1M</b> พารามิเตอร์ (weight 2·d·d_ff = 2,097,152 + bias 2,560) · ปกติ d_ff = 4×d_model</div>
+    </div>
+  </details>
+</div>
+
+<!-- ===================== WEEK 5 ===================== -->
+<div class="wk">📓 Week 5 · Transformer Decoder · KV Cache ⭐</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">14</span><span class="tag hot">⭐ ออก 5 ข้อ</span><span class="q-title">KV Cache Memory — MHA</span></div>
+  <div class="q-body">จงคำนวณขนาด KV cache (MB) สำหรับ Multi-Head Attention</div>
+  <div class="given"><div class="gl">กำหนดให้</div>batch B=4 · seq=2048 · n_kv_heads=32 · head_dim=128 · n_layers=32 · FP16 = 2 bytes</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">สูตร <code>bytes = 2 × B × seq × n_kv_heads × head_dim × n_layers × bytes_per_param</code> (เลข 2 = เก็บทั้ง K และ V)</span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">นับจำนวน element ก่อน<span class="calc-line">2 × 4 × 2048 × 32 × 128 × 32
+= 2,147,483,648 elements</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">คูณ bytes ต่อ element (FP16 = 2)<span class="calc-line">= 2,147,483,648 × 2 = 4,294,967,296 bytes</span></span></div>
+      <div class="step"><span class="step-n">4</span><span class="step-t">แปลงเป็น MB (หาร 1024²)<span class="calc-line">= 4,294,967,296 / 1,048,576 = 4096 MB</span></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>KV cache (MHA) = <b>4096 MB = 4 GB</b> · (n_kv_heads×head_dim = 32×128 = 4096 = d_model)</div>
+    </div>
+  </details>
+</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">15</span><span class="tag hot">⭐ ออก 5 ข้อ</span><span class="q-title">KV Cache — GQA เทียบ MHA</span></div>
+  <div class="q-body">ใช้ค่าเดิมจากข้อ 14 แต่เปลี่ยนเป็น GQA <b>n_kv_heads=8</b> · จงหาขนาด cache และอัตราส่วนที่ประหยัดได้</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">เปลี่ยนแค่ n_kv_heads: 32 → 8 (ตัวอื่นเท่าเดิม)</span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">เพราะ cache แปรผันตรงกับ n_kv_heads → คำนวณง่ายๆจากอัตราส่วน<span class="calc-line">GQA = MHA × (8/32) = 4096 × (1/4) = 1024 MB</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">อัตราส่วนประหยัด = 32/8 = <b>4 เท่า</b></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>KV cache (GQA-8) = <b>1024 MB = 1 GB</b> → เล็กลง <b>4 เท่า</b> · (MQA = 1 head จะเล็กสุด)</div>
+      <div class="trap"><b>กับดัก:</b> "GQA เพิ่มขนาด KV cache" = ผิด → GQA/MQA <b>ลด</b> cache</div>
+    </div>
+  </details>
+</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">16</span><span class="tag calc">คำนวณ</span><span class="q-title">Static Weights + Total VRAM</span></div>
+  <div class="q-body">โมเดล 7B parameters โหลดแบบ FP16 · จงหา (ก) ขนาด static weights (ข) VRAM รวมเมื่อรวม KV cache จากข้อ 14</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t"><code>Static = params × bytes</code><span class="calc-line">= 7×10⁹ × 2 = 14×10⁹ bytes ≈ 14 GB</span></span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">VRAM รวม = static + KV cache (+ activations)<span class="calc-line">≈ 14 GB + 4 GB = 18 GB</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">static คงที่ แต่ KV cache <b>โตตาม</b> seq &amp; batch → ยาว/ใหญ่เกินไป = <b>CUDA OOM</b></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>(ก) static ≈ <b>14 GB</b> &nbsp;·&nbsp; (ข) รวม ≈ <b>18 GB</b> (การ์ด 16GB จะ OOM)</div>
+    </div>
+  </details>
+</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">17</span><span class="tag calc">คำนวณ</span><span class="q-title">Top-k vs Top-p (Nucleus)</span></div>
+  <div class="q-body">distribution เรียงลำดับ: [0.4, 0.25, 0.15, 0.10, 0.06, 0.04] · จงหาว่า (ก) top-k k=2 (ข) top-p p=0.9 เก็บ token ใดบ้าง</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">Top-k (k=2): เก็บ 2 ตัวแรกที่ prob สูงสุด → <b>{0.4, 0.25}</b> แล้ว renormalize (÷0.65)<span class="calc-line">→ [0.615, 0.385]</span></span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">Top-p (p=0.9): บวกสะสมจนถึง ≥ 0.9<span class="calc-line">0.4 → 0.65 → 0.80 → 0.90  (ครบที่ตัวที่ 4)</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">เก็บ <b>4 ตัวแรก</b> {0.4, 0.25, 0.15, 0.10} แล้ว renormalize</span></div>
+      <div class="ans"><div class="al">คำตอบ</div>(ก) top-k=2 → เก็บ <b>2 ตัว</b> &nbsp;·&nbsp; (ข) top-p=0.9 → เก็บ <b>4 ตัว</b><br>Top-p ปรับจำนวนตามความชัน (adaptive), Top-k คงที่เสมอ · ลำดับกรอง: temperature → top-k → top-p → sample</div>
+    </div>
+  </details>
+</div>
+
+<!-- ===================== WEEK 7 ===================== -->
+<div class="wk">📒 Week 7 · Decoder — GPT</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">18</span><span class="tag calc">คำนวณ</span><span class="q-title">SwiGLU Parameter Count</span></div>
+  <div class="q-body">SwiGLU มี in_dim=512, hidden=1024 · จงหาจำนวนพารามิเตอร์ (ไม่มี bias)</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t"><code>SwiGLU = (SiLU(xW₁) ⊙ xW₃)·W₂</code> → มี 3 เมทริกซ์</span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">ขนาดแต่ละตัว<span class="calc-line">W₁ = 512×1024 · W₃ = 512×1024 · W₂ = 1024×512
+แต่ละตัว = 524,288</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">รวม = 3 × in × hidden<span class="calc-line">= 3 × 512 × 1024 = 1,572,864</span></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>≈ <b>1.57M</b> พารามิเตอร์ (3·in·hidden) · มากกว่า FFN ปกติที่มี 2 เมทริกซ์</div>
+    </div>
+  </details>
+</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">19</span><span class="tag calc">คำนวณ</span><span class="q-title">RMSNorm</span></div>
+  <div class="q-body">x = [1, 2, 3, 4] (dim=4), γ=1, ε≈0 · จงหา output ของ RMSNorm</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">สูตร <code>y = x / √(mean(x²)+ε) · γ</code> (ไม่ลบค่าเฉลี่ย ต่างจาก LayerNorm)</span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">mean ของกำลังสอง<span class="calc-line">mean(x²) = (1+4+9+16)/4 = 30/4 = 7.5</span></span></div>
+      <div class="step"><span class="step-n">3</span><span class="step-t">RMS = √7.5 ≈ 2.739<span class="calc-line">y = [1,2,3,4] / 2.739 = [0.365, 0.730, 1.095, 1.461]</span></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>y ≈ <b>[0.365, 0.730, 1.095, 1.461]</b> · RMSNorm ไม่ลบ mean, ไม่มี bias → เบากว่า LayerNorm</div>
+    </div>
+  </details>
+</div>
+
+<div class="q">
+  <div class="q-head"><span class="q-num">20</span><span class="tag calc">คำนวณ</span><span class="q-title">Chinchilla Scaling Law</span></div>
+  <div class="q-body">ตาม Chinchilla (~20 tokens ต่อ 1 parameter) · (ก) โมเดล 70B ต้องเทรนด้วยกี่ token (ข) FLOPs โดยประมาณ (C≈6·N·D)</div>
+  <details><summary>ดูเฉลยทีละ step</summary>
+    <div class="sol">
+      <div class="step"><span class="step-n">1</span><span class="step-t">จำนวน token = params × 20<span class="calc-line">D = 70×10⁹ × 20 = 1.4×10¹² = 1.4T tokens</span></span></div>
+      <div class="step"><span class="step-n">2</span><span class="step-t">FLOPs ≈ 6·N·D<span class="calc-line">= 6 × (7×10¹⁰) × (1.4×10¹²) ≈ 5.88×10²³ FLOPs</span></span></div>
+      <div class="ans"><div class="al">คำตอบ</div>(ก) <b>1.4T tokens</b> &nbsp;·&nbsp; (ข) ≈ <b>5.9×10²³ FLOPs</b></div>
+      <div class="trap"><b>กับดัก:</b> "Kaplan บอก 20 tok/param" = ผิด → นี่คือ <b>Chinchilla</b> (Kaplan บอกให้ขยายโมเดลเร็วกว่า data)</div>
+    </div>
+  </details>
+</div>
+
+<p class="foot">20 ข้อ ครอบคลุมทุกสัปดาห์ · ทุกตัวเลขตรงกับสไลด์/แล็บของคอร์ส · ขอให้สอบผ่าน 🍀</p>
+</div>
+
+<script>
+function toggleAll(open){ document.querySelectorAll('details').forEach(d => d.open = open); }
+</script>
+</body>
+</html>

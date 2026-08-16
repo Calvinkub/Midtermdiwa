@@ -41,7 +41,7 @@ Default to **active recall**, not lecturing. When the student invokes this skill
 - **Static weights** = params × bytes (7B×2B FP16 ≈ 14 GB).
 - ⭐ **KV cache bytes** = 2 × precision × n_layers × d_model × n_ctx × B
   (lab form: 2·B·seq·n_kv_heads·head_dim·n_layers·bytes). MHA vs GQA example:
-  B4/seq2048/hd128/32layers/FP16 → MHA(32h)=8192 MB, GQA(8h)=2048 MB.
+  B4/seq2048/hd128/32layers/FP16 → MHA(32h)=4096 MB, GQA(8h)=1024 MB.
 - **RMSNorm** = x/√(mean(x²)+ε)·γ. **SwiGLU** = (SiLU(xW1)⊙xW3)W2, params = 3·in·hidden.
 - **Chinchilla** ≈ 20 tokens/param (70B ⇒ ~1.4T tokens).
 - **LSTM**: f,i,o=σ; candidate g=tanh; c=f⊙c_prev+i⊙g; h=o⊙tanh(c).

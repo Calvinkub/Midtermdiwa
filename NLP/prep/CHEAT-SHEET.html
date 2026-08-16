@@ -241,8 +241,8 @@
       <span class="f fb">KV bytes = 2·precision·n_layers·d_model·n_ctx·B</span>
       <p style="margin:.4mm 0">(×2 = K and V). Lab form: <span class="f">2·B·seq·n_kv_heads·head_dim·n_layers·bytes</span>.</p>
       <div class="ex"><b>Ex (lab).</b> B=4, seq=2048, head_dim=128, layers=32, FP16(2B):<br>
-      MHA 32 heads → 2·4·2048·32·128·32·2 /1024² = <b>8192 MB</b>.<br>
-      GQA 8 heads → <b>2048 MB</b> (4× smaller cache).</div>
+      MHA 32 heads → 2·4·2048·32·128·32·2 /1024² = <b>4096 MB</b>.<br>
+      GQA 8 heads → <b>1024 MB</b> (4× smaller cache).</div>
     </section>
     <section>
       <h2><span class="n">W5 ·</span> VRAM Planning</h2>

@@ -658,11 +658,11 @@ h2{ font-size:40px !important; }
       <div class="formula anim-2 sm">KV bytes = 2 · precision · n_layers · d_model · n_ctx · B&nbsp;&nbsp;&nbsp;(×2 = เก็บทั้ง K และ V)</div>
       <div class="formula anim-2 sm">แบบใน Lab:  2 · B · seq · n_kv_heads · head_dim · n_layers · bytes</div>
       <div class="worked anim-3"><div class="wl">ตัวอย่างจาก Lab (B=4, seq=2048, head_dim=128, layers=32, FP16=2B)</div>
-        <p><b>MHA</b> (32 heads) = 2·4·2048·32·128·32·2 / 1024² = <b>8192 MB</b><br>
-        <b>GQA</b> (8 heads) &nbsp;= <b>2048 MB</b> → เล็กลง <b>4 เท่า</b> (เพราะ n_kv_heads ลด 32→8)</p></div>
+        <p><b>MHA</b> (32 heads) = 2·4·2048·32·128·32·2 / 1024² = <b>4096 MB</b><br>
+        <b>GQA</b> (8 heads) &nbsp;= <b>1024 MB</b> → เล็กลง <b>4 เท่า</b> (เพราะ n_kv_heads ลด 32→8)</p></div>
       <div class="note anim-4">Static weights = params × bytes → LLaMA-7B FP16 = 7×10⁹ × 2 ≈ 14 GB</div>
     </div>
-    <script type="application/json" class="slide-notes">{"title":"KV Cache คำนวณ","script":"สูตร KV cache คือสองคูณ precision คูณจำนวนชั้น คูณ d model คูณ context คูณ batch สองมาจากเก็บทั้ง K และ V ในแล็บใช้ n kv heads คูณ head dim ตัวอย่าง MHA ได้แปดพัน GQA ได้สองพัน เล็กลงสี่เท่า","notes":["KV=2·prec·L·d·n·B","×2 = K และ V","MHA 8192MB vs GQA 2048MB","static = params×bytes (7B≈14GB)"]}</script>
+    <script type="application/json" class="slide-notes">{"title":"KV Cache คำนวณ","script":"สูตร KV cache คือสองคูณ precision คูณจำนวนชั้น คูณ d model คูณ context คูณ batch สองมาจากเก็บทั้ง K และ V ในแล็บใช้ n kv heads คูณ head dim ตัวอย่าง MHA ได้สี่พัน GQA ได้หนึ่งพัน เล็กลงสี่เท่า","notes":["KV=2·prec·L·d·n·B","×2 = K และ V","MHA 4096MB vs GQA 1024MB","static = params×bytes (7B≈14GB)"]}</script>
   </div>
 
   <!-- 30 · VRAM + top-k/top-p -->

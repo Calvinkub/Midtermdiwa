@@ -46,6 +46,7 @@ NLP/
 │   └── nlp_dl_07_lab_solution.py # RMSNorm · SwiGLU · RoPE · GQA · KV Cache
 └── prep/                     # 📌 สื่อเตรียมสอบ (เริ่มที่นี่)
     ├── SLIDES-TEACH.html         # 🖥️ สไลด์สอน 43 หน้า ครบ 7 สัปดาห์ (เปิดในเบราว์เซอร์)
+    ├── CALC-DRILLS.html          # ✏️ โจทย์คำนวณ 20 ข้อ + เฉลยทีละ step (กดเปิด/ปิดเฉลยได้)
     ├── CHEAT-SHEET.html          # ชีตสรุป A4 × 2 หน้า (พร้อมพิมพ์)
     ├── STUDY-PLAN.md            # แผนอ่านหนังสือ + drill การคำนวณ
     └── midterm-nlp-prep.skill.md # สกิลติวแบบถาม-ตอบ (active recall)
@@ -67,7 +68,11 @@ NLP/
    - ตารางอ่าน 9 ช่วง เริ่มจากหัวข้อหนัก + ข้อคำนวณก่อน
    - ตาราง "confusable pairs" คือจุดที่ข้อสอบชอบวางกับดัก "ข้อใดผิด"
 
-3. **ติวแบบถาม-ตอบ** — ใช้ [`NLP/prep/midterm-nlp-prep.skill.md`](NLP/prep/midterm-nlp-prep.skill.md)
+3. **ฝึกทำโจทย์คำนวณ** — เปิด [`NLP/prep/CALC-DRILLS.html`](NLP/prep/CALC-DRILLS.html)
+   - 20 ข้อครอบคลุมทุกสัปดาห์ · ลองทำเองก่อนแล้วกด "ดูเฉลยทีละ step"
+   - แต่ละข้อมีวิธีคิดทีละขั้น + คำตอบ + กับดักที่ต้องระวัง
+
+4. **ติวแบบถาม-ตอบ** — ใช้ [`NLP/prep/midterm-nlp-prep.skill.md`](NLP/prep/midterm-nlp-prep.skill.md)
    - ก๊อปไปไว้ที่ `~/.claude/skills/midterm-nlp-prep/SKILL.md` แล้วสั่ง Claude ติวทีละข้อ
 
 ---
