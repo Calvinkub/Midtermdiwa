@@ -1,0 +1,445 @@
+Lecture 3: Backend and REST API
+Serving an LLM app over HTTP.
+
+▶ Slides
+⤓ PDF
+Lecture 3 — Backend & REST API
+Goal of this lecture: understand why an LLM call belongs behind your own server, design a small REST API for it, model the request and response with Pydantic, and add error handling and a simple rate limit. By the end you should be able to expose a chat completion as a POST /api/chat endpoint with typed request/response schemas.
+In Lectures 1–2 you called the model directly from a Python script and learned to get structured JSON back. That is perfect for experimenting, but it is not how a real product works. A web or mobile app cannot ship your API key to every user's browser, and you want a place to validate input, enforce limits, and log what happens. That place is your backend.
+
+1. Why put the LLM behind your own backend?
+When the browser calls the model provider directly, the provider's API key has to live in the client — where anyone can open dev-tools and steal it. They could then spend your money or impersonate your app. The fix is a server you control sitting in the middle: the browser talks to your API, and only your API talks to the model.
+
+Once you own that middle layer, you get a lot more than secrecy:
+
+Hide the key. The provider key stays in a server-side environment variable and never crosses the network to the client.
+Validate. Reject empty, oversized, or malformed requests before you spend tokens on them.
+Rate-limit. Cap how often each user can call the model, so one person (or a bug) can't run up your bill or starve everyone else.
+Log & observe. Record requests and responses for debugging, evaluation (Lecture 8), and abuse detection.
+Inject context. Add the system prompt, retrieved documents (Lecture 6), or tool definitions (Lecture 10) on the server, so the client only sends the user's message.
+Swap models freely. Change gemma-4-E4B-it for something else, or route to a different provider, without shipping a new frontend.
+The course's reference app — a small FastAPI backend deployed at <https://rag-demo.nat-d.uk> (source) — is exactly such a backend: a real server that exposes a POST /api/chat endpoint and forwards chat calls to a model, with the provider key held server-side. We'll use it as a running example. Concretely, "hide the key" is real there: the key lives only in a server-side environment variable, and the browser never sees it — it just POSTs a message to /api/chat and gets a reply back. So from openai import OpenAI; OpenAI() reads its key from the server's environment, without that key ever appearing in client code or the page. The server holds it; the client only ever sees its effect.
+
+What a "server" actually is
+Until now your code ran and exited. A backend is different: a long-running process that waits, and for every incoming HTTP request sends back exactly one HTTP response. A request is just text — a method and path, some headers, and an optional JSON body:
+
+POST /api/chat HTTP/1.1
+Host: courses.nat-d.uk
+Content-Type: application/json
+
+{"message": "Hi", "temperature": 0.7}
+and the response is text too — a status line, headers, and a body:
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{"reply": "Hello!", "model": "gemma-4-E4B-it"}
+Everything in this lecture is about shaping those two messages: which verb and path you accept, what JSON body you require, and which status code you answer with. FastAPI hides the raw text, but it's worth seeing once — the browser in Lecture 4 sends exactly this.
+
+A note on CORS: when a frontend is served from a different origin than the API, the browser blocks the call unless the API explicitly allows that origin. This app dodges it entirely — FastAPI serves the built SPA and the API from the same origin (and Vite proxies /api in dev), so there's nothing to configure. You'd add CORS only if you hosted the frontend separately.
+2. REST in 90 seconds
+A REST API exposes resources (things) at URLs, and uses the HTTP verb to say what to do with one. The verbs you'll use most:
+
+Verb	Meaning	Side effects?
+GET	Read a resource	No — safe to repeat/cache
+POST	Create something, or run an action	Yes
+PUT / PATCH	Replace / partially update	Yes
+DELETE	Remove a resource	Yes
+A chat completion does work — it spends tokens and produces a new reply — so it is a POST, not a GET. As a rule, anything with a side effect or a request body is a POST.
+
+The server answers with a status code that tells the client what happened:
+
+2xx — success. 200 OK (here's your data), 201 Created.
+4xx — the client's fault. 400 Bad Request, 401 Unauthorized, 404 Not Found, 422 Unprocessable Entity (well-formed JSON but invalid fields), 429 Too Many Requests.
+5xx — the server's fault. 500 Internal Server Error, 502 Bad Gateway, 504 Gateway Timeout (an upstream like the model failed).
+Picking honest status codes is half of good API design: the client can branch on them ("show a 'slow down' toast on 429, a validation error on 422").
+
+3. Modelling requests and responses with Pydantic
+Your API is a contract. The cleanest way to write that contract in FastAPI is a pair of Pydantic models: one for the request body, one for the response. FastAPI parses the incoming JSON into the request model and rejects anything that doesn't fit with a 422 — before a line of your handler runs.
+
+from pydantic import BaseModel, Field
+
+
+class ChatRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=2000)
+    temperature: float = Field(default=0.7, ge=0.0, le=2.0)
+
+
+class ChatResponse(BaseModel):
+    reply: str
+    model: str
+ChatRequest says: "the body must have a non-empty message of at most 2000 characters, and an optional temperature between 0 and 2." A 3000-character message or a missing message is now a clean, automatic 422 with a precise error pointing at the bad field — you never wrote that check yourself. ChatResponse documents and validates what you send back.
+
+This is the same idea as the structured-output schemas from Lecture 2, applied to the edge of your service instead of to the model's output.
+
+Seeing the 422 before FastAPI
+You don't need a running server to see what FastAPI does on a bad body. Pydantic is installed in the sandbox, so you can validate the exact same model by hand. A good body parses; a bad one raises a ValidationError, and e.errors() is a list of precise, per-field problems:
+
+from pydantic import BaseModel, Field, ValidationError
+
+
+class ChatRequest(BaseModel):
+    message: str = Field(min_length=1)
+    temperature: float = Field(0.7, ge=0, le=2)
+
+
+good = ChatRequest.model_validate({"message": "Hello!", "temperature": 0.7})
+print("OK  ->", good)
+
+try:
+    ChatRequest.model_validate({"message": "", "temperature": 9})
+except ValidationError as e:
+    print("422 ->", e.errors())
+The bad request prints two errors — one for the empty message (type: "string_too_short") and one for the out-of-range temperature (type: "less_than_equal"). FastAPI turns exactly this ValidationError into the 422 response body the client receives. So the JSON your frontend sees on a 422 looks like this — a detail field holding a list of per-field errors:
+
+{"detail": [
+  {"loc": ["body", "message"], "msg": "String should have at least 1 character",
+   "type": "string_too_short"},
+  {"loc": ["body", "temperature"], "msg": "Input should be less than or equal to 2",
+   "type": "less_than_equal"}
+]}
+(The real response also carries an input field per error showing the offending value; trimmed here for brevity.)
+
+Every error you raise yourself with HTTPException(status_code, detail="...") uses the same detail field, but with a plain string instead of a list:
+
+{"detail": "upstream error"}
+Knowing this shape matters: in Lecture 4 the frontend will read detail to decide what to show the user — a per-field form error for a list, a toast for a string.
+
+4. The FastAPI handler
+With the schemas in place, the handler is small. It declares the verb and path, takes the typed body, and returns the typed response:
+
+from fastapi import APIRouter, Depends, HTTPException
+# User, current_user come from this app's security layer (kmitl.security.deps)
+
+router = APIRouter(prefix="/api")
+MODEL = "gemma-4-E4B-it"
+
+
+@router.post("/chat", response_model=ChatResponse)
+async def chat(req: ChatRequest, user: User = Depends(current_user)) -> ChatResponse:
+    if not await rate_limiter.allow(user.id):
+        raise HTTPException(status_code=429, detail="Too many requests")
+    reply = await chat_service.complete(req.message, req.temperature)
+    return ChatResponse(reply=reply, model=MODEL)
+A few things to notice:
+
+@router.post("/chat", ...) binds the verb and path in one place.
+req: ChatRequest is all it takes for FastAPI to parse and validate the JSON body. response_model=ChatResponse validates and documents the output.
+Depends(current_user) pulls the logged-in user from the session cookie, so we know who is calling — needed for per-user rate limiting and logging.
+The handler raises HTTPException to produce error responses; FastAPI turns them into the right status code and JSON.
+This snippet is pseudo-real, not copy-paste runnable. User and current_user come from this app's security layer (kmitl.security.deps.current_user); chat_service and rate_limiter are objects you'd inject (construct once at startup and pass in). The shape is exactly what the real code looks like, but it leans on wiring defined elsewhere — so to experiment with the logic, use the sandbox-safe simulation in §6.
+The handler does almost no work itself. The actual logic — building the message list, calling the model — lives in chat_service. That separation is the next point. (A real chat endpoint usually goes one step further and streams tokens back as they're generated rather than returning one final JSON blob — that's Lecture 4.)
+
+5. House style: router → service → repository
+This course's backend (and the code you write for the homeworks) follows a three-layer shape. Keeping to it makes code easy to test and to reason about:
+
+router — HTTP only. Path, verb, status codes, auth dependency, and mapping errors to responses. No business logic.
+service — the business logic. Build the messages, call the LLM client, enforce the rate limit, log the call. This is the "fat middle."
+repository — pure data access (the database). One class per aggregate, no business logic.
+A first /api/chat may not need a repository at all. But the moment you want to persist conversation history — so a returning user sees their past turns — that read/write belongs in a repository, the service orchestrates it, and the router still just speaks HTTP. The payoff: you can unit-test the service (the interesting part) by calling a plain async function, with no HTTP server and no FastAPI in the test.
+
+# service layer — testable without HTTP
+from openai import AsyncOpenAI
+
+class ChatService:
+    def __init__(self, client: AsyncOpenAI):
+        self._client = client
+
+    async def complete(self, message: str, temperature: float) -> str:
+        resp = await self._client.chat.completions.create(
+            model="gemma-4-E4B-it",
+            temperature=temperature,
+            messages=[
+                {"role": "system", "content": "You are a helpful, terse assistant."},
+                {"role": "user", "content": message},
+            ],
+        )
+        return resp.choices[0].message.content
+Why AsyncOpenAI and await? The handler is async, so it runs on the event loop that serves every request. A blocking call there — like the sync OpenAI client, which waits seconds for the model — would freeze all other requests until it returns. Use the async client and await it (or wrap a sync call in asyncio.to_thread) so the loop stays free while the model thinks. This is what "async everywhere" buys you.
+The repository layer, with an ORM
+The service above has no database yet. The moment you persist conversation history, that read/write belongs in the repository — pure data access, no business logic. The repository is usually built on an ORM (Object-Relational Mapper), which turns table rows into typed Python objects and lets you compose queries instead of hand-writing SQL strings. With SQLAlchemy 2.x that looks like:
+
+# data layer — display-only (SQLAlchemy is not in the in-browser sandbox)
+from datetime import datetime
+
+from sqlalchemy import String, func, select
+from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+class Conversation(Base):                 # one row = one stored chat turn
+    __tablename__ = "conversations"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[str] = mapped_column(String(64), index=True)
+    message: Mapped[str]
+    reply: Mapped[str]
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+class ConversationRepository:             # pure data access — NO business logic
+    def __init__(self, session: Session):
+        self._session = session
+
+    def add(self, user_id: str, message: str, reply: str) -> Conversation:
+        turn = Conversation(user_id=user_id, message=message, reply=reply)
+        self._session.add(turn)
+        self._session.flush()
+        return turn
+
+    def recent(self, user_id: str, limit: int = 5) -> list[Conversation]:
+        stmt = (
+            select(Conversation)
+            .where(Conversation.user_id == user_id)
+            .order_by(Conversation.id.desc())
+            .limit(limit)
+        )
+        return list(self._session.scalars(stmt))
+Three things to read off this:
+
+*The repository is the only code that touches the database.* The service calls repo.add(...) / repo.recent(...); the router never sees a query. One class per aggregate (here, Conversation), each method a single read or write.
+The ORM gives you typed rows and composable queries. Conversation columns are Mapped[...], so turn.reply is a real typed attribute, and select(...) builds a query you can .where(...).order_by(...).limit(...) — no SQL strings.
+The table this maps to is exactly what a migration creates. The conversations table with these columns is what Alembic's op.create_table(...) owns — the migration section later in this lecture creates this very table.
+Runnable in the reference app: examples/orm_repository.py (this model + repository over in-memory SQLite) and examples/layering.py (the same repository wired under a service and router, with the service unit-tested by a plain call).
+
+6. Simulating the handler (sandbox-safe)
+You can't run FastAPI inside the in-browser sandbox, but you can see the whole shape of the handler with a plain function: take a request dict, validate it, call the chat API, and return a response dict. This is exactly what the FastAPI handler does, minus the framework plumbing.
+
+from openai import OpenAI
+
+client = OpenAI()
+MODEL = "gemma-4-E4B-it"
+
+
+def chat_endpoint(request: dict) -> dict:
+    # 1. Validate (Pydantic does this for you in real FastAPI).
+    msg = request.get("message")
+    if not isinstance(msg, str) or not msg.strip():
+        return {"status": 422, "error": "message is required"}
+    if len(msg) > 2000:
+        return {"status": 422, "error": "message too long"}
+
+    # 2. Call the model — the service's job. Hide failures behind 502.
+    try:
+        resp = client.chat.completions.create(
+            model=MODEL,
+            temperature=request.get("temperature", 0.7),
+            messages=[
+                {"role": "system", "content": "You are a helpful, terse assistant."},
+                {"role": "user", "content": msg},
+            ],
+        )
+    except Exception as e:
+        return {"status": 502, "error": f"upstream model error: {e}"}
+
+    # 3. Shape the response (ChatResponse).
+    return {"status": 200, "reply": resp.choices[0].message.content, "model": MODEL}
+
+
+print(chat_endpoint({"message": "Why hide the API key on the server?"}))
+print(chat_endpoint({"message": "   "}))  # -> 422
+Run it: the good request returns a 200 with a reply; the empty one returns a 422. Map status to a real HTTP status and request: dict to a ChatRequest, and you have the FastAPI handler from §4.
+
+7. Errors are part of the API
+Failures are not exceptional — they are a normal part of the contract. Two rules:
+
+Map each failure to a status code the client can act on.
+Log the detail server-side; return a safe, generic message to the client. Never leak a stack trace or — worst of all — the API key.
+if not req.message.strip():
+    raise HTTPException(status_code=422, detail="message is required")
+try:
+    reply = await call_model(req)
+except httpx.TimeoutException:
+    raise HTTPException(status_code=504, detail="model timed out")
+except Exception:
+    log.exception("chat failed")                       # full detail in YOUR logs
+    raise HTTPException(status_code=502, detail="upstream error")  # vague to client
+The client sees "upstream error"; you see the full traceback in your logs. That asymmetry is deliberate — it's good security and good debugging.
+
+8. A simple token-bucket rate limit
+A token bucket is the standard way to cap request rate. Each user has a bucket that holds up to cap tokens and refills at a steady rate per second. Every request spends one token; if the bucket is empty, you reject with 429.
+
+import time
+from dataclasses import dataclass
+
+
+@dataclass
+class Bucket:
+    tokens: float
+    last: float
+
+
+def allow(bucket: Bucket, rate: float = 0.5, cap: float = 30) -> bool:
+    now = time.monotonic()
+    # refill for the elapsed time, capped
+    bucket.tokens = min(cap, bucket.tokens + (now - bucket.last) * rate)
+    bucket.last = now
+    if bucket.tokens >= 1:
+        bucket.tokens -= 1
+        return True
+    return False  # -> 429 Too Many Requests
+With rate=0.5 and cap=30 this allows 30 requests per minute per user, with short bursts up to 30. An in-process token bucket keyed by user id like this is the standard approach: it is simple and correct for a single server. If you run multiple replicas, move the buckets to a shared store like Redis so the limit is global rather than per-process.
+
+When you reject with a 429, be kind to the client: also send a Retry-After header saying how many seconds to wait before trying again. With this bucket the wait until the next token is (1 - bucket.tokens) / rate seconds. The frontend can read that header and time its "slow down — try again in N seconds" toast instead of hammering the endpoint:
+
+raise HTTPException(
+    status_code=429,
+    detail="slow down",
+    headers={"Retry-After": str(retry_seconds)},
+)
+A note on idempotency
+A GET can be retried freely — it has no side effects. A POST /api/chat is different: each call spends tokens and costs money, so blindly retrying a request whose response got lost on the network can double-charge you and double-run the model. The standard fix is an idempotency key: the client sends a unique id with the request, the server remembers the result for that id, and a retry with the same key returns the stored result instead of calling the model again. Stripe's write-up below is the canonical treatment.
+
+9. Testing your LLM endpoint
+Section 5 promised that the router → service → repository split makes your code testable. Here's the payoff — plus the one twist that LLM code adds.
+
+The twist: the model is non-deterministic. You cannot write assert reply == "The total is 96 baht." — ask the same question twice and the wording changes. So you split the problem in two:
+
+The scaffolding is deterministic — message assembly, validation, error mapping (422/502), the rate limiter, response shaping. This you unit-test normally, with the model mocked at the boundary so no network is involved.
+The model's answer quality is non-deterministic — judged separately by an eval harness (Lecture 8), not a unit test.
+Unit test: mock the model, test the scaffolding
+Because ChatService takes its client by injection (§5), a test can pass a fake client that returns a canned reply — no real call, no network, instant and repeatable:
+
+# test_chat_service.py  (display-only — pytest isn't in the class sandbox)
+from types import SimpleNamespace
+import pytest
+
+
+class FakeChatClient:
+    """Stand-in for AsyncOpenAI: .chat.completions.create returns a canned reply."""
+    def __init__(self, reply):
+        self.reply = reply
+        self.seen = None
+        self.chat = SimpleNamespace(completions=self)
+
+    async def create(self, **kwargs):
+        self.seen = kwargs                       # record the call for assertions
+        message = SimpleNamespace(content=self.reply)
+        return SimpleNamespace(choices=[SimpleNamespace(message=message)])
+
+
+@pytest.mark.asyncio
+async def test_complete_builds_the_right_messages():
+    fake = FakeChatClient("Paris is the capital of France.")
+    svc = ChatService(fake)
+    reply = await svc.complete("Capital of France?", temperature=0)
+    # assert on the SCAFFOLDING, not on the model's exact words:
+    assert [m["role"] for m in fake.seen["messages"]] == ["system", "user"]
+    assert fake.seen["temperature"] == 0         # we passed the knob through
+    assert "Paris" in reply                       # a PROPERTY of the output, not ==
+Notice the assertions: we check the messages we built and that the reply contains an expected token — never that it equals an exact string. Asserting properties (contains, is-valid-JSON, has-the-required-fields) is how you test non-deterministic output.
+
+End-to-end test: drive the real route, mock only the model
+A unit test skips HTTP. An e2e test exercises the whole route — routing, Pydantic validation, status codes, response shape — by calling the app in process with httpx's AsyncClient over an ASGI transport. No live server, no port, no network; the LLM is still mocked via FastAPI's dependency override:
+
+# test_chat_route.py  (display-only)
+import httpx
+import pytest
+from myapp.main import app
+from myapp.deps import get_chat_service
+
+app.dependency_overrides[get_chat_service] = lambda: ChatService(FakeChatClient("hi there"))
+
+
+@pytest.mark.asyncio
+async def test_chat_route_happy_path():
+    transport = httpx.ASGITransport(app=app)            # in-process, no network
+    async with httpx.AsyncClient(transport=transport, base_url="http://t") as ac:
+        r = await ac.post("/api/chat", json={"message": "hello"})
+    assert r.status_code == 200
+    assert r.json()["reply"] == "hi there"              # the mock makes this exact
+
+
+@pytest.mark.asyncio
+async def test_chat_route_rejects_empty():
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://t") as ac:
+        r = await ac.post("/api/chat", json={"message": "   "})
+    assert r.status_code == 422                          # Pydantic/handler rejects it
+This is exactly how the reference app is tested — see its tests/test_e2e.py: an in-process httpx.AsyncClient over an ASGITransport pointed at the FastAPI app, with the LLM swapped for a fake so the route runs fast and deterministically. No live server, no port, no network.
+
+Three tools, three questions
+Test	Question it answers	Model
+Unit	Does my scaffolding logic work? (messages, validation, errors)	mocked
+e2e	Does the whole route wire up? (status codes, response shape)	mocked
+Eval (L8)	Is the model's answer actually good?	real
+Don't reach for an eval when a unit test fits, and don't unit-test the model's prose. Mock the model in unit/e2e tests; save the real model for evals.
+
+Runnable: stub the model, assert the scaffolding
+pytest isn't in the sandbox, but the idea runs in plain Python — a stub instead of the model, and assert instead of a test framework:
+
+def build_messages(system, user):            # the deterministic scaffolding
+    return [{"role": "system", "content": system},
+            {"role": "user", "content": user}]
+
+def fake_model(messages):                     # stub: no network, fixed reply
+    return "The total is 96 baht."
+
+def handle(system, user):
+    msgs = build_messages(system, user)
+    reply = fake_model(msgs)                   # in prod: client.chat.completions.create(...)
+    return {"messages": msgs, "reply": reply}
+
+out = handle("You are terse.", "Sum 90 and 6 in baht.")
+# assert PROPERTIES, never the model's exact words:
+assert [m["role"] for m in out["messages"]] == ["system", "user"]
+assert "96" in out["reply"]
+print("all assertions passed")
+Swap fake_model for a real client.chat.completions.create(...) and the scaffolding is unchanged — which is the whole point of mocking at the boundary.
+
+Key terms
+REST — an architectural style: resources at URLs, manipulated with HTTP verbs.
+Verb / method — GET, POST, PUT, PATCH, DELETE; says what to do.
+Status code — the numeric result: 2xx ok, 4xx client error, 5xx server error.
+Pydantic model / schema — a typed class that validates and documents a request or response body.
+Handler / router — the function bound to a verb + path; the HTTP edge.
+Service layer — where business logic lives, independent of HTTP.
+Rate limit / token bucket — capping request rate per user to control cost and abuse; the bucket refills over time and each call spends a token.
+Unit test — exercises one function/service in isolation with the model mocked; asserts on the deterministic scaffolding (messages, validation, errors).
+End-to-end (e2e) test — drives the whole HTTP route in-process (httpx AsyncClient), model still mocked; checks status codes and response shape.
+Mock / stub — a fake stand-in for the model client that returns a canned reply, so tests run fast, offline, and repeatably.
+Eval vs. test — an eval judges the real model's answer quality (Lecture 8); a test checks your deterministic code with the model mocked.
+Practice
+Run the §6 chat_endpoint simulation. Add a check that rejects a temperature outside 0.0–2.0 with a 422, mirroring the Pydantic Field constraints.
+Add an in-memory Bucket per "user id" (use a dict) to the simulation and reject the 4th call within a tight loop with a 429.
+Sketch the real FastAPI version on paper: the ChatRequest/ChatResponse schemas, the @router.post("/chat") handler, and a ChatService.complete method. Identify which line would live in which layer.
+Run the §9 "stub the model, assert the scaffolding" snippet. Then break it: make build_messages put the user turn first and watch the role assertion fail — that failure is the test doing its job. Add a property assertion that the system prompt is non-empty.
+Start HW2 — Backend & a streaming chat UI: design the POST /api/chat endpoint that wraps your chat logic — what's in the request body, what's in the response, and which status codes can it return? You'll connect a browser to this endpoint in Lecture 4.
+Further reading
+MDN — HTTP request methods and HTTP response status codes
+FastAPI — Request body and Handling errors
+Pydantic — Models
+Stripe — Designing robust and predictable APIs with idempotency
+pytest — Getting started and Monkeypatching / mocking
+FastAPI — Testing and Testing dependencies with overrides
+Database migrations with Alembic
+The moment your backend has a database — conversation history (§5), users, or a vector store for retrieval (Lecture 6) — its schema has to change over time: you add a column, a table, an index. A quick demo can get away with a CREATE TABLE IF NOT EXISTS run once at startup, but that doesn't evolve a table that already holds data, and it leaves you hand-editing production tables through a psql prompt — unreviewed, unordered, and impossible to undo cleanly.
+
+A migration is the disciplined alternative. Each schema change is a small, versioned, ordered, reversible script. Alembic (the migration tool for SQLAlchemy) keeps these scripts in alembic/versions/, each one chained to the one before it, and records in the database which revisions have already run. So every environment — your laptop, staging, production — converges to the same schema by replaying the same ordered list.
+
+The workflow is three commands. You generate a revision, fill in its two functions, then apply it:
+
+alembic revision -m "add conversations table"   # create an empty revision
+alembic upgrade head                             # apply everything up to latest
+alembic downgrade -1                             # roll back the last one
+upgrade() makes the change; downgrade() undoes it, so a bad migration can be reversed instead of debugged in production:
+
+def upgrade() -> None:
+    op.create_table(
+        "conversations",
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("user_id", sa.Integer, sa.ForeignKey("users.id")),
+        sa.Column("message", sa.Text, nullable=False),
+    )
+
+def downgrade() -> None:
+    op.drop_table("conversations")
+This isn't hypothetical — the reference app runs on it. Its migrations live in alembic/versions/, and the workflow is the same one any real backend uses: a schema change is a reviewed revision, and alembic upgrade head brings every environment — your laptop, staging, production — to the same schema in lockstep with the code that expects it.
+
+Concretely, the reference app uses this for its Postgres + pgvector path. Its alembic/versions/0001_create_chunks.py creates the chunks table with a vector(1024) column for embeddings. To run it, docker compose up -d brings up Postgres + pgvector (on host port 55432, deliberately not the default 5432 so it can't clash with a local Postgres), then uv sync --group pg, set DATABASE_URL, and alembic upgrade head. Its app/vectorstore.py switches between SQLite and Postgres purely by whether DATABASE_URL is set — the same code, two backends, one migrated schema.
+
+Reference app
+Study the reference app: the POST /api/chat endpoint that wraps a chat call — read app/main.py at tag l03-chat. It mirrors §9's request/response schemas and the thin service layer above the model call. Try it live: <https://rag-demo.nat-d.uk>. It's a reference to learn from, not a homework answer.

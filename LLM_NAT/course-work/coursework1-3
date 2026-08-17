@@ -1,0 +1,960 @@
+HW1 — Prompting & structured output
+Lectures 1–2: call the chat API, control sampling, and get strict schema-valid JSON. · 125 points
+
+HW1 — Prompting & Structured Output
+Covers: Lectures 1–2 — prompt engineering (chat roles, temperature/top_p sampling, zero/few-shot, chain-of-thought, streaming) and structured output (JSON mode / response schemas, Pydantic & function-calling schemas, validation & repair).
+
+Goal
+By the end of this homework you can do the two things every LLM app depends on: get the model to say what you want, and turn its reply into data your code can trust. You'll reason about sampling settings, write the two stdlib helpers that make a "prompt + validate + repair" pipeline survive a real (imperfect) model, and design a prompt that holds up under iteration.
+
+Everything here builds toward the same pattern you'll reuse for the rest of the course: a chat call whose output is parsed into a typed object before the rest of your program touches it. Remember the course caveat — our class proxy ignores response_format (both json_object and json_schema), so you cannot lean on provider JSON mode. The robust path is to prompt precisely, then parse defensively.
+
+What to do
+You'll answer four questions. Two are short reasoning/design tasks; two ask you to write small, pure-Python (stdlib-only) helpers that are auto-graded by running them against hidden tests. These helpers are exactly the ones from Lecture 2's extract_json / repair-loop discussion — no openai call, no network, just string and json work.
+
+In the in-browser sandbox the class proxy is preconfigured (OPENAI_API_KEY and OPENAI_BASE_URL are already set; model id gemma-4-E4B-it). You don't need the proxy to pass the Python questions — they're deterministic — but you should be running chat calls while you reason about Q1 and Q4. A typical call looks like:
+
+from openai import OpenAI
+
+client = OpenAI()
+resp = client.chat.completions.create(
+    model="gemma-4-E4B-it",
+    temperature=0,                       # repeatable: right for extraction
+    messages=[
+        {"role": "system", "content": "Reply with ONLY a JSON object, no markdown."},
+        {"role": "user", "content": "2 mangoes at 45 baht each"},
+    ],
+)
+print(resp.choices[0].message.content)   # now parse this with your helpers
+(The brief's code is illustrative — only your submitted Python functions are run.)
+
+Deliverables / how it's graded
+Q1 (MCQ, 20 pts): Pick the sampling configuration for a task that must return the same structured result every time. This checks you understand what temperature does and why deterministic extraction wants temperature=0.
+Q2 (Python, 30 pts): Implement extract_json(text) — return, as a string, the first JSON object embedded in text. It must strip a leading ``` `json `` / `` ` `` fence, drop any surrounding prose, and return the substring from the first { to the last }. Auto-graded: the returned string must json.loads` to the expected object. This is the single most common real failure on our proxy (the model wraps JSON in a fence), so it's the helper you'll reuse most.
+Q3 (Python, 30 pts): Implement repair_json(text) — strip fences, remove a trailing comma before a closing } or ] (the classic malformation), parse, and return the resulting dict. If it still can't be parsed, return None. This is the parse half of the repair loop made local and testable.
+Q4 (Short, 20 pts): Design a few-shot or chain-of-thought prompt for a task of your choice (e.g. classify support tickets, or solve a word problem). Paste the full messages list and 2–3 sentences explaining why your choice of pattern, role placement, and temperature fits the task.
+Q5 (Python, 25 pts): Implement classify_sentiment(text) — your first task that calls the model: a temperature=0 chat completion returning exactly POSITIVE, NEGATIVE, or NEUTRAL. Pin the format with a system instruction + a couple of few-shot examples, then normalise the reply. Auto-graded against the live proxy (it makes real model calls, unlike Q2/Q3).
+Total: 125 points.
+
+Tips
+Sampling: if you ever need the same answer twice, temperature=0. Tune top_p or temperature, never both.
+extract_json: text.find("{") and text.rfind("}") bracket the object; slice inclusively (end + 1). Strip the fence before you look for braces.
+repair_json: a tiny regex like re.sub(r",\s*([}\]])", r"\1", t) kills the trailing comma in objects and arrays. Wrap json.loads in try/except (json.JSONDecodeError, ValueError) and return None on failure — don't let it raise.
+Few-shot vs CoT: few-shot pins the output format (show, don't tell); CoT buys reasoning room on multi-step problems. Put persona/format rules in the system message.
+Test locally in the sandbox before submitting — paste a fenced reply with a trailing comma and confirm both helpers behave. Keep extract_json / repair_json stdlib-only; no openai, no network, no randomness.
+classify_sentiment is the exception — it must call the model. Run it at temperature=0, show two or three few-shot label examples in the prompt, and map the reply to the bare label (e.g. uppercase it and check which of the three words it contains). The clearer your prompt, the more reliably clear-cut inputs land on the right label.
+1. · 20 pts
+You are extracting a structured order (item, qty, price) from a customer message and need the same JSON for the same input every time. Which sampling configuration is the right default?
+
+temperature=0 (and don't also tune top_p) — the most repeatable setting for extraction
+temperature=1.0 so the model considers more possibilities and is more accurate
+temperature=0.7 with top_p=0.9 together, to balance creativity and consistency
+It doesn't matter — response_format={"type": "json_object"} guarantees identical output on our class proxy
+✓ answer recorded
+2. · 30 pts
+Implement extract_json(text). Return, as a string, the first JSON object embedded in text. Strip a leading ``` `json `` or `` ` `` markdown fence and any surrounding prose, then return the substring from the first { to the last } (inclusive). The returned string must parse with json.loads. Pure-Python / stdlib only — no openai`, no network.
+
+Write your solution, run it to test, then submit.
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+import json
+import re
+
+def extract_json(text):
+    # Remove markdown code fences
+    text = re.sub(r"```(?:json)?\s*", "", text, flags=re.IGNORECASE)
+    text = text.replace("```", "")
+
+    # Find the first JSON object
+    start = text.find("{")
+    if start == -1:
+        raise ValueError("No JSON object found")
+
+    obj, end = json.JSONDecoder().raw_decode(text[start:])
+    return text[start:start + end]
+
+
+# Tests
+tests = [
+    'Here is the result:\n```json\n{"a":1,"b":2}\n```\nThanks!',
+    '```{"x":[1,2,3],"y":{"z":4}}```',
+    'Random text {"name":"Alice","age":30} more text',
+]
+
+for t in tests:
+    s = extract_json(t)
+    print(s)
+    print(json.loads(s))
+Run ▶
+Clear output
+⌘/Ctrl + Enter to run
+Resubmit
+✓ answer recorded
+3. · 30 pts
+Implement repair_json(text). Strip any markdown fence, remove a trailing comma that sits before a closing } or ] (the classic malformation), then json.loads the result and return the parsed dict. If it still can't be parsed, return None (don't raise). Pure-Python / stdlib only — json and re are available.
+
+Write your solution, run it to test, then submit.
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+import json
+import re
+
+
+def repair_json(text):
+    # 1) Strip markdown code fence
+    text = re.sub(r"^```(?:json)?\s*", "", text.strip(), flags=re.IGNORECASE)
+    text = re.sub(r"\s*```$", "", text)
+
+    # 2) Remove trailing commas before } or ]
+    text = re.sub(r",\s*([}\]])", r"\1", text)
+
+    # 3) Parse safely
+    try:
+        result = json.loads(text)
+        return result if isinstance(result, dict) else None
+    except (json.JSONDecodeError, TypeError):
+        return None
+Run ▶
+Clear output
+⌘/Ctrl + Enter to run
+· 477 ms, exit 0
+(no output)
+Resubmit
+✓ answer recorded
+4. · 20 pts
+Design a few-shot or chain-of-thought prompt for a task of your choice (e.g. classify support tickets into BILLING/TECHNICAL/OTHER, or solve a word problem). Paste the full messages list (the system/user/assistant turns you'd send to gemma-4-E4B-it) and add 2–3 sentences explaining why your choice of pattern, role placement, and temperature fits the task.
+
+### Task: Classify Support Tickets
+
+```python
+messages = [
+    {
+        "role": "system",
+        "content": (
+            "You are a customer support ticket classifier. "
+            "Classify each ticket into exactly one category: "
+            "BILLING, TECHNICAL, or OTHER. "
+            "Return only the category name, with no explanation."
+        )
+    },
+    {
+        "role": "user",
+        "content": "My credit card was charged twice for the same subscription."
+    },
+    {
+        "role": "assistant",
+        "content": "BILLING"
+    },
+    {
+        "role": "user",
+        "content": "The app keeps crashing whenever I try to upload a photo."
+    },
+    {
+        "role": "assistant",
+        "content": "TECHNICAL"
+    },
+    {
+        "role": "user",
+        "content": "I would like to change the name displayed on my account."
+    },
+    {
+        "role": "assistant",
+        "content": "OTHER"
+    },
+    {
+        "role": "user",
+        "content": "I was charged for a plan even though I cancelled my subscription yesterday."
+    }
+]
+```
+
+**Expected output:** `BILLING`
+
+I chose a **few-shot prompt** because classification is a structured task where showing several examples helps the model learn the intended category boundaries without needing a long chain-of-thought. The system message establishes the rules, while the user/assistant examples demonstrate the exact input-output format; I would use a **low temperature (e.g. 0.1)** because deterministic and consistent classification is more important than creative variation.
+
+Resubmit
+1557 / 2000
+✓ answer recorded
+5. · 25 pts
+Implement classify_sentiment(text) — your first graded task that actually calls the model (the others here are offline). Make a chat completion against the class proxy (from openai import OpenAI; OpenAI(), model gemma-4-E4B-it, temperature=0) that classifies text as exactly one of POSITIVE, NEGATIVE, or NEUTRAL, and return that label — uppercase, nothing else.
+
+This is Lecture 1's two skills at once: making a chat completion and designing the prompt so the output is reliably parseable. Pin the format with a system instruction and a couple of few-shot examples, run at temperature=0, and normalise the reply to one of the three labels (the model may add a period or a stray word). The grader runs your function against the live proxy, so keep the prompt tight enough that clear-cut inputs always land on the right label.
+
+Write your solution, run it to test, then submit.
+
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+from openai import OpenAI
+            "role": "assistant",
+            "content": "POSITIVE",
+        },
+        {
+            "role": "user",
+            "content": "This is terrible and I hate it.",
+        },
+        {
+            "role": "assistant",
+            "content": "NEGATIVE",
+        },
+        {
+            "role": "user",
+            "content": "The package arrived today.",
+        },
+        {
+            "role": "assistant",
+            "content": "NEUTRAL",
+        },
+        {
+            "role": "user",
+            "content": text,
+        },
+    ]
+
+    response = client.chat.completions.create(
+        model="gemma-4-E4B-it",
+        messages=messages,
+        temperature=0,
+    )
+
+    reply = response.choices[0].message.content.strip().upper()
+
+    for label in ("POSITIVE", "NEGATIVE", "NEUTRAL"):
+        if label in reply:
+            return label
+
+    # Fallback for unexpected model output
+    return "NEUTRAL"
+
+print(classify_sentiment("I had a wonderful experience!"))
+print(classify_sentiment("The service was awful."))
+print(classify_sentiment("The store closes at 8 PM."))
+
+#POSITIVE
+#NEGATIVE
+#NEUTRAL
+Run ▶
+Clear output
+⌘/Ctrl + Enter to run
+Resubmit
+
+HW2 — A streaming LLM backend & UI
+Lectures 3–4: expose an LLM over a REST endpoint and stream tokens to the browser with SSE. · 150 points
+
+HW2 — Backend & a streaming chat UI
+Covers: Lectures 3–4 — backend & REST (FastAPI handlers, Pydantic request/response models, auth/errors/rate limiting) and frontend reactivity + Server-Sent Events (calling your API from the browser, streaming tokens with SSE).
+
+Goal
+In HW1 you called the model from a script. Now you put it behind your own server and stream its reply to a browser. You'll design a POST /api/chat endpoint with typed request/response models, decide which HTTP status codes it returns, and then make the answer type itself out token by token using Server-Sent Events instead of arriving in one slow lump. Finally, you'll deploy that server to a free host so it answers at a real public URL — the point where "a backend is a long-running process" stops being a diagram.
+
+This homework leans on two small, deterministic helpers that sit at the heart of that pipeline — one that assembles the messages list the server sends to the proxy, and one that parses the SSE frames the client reads back. Get those right and the rest is plumbing you already saw in lecture.
+
+The class proxy is preset in the sandbox: from openai import OpenAI with OPENAI_API_KEY / OPENAI_BASE_URL already in the environment, model gemma-4-E4B-it. The graded Python tasks, though, are pure stdlib — no network, no model calls — so they run fast and deterministically.
+
+What to do
+Pick the transport (Q1). Revisit Lecture 4 §4: plain fetch vs SSE vs WebSockets. Be clear on why a one-way token stream over plain HTTP points to SSE, and what Content-Type an SSE response carries.
+Build the server-side message list (Q2). Implement build_messages(history, user_msg, system_prompt). This is the part of the service layer that turns a conversation history into the exact messages array passed to client.chat.completions.create(...). Order matters: a single system message, then each past turn as a user then assistant pair, then the new user message last.
+Parse the SSE stream (Q3). Implement parse_sse(chunk), the client-side logic from Lecture 4 §7: split a block of text/event-stream text on the blank-line frame separator, strip the data: prefix (and one leading space), join multi-line events with \n, stop at the [DONE] sentinel, and skip comment / keep-alive events that carry no data: line.
+Design the endpoint (Q4). Write up the streaming POST /api/chat you'd build with these helpers: the Pydantic request body, the StreamingResponse over an async generator that yields data: <token>\n\n frames, the failure cases and their status codes, and why SSE beats WebSockets here.
+Deploy it (Render) (Q6–Q7). Put a working POST /api/chat backend on a public URL so it's a real running server, not just a sandbox sketch. The Deploy to Render guide walks through every step — running the server locally, pushing to GitHub, deploying on Render, and testing it with Yaak. The essentials: the environment) and a static/index.html — a text box + Send button that fetches /api/chat. Serve the page from the app so it's the same origin as the API (no CORS needed — that's your Lecture 4 browser client). uvicorn[standard], openai, pydantic). Never commit your .env. Start Command: uvicorn main:app --host 0.0.0.0 --port $PORT (bind Render's injected $PORT, not a hard-coded 8000). Set OPENAI_API_KEY and OPENAI_BASE_URL — from Profile → API key — as Environment variables, not in code. That's the "hide the key on the server" rule from Lecture 3 §1, now for real. the API directly with Yaak or curl. (Free tier sleeps after ~15 min idle, so the first request cold-starts for ~1 min — that's normal.)
+Build a tiny app: a main.py with your POST /api/chat (reads the key from
+Push it to a GitHub repo with a requirements.txt (fastapi,
+On render.com → New → Web Service → connect the repo.
+Deploy, then open your https://<you>.onrender.com page in a browser and test
+You can prototype the server shape in the sandbox the same way the lectures do — a plain function plus a real streamed completion — even though FastAPI itself doesn't run there:
+
+from openai import OpenAI
+
+client = OpenAI()
+stream = client.chat.completions.create(
+    model="gemma-4-E4B-it",
+    messages=build_messages([], "Why is the sky blue?", "Be terse."),
+    stream=True,
+)
+for chunk in stream:
+    token = chunk.choices[0].delta.content or ""
+    if token:
+        print(f"data: {token}\n", flush=True)   # one SSE frame per token
+print("data: [DONE]\n")
+Then feed that printed text into your parse_sse to confirm you reconstruct the reply.
+
+Deliverables / how it's graded
+Q1 (MCQ, 20 pts): Choose the right transport for one-way token streaming and know what content type it uses.
+Q2 (Python, 25 pts): build_messages(history, user_msg, system_prompt) returns the correctly ordered OpenAI-style messages list. Auto-graded against hidden tests (empty history, one turn, multiple turns with a custom system prompt).
+Q3 (Python, 25 pts): parse_sse(chunk) returns the ordered list of payload strings, handling multi-line events, the [DONE] sentinel, and non-data comment frames. Auto-graded.
+Q4 (Short, 30 pts): Design the streaming POST /api/chat endpoint and argue why SSE suits token streaming. Graded by rubric — name the response type, the [DONE] sentinel, at least two failure cases with their status codes, and the SSE-vs-WebSockets reasoning.
+Q5 (Python, 20 pts): check_response(response, must_include) — the unit-test assertion helper from Lecture 3 §9: safely pull the assistant content from an OpenAI-style response and assert it contains every required substring (case-insensitive). You can't assert a model reply equals a string, so you assert properties. Auto-graded against hidden tests.
+Q6 (URL, 15 pts): Submit the live https://<you>.onrender.com URL of your deployed app. Graded by rubric: the root serves a simple web page that calls your POST /api/chat, the endpoint returns a model reply, and the key is read from the environment — not committed to the repo. (The link may cold-start on the first hit.)
+Q7 (Short, 15 pts): Deployment reflection. Paste one real request and the reply from your live endpoint; explain where your API key lives (and why it's not in your repo), how your page reaches the backend (same origin — and what would change if it didn't: CORS), and what a free-tier cold start is. Graded by rubric.
+Total: 150 points.
+
+Tips
+For build_messages, the order is the whole point: system → (user, assistant) per past turn, oldest first → final user. Build a fresh list each call; don't mutate the input history.
+For parse_sse, remember network chunks don't line up with frames — but here you're handed a clean text block, so just split("\n\n"). Strip the data: prefix and exactly one leading space — no more: data: there → " there" (the surviving space matters, because sub-word tokens like " there" concatenate into "Hello there"; stripping it would give "Hellothere"). [DONE] ends the stream and is not a payload.
+Sub-word tokens ("Ray", "leigh") are concatenated, not space-joined — that surprises people the first time.
+For Q4, honest status codes earn the marks: 422 for a bad body (Pydantic does it for free), 429 + Retry-After for rate limits, 502/504 for upstream model failures, and breaking the generator when the client disconnects. Log the detail server-side, return a vague message to the client.
+Test your Python locally before submitting — the graded Python tasks (Q2, Q3, Q5) are stdlib-only, so a quick python3 run with the lecture examples is the fastest way to be sure.
+Render (Q6): the free tier is plenty — a thin chat proxy needs no GPU and little RAM. Bind to 0.0.0.0:$PORT (hard-coding a port makes Render mark the deploy unhealthy), and add a tiny GET /api/health returning {"status":"ok"} so you can check it's up without spending tokens.
+Keep secrets in Render's Environment tab (or a local .env you never commit) — never in code. If you use a render.yaml, mark the two vars sync: false so they aren't stored in Git.
+Your personal key is rate-limited (the exact limits show on Profile → API key). A burst that returns 429 is the same limit you reason about in Lecture 3 §8 — back off and retry.
+Heads-up for Lecture 4: your browser UI will call this deployed URL from a different origin — that's when CORS stops being hypothetical and you add CORSMiddleware. Nothing to configure yet while you curl it.
+1. · 20 pts
+Your /api/chat endpoint needs to push the assistant's reply to the browser token by token, as the model generates them. The data flows in one direction only (server → client), and you want it to ride on ordinary HTTP with no new protocol to deploy.
+
+Which transport is the right, simplest choice for this?
+
+Plain fetch returning one JSON body — it is the simplest option and works for every endpoint
+Server-Sent Events (text/event-stream) — a long-lived, one-way HTTP response the server keeps writing to
+WebSockets — you always need a full-duplex channel to send more than one chunk
+A GET request that the client polls every 100 ms until the reply is complete
+✓ answer recorded
+2. · 25 pts
+On the server you must assemble the OpenAI-style messages list before calling the proxy, so the model remembers earlier turns. Write build_messages(history, user_msg, system_prompt) that returns a list of {"role", "content"} dicts in this exact order:
+
+one system message with content == system_prompt,
+for each turn in history (a list of {"user": str, "assistant": str} dicts, oldest first): a user message then an assistant message,
+finally one user message holding user_msg.
+Pure Python, no LLM call. Example: build_messages([], "Hi", "Be terse.") → [{"role": "system", "content": "Be terse."}, {"role": "user", "content": "Hi"}].
+
+Write your solution, run it to test, then submit.
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+def build_messages(history, user_msg, system_prompt):
+    messages = [
+        {"role": "system", "content": system_prompt}
+    ]
+
+    for turn in history:
+        messages.append({
+            "role": "user",
+            "content": turn["user"]
+        })
+        messages.append({
+            "role": "assistant",
+            "content": turn["assistant"]
+        })
+
+    messages.append({
+        "role": "user",
+        "content": user_msg
+    })
+
+    return messages
+Run ▶
+Clear output
+⌘/Ctrl + Enter to run
+Resubmit
+✓ answer recorded
+3. · 25 pts
+On the client you read the streamed response and split it on the blank-line frame separator. Write parse_sse(chunk) that takes a block of SSE text and returns the list of payload strings, in order, applying the conventions from Lecture 4:
+
+Events are separated by a blank line (\n\n). Within an event, every line starting with data: is a data line; strip the data: prefix and a single leading space.
+A single event may carry multiple data: lines — join them with \n to form one payload.
+Stop at the [DONE] sentinel: do not include it, and ignore anything after it.
+Skip events with no data: line (e.g. a : comment / keep-alive).
+Example: parse_sse("data: Hello\n\ndata: there\n\ndata: [DONE]") → ["Hello", " there"] (note the surviving leading space — only ONE space after data: is stripped, so sub-word tokens still concatenate correctly).
+
+Write your solution, run it to test, then submit.
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+def parse_sse(chunk):
+    # Split on "\n\n"; collect each event's data: payload(s) in order.
+    # Stop at [DONE]; skip events with no data: line.
+
+    results = []
+
+    events = chunk.split("\n\n")
+
+    for event in events:
+        data_lines = []
+
+        for line in event.splitlines():
+            if line.startswith("data:"):
+                value = line[5:]  # remove "data:"
+                
+                # remove exactly ONE leading space
+                if value.startswith(" "):
+                    value = value[1:]
+
+                data_lines.append(value)
+
+        # skip comments / empty events
+        if not data_lines:
+            continue
+
+        payload = "\n".join(data_lines)
+
+        if payload == "[DONE]":
+            break
+
+        results.append(payload)
+
+    return results
+Run ▶
+Clear output
+⌘/Ctrl + Enter to run
+Resubmit
+✓ answer recorded
+4. · 30 pts
+Design the streaming POST /api/chat endpoint you would build on top of the helpers above, and explain why SSE (not WebSockets) suits token streaming here.
+
+Cover, in a few short paragraphs:
+
+The request/response contract: what the ChatRequest body holds, and what the response's Content-Type is for a streamed reply.
+How the server produces the stream (which FastAPI response type and the shape of the generator that yields frames), and what the [DONE] sentinel is for.
+At least two failure cases you must handle and the status code or behavior for each (e.g. an invalid body, an upstream model error, a rate-limited user, or a client that disconnects mid-stream).
+One sentence on why SSE is the simpler, sufficient transport for this one-way token stream compared with WebSockets.
+`POST /api/chat` accepts a `ChatRequest` JSON body containing the user's message, conversation history, and optional settings such as `temperature`. The endpoint returns a streamed response with the content type `text/event-stream`, which tells the client to interpret the response as Server-Sent Events (SSE).
+
+The server calls the upstream chat model and uses FastAPI's `StreamingResponse` with an async generator. The generator yields each model chunk as an SSE frame, for example `data: <token>\n\n`. When generation is complete, it yields `data: [DONE]\n\n`. The `[DONE]` sentinel lets the client know that the stream has finished normally.
+
+Failure cases should also be handled. An invalid request body, such as a missing or invalid field, should return **422 Unprocessable Entity**. An upstream model/API failure should return **502 Bad Gateway**, while a rate-limited user should receive **429 Too Many Requests**. If the client disconnects during streaming, the server should detect the disconnect and stop the generator to avoid unnecessary work.
+
+SSE is simpler and sufficient because token streaming is one-way from the server to the client, so it does not require the bidirectional communication and connection management of WebSockets.
+
+Resubmit
+1250 / 2500
+✓ answer recorded
+5. · 20 pts
+Implement check_response(response, must_include) — a unit-test assertion helper for LLM output (Lecture 3 §9). You can't assert a model reply equals an exact string — the wording varies — so you assert it contains the key facts.
+
+response is an OpenAI-style chat response: {"choices": [{"message": {"role": "assistant", "content": <str>}}]}. must_include is a list of substrings. Return True iff the assistant's content contains every string in must_include, matched case-insensitively.
+
+Pull the content out safely: if choices is empty, a key is missing, or content is null, treat the content as "" (so the check returns False unless must_include is empty).
+An empty must_include returns True (nothing required).
+Matching is plain substring containment — "happy" is inside "unhappy". Return a bool. No LLM, network, or randomness.
+Write your solution, run it to test, then submit.
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+def check_response(response, must_include):
+    # 1) safely pull response['choices'][0]['message']['content']
+    # 2) return True iff every needle is a case-insensitive substring
+
+    content = ""
+
+    try:
+        content = response.get("choices", [])[0].get("message", {}).get("content") or ""
+    except (IndexError, AttributeError):
+        content = ""
+
+    content = content.lower()
+
+    return all(
+        needle.lower() in content
+        for needle in must_include
+    )
+response = {
+    "choices": [
+        {
+            "message": {
+                "role": "assistant",
+                "content": "The weather is sunny and warm today."
+            }
+        }
+    ]
+}
+
+print(check_response(response, ["sunny", "warm"]))
+# True
+
+Run ▶
+Clear output
+⌘/Ctrl + Enter to run
+Resubmit
+✓ answer recorded
+6. · 15 pts
+Deploy your backend (Render). Put your POST /api/chat server and a simple web page that talks to it on a public URL, and submit it here.
+
+Build a main.py (your /api/chat, reading the key from the environment) plus a static/index.html — a text box + Send button that fetches /api/chat — served from the app so the page and API share one origin. Push to GitHub with a requirements.txt, create a Render → New → Web Service (Start command uvicorn main:app --host 0.0.0.0 --port $PORT), and set OPENAI_API_KEY + OPENAI_BASE_URL (from Profile → API key) as Render environment variables — do not commit them. Full walkthrough, including testing with Yaak: the Deploy to Render guide.
+
+Submit the live URL (e.g. https://your-app.onrender.com) — its root should show your page, and POST /api/chat should return a model reply. (Free tier: the first request after ~15 min idle cold-starts for ~1 min.)
+
+https://best-backend-in-the-world.onrender.com/
+Resubmit
+must be a onrender.com link
+open link ↗
+✓ answer recorded
+7. · 15 pts
+Deployment reflection. In a short answer:
+
+Paste one real request you sent to your live endpoint and the reply you got back.
+Explain where your API key lives in the deployed setup and why it is not in your GitHub repo — tie it back to Lecture 3 §1 (hiding the key on the server).
+Explain how your web page reaches the backend — why serving it from the same app means no CORS, and what you would add if the page lived on a different origin.
+In one sentence, say what a free-tier cold start is and why your first request was slow.
+### 1. Real request and reply
+
+I sent this request to my live Render endpoint:
+
+```bash
+curl -X 'POST' \
+  'https://best-backend-in-the-world.onrender.com/api/chat' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "message": "how old are you",
+  "temperature": 0.7
+}'
+```
+
+The endpoint returned HTTP `200` with:
+
+```json
+{
+  "reply": "I am a large language model, trained by Google.",
+  "model": "gemma-4-E4B-it"
+}
+```
+
+### 2. API key security
+
+The API key is stored as the `OPENAI_API_KEY` environment variable in the deployed Render backend. It is not stored in my GitHub repository, so users viewing the source code cannot obtain the secret key. This follows Lecture 3 §1: the API key should remain hidden on the server and only the backend should use it when calling the model API.
+
+### 3. How the web page reaches the backend
+
+The web page is served from `static/index.html` by the same FastAPI application that provides the `/api/chat` endpoint. Therefore, the frontend and backend have the same origin, so the browser does not require CORS permission. If the page were hosted on a different origin, I would add FastAPI's `CORSMiddleware` and configure it to allow requests from the frontend's specific origin.
+
+### 4. Cold start
+
+A free-tier cold start occurs when Render puts an inactive service to sleep and has to restart it when a new request arrives, which makes the first request after inactivity slower.
+
+Resubmit
+1455 / 1800
+
+HW3 — Vector search & a mini-RAG
+Lectures 5–6: embed + index documents and answer questions grounded in retrieved context with citations. · 100 points
+
+HW3 — Vector Search & Retrieval-Augmented Generation
+Covers: Lectures 5–6 — vector storage (embeddings, cosine similarity, vector indexes, chunking & metadata) and Retrieval-Augmented Generation (retrieve-then-read, prompt assembly / context injection, citations).
+
+Goal
+In Lectures 5–6 you learned how a question gets answered from your own documents: text becomes vectors, similar vectors point in similar directions, and a RAG pipeline retrieves the nearest chunks and feeds them to the model so the answer is grounded and cited. This homework drills the load-bearing mechanics of that pipeline. You'll re-implement the three pure-Python primitives behind a vector store — cosine similarity, chunking, and top-k nearest-neighbor retrieval — and explain how retrieve-then-read plus citations turn a fluent guess into a verifiable answer.
+
+The point is to own the mechanism. A production stack would swap your bag-of-words vectors for a real embedding model (the class model is bge-m3) and your list-of-dicts for pgvector, but the shape — embed, search, assemble, generate, cite — is exactly what you build here.
+
+What to do
+Implement the three functions below as plain Python (standard library only — no numpy, no openai, no network). Each is auto-graded by running it against hidden tests, so match the described behaviour and return types exactly.
+
+cosine_similarity(a, b) — return the cosine similarity of two equal-length numeric lists, rounded to 4 decimal places (round(value, 4)). Recall cos(a, b) = (a · b) / (‖a‖·‖b‖). If either vector is all-zeros (norm 0), return 0.0.
+chunk_text(text, size) — split text on whitespace into fixed-size, non-overlapping chunks of size words each (the final chunk may be shorter). Return a list[str], each chunk a single space-joined string. An empty string returns [].
+top_k(query, docs, k) — query is a vector, docs is a list of vectors. Return the indices of the k documents most cosine-similar to query, highest similarity first. On a tie, the lower index wins.
+Then write a short explanation (Q5) of the retrieve-then-read pattern and why citations matter — see the rubric below.
+
+Where the class proxy fits
+You won't call the LLM in the graded functions — they're the deterministic retrieval layer that runs before the model. But to see the full picture, the Lecture 6 mini-RAG demo (runnable in the in-browser sandbox) assembles your retrieved chunks into a prompt and calls the proxy:
+
+from openai import OpenAI
+client = OpenAI()  # OPENAI_API_KEY + OPENAI_BASE_URL are preset in the sandbox
+resp = client.chat.completions.create(
+    model="gemma-4-E4B-it",
+    temperature=0,                       # RAG answers should be faithful, not creative
+    messages=[
+        {"role": "system", "content":
+            "Answer using ONLY the context. If absent, say you don't know. "
+            "Cite sources as [1], [2]."},
+        {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {question}"},
+    ],
+)
+print(resp.choices[0].message.content)
+cosine_similarity ranks the chunks, top_k picks them, chunk_text produced them in the first place — the proxy just reads what your retrieval handed it.
+
+Deliverables / how it's graded
+Q1 (MCQ, 20 pts): a conceptual check on embeddings, cosine similarity, and chunking.
+Q2 (Python, 25 pts): cosine_similarity(a, b) — must round to 4 decimals and handle the zero-vector case. Auto-graded against hidden tests.
+Q3 (Python, 25 pts): chunk_text(text, size) — fixed-size, non-overlapping word chunks. Auto-graded.
+Q4 (Python, 15 pts): top_k(query, docs, k) — indices of the k nearest by cosine, ties broken by lower index. Auto-graded.
+Q5 (Short, 15 pts): explain retrieve-then-read and why citations matter. Graded by rubric.
+Total: 100 points.
+
+Tips
+Cosine, step by step: dot product Σ aᵢ·bᵢ, then divide by both norms (‖a‖ = √(Σ aᵢ²)). Guard the zero-norm case before dividing — [0,0,0] has no direction, so its similarity is defined as 0.0 here.
+Round once, at the end. The grader checks == against a rounded expected value, so compute the full ratio first and apply round(value, 4) to the result — e.g. cos([1,1,0,1], [0,1,1,1]) is 0.6667.
+Chunking is just slicing. Split on whitespace into a word list, then step through it size words at a time (range(0, len(words), size)). No overlap in this task — keep it simple. Remember "".split() is [].
+Reuse your own cosine in top_k. Score every doc, sort by score descending, and return the indices. To make ties deterministic (lower index first), sort on (-score, index) or sort by score with a stable secondary key — don't leave tie order to chance, the tests check it.
+For Q5, be concrete. Name the steps (retrieve → assemble → generate), say why the model "never sees the whole corpus," and tie citations to trust (the user can verify) and debugging (you can see which chunk caused a wrong answer).
+Test your functions on the sandbox or locally before submitting — the worked example cos([1,0,1],[1,1,0]) = 0.5 from Lecture 5 is a good sanity check.
+1. · 20 pts
+Which statement about embeddings, cosine similarity, and chunking is correct?
+
+Cosine similarity measures the angle between two vectors, so it ignores their magnitudes; scaling a vector (e.g. doubling every component) does not change its cosine similarity to another vector.
+Cosine similarity is the Euclidean distance between two vectors, so a larger value always means the vectors are farther apart in meaning.
+You can directly compare a vector from one embedding model with a vector from a different model, as long as both have the same number of dimensions.
+Making chunks as large as possible (e.g. embedding an entire 30-page PDF as one vector) gives the best retrieval, because a bigger chunk carries more context.
+✓ answer recorded
+2. · 25 pts
+Implement cosine_similarity(a, b) for two equal-length numeric lists.
+
+Return (a · b) / (‖a‖·‖b‖) rounded to 4 decimal places with round(value, 4). If either vector has norm 0 (all zeros), return 0.0. Standard library only — no numpy.
+
+Example: cosine_similarity([1, 0, 1], [1, 1, 0]) returns 0.5.
+
+Write your solution, run it to test, then submit.
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+import math
+
+def cosine_similarity(a, b):
+    dot_product = sum(x * y for x, y in zip(a, b))
+    
+    norm_a = math.sqrt(sum(x * x for x in a))
+    norm_b = math.sqrt(sum(y * y for y in b))
+    
+    if norm_a == 0 or norm_b == 0:
+        return 0.0
+    
+    return round(dot_product / (norm_a * norm_b), 4)
+
+
+# Test
+print(cosine_similarity([1, 0, 1], [1, 1, 0]))
+# Expected: 0.5
+Run ▶
+Clear output
+⌘/Ctrl + Enter to run
+Resubmit
+✓ answer recorded
+3. · 25 pts
+Implement chunk_text(text, size).
+
+Split text on whitespace into fixed-size, non-overlapping chunks of size words each. Each chunk is a single space-joined string; the last chunk may be shorter. An empty string returns []. Return a list[str].
+
+Example: chunk_text("the quick brown fox jumps over the lazy dog", 3) returns ["the quick brown", "fox jumps over", "the lazy dog"].
+
+Write your solution, run it to test, then submit.
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+def chunk_text(text, size):
+    words = text.split()
+
+    if not words:
+        return []
+
+    return [
+        " ".join(words[i:i + size])
+        for i in range(0, len(words), size)
+    ]
+
+
+# Test
+print(chunk_text("the quick brown fox jumps over the lazy dog", 3))
+# Expected:
+# ['the quick brown', 'fox jumps over', 'the lazy dog']
+
+print(chunk_text("", 3))
+# Expected:
+# []
+
+print(chunk_text("one two three four five", 2))
+# Expected:
+# ['one two', 'three four', 'five']
+Run ▶
+Clear output
+⌘/Ctrl + Enter to run
+Resubmit
+✓ answer recorded
+4. · 15 pts
+Implement top_k(query, docs, k).
+
+query is a vector (list of numbers); docs is a list of vectors. Return the indices of the k documents most cosine-similar to query, highest similarity first. On a tie, the lower index wins. Reuse the cosine-similarity formula from Q2 (standard library only).
+
+Example: with query = [1, 0, 1] and docs = [[1, 1, 0], [1, 0, 1], [0, 0, 1], [2, 0, 2]], top_k(query, docs, 2) returns [1, 3] (docs 1 and 3 both score 1.0, so the lower index comes first).
+
+Write your solution, run it to test, then submit.
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+import math
+
+
+def cosine_similarity(a, b):
+    dot_product = sum(x * y for x, y in zip(a, b))
+
+    norm_a = math.sqrt(sum(x * x for x in a))
+    norm_b = math.sqrt(sum(y * y for y in b))
+
+    if norm_a == 0 or norm_b == 0:
+        return 0.0
+
+    return round(dot_product / (norm_a * norm_b), 4)
+
+
+def top_k(query, docs, k):
+    scores = [
+        (cosine_similarity(query, doc), i)
+        for i, doc in enumerate(docs)
+    ]
+
+    # Highest similarity first; lower index wins ties
+    scores.sort(key=lambda x: (-x[0], x[1]))
+
+    return [i for _, i in scores[:k]]
+
+
+# Test
+query = [1, 0, 1]
+docs = [
+    [1, 1, 0],
+    [1, 0, 1],
+    [0, 0, 1],
+    [2, 0, 2]
+]
+
+Run ▶
+Clear output
+⌘/Ctrl + Enter to run
+Resubmit
+✓ answer recorded
+5. · 15 pts
+Explain the retrieve-then-read pattern in RAG and why citations matter.
+
+In your own words (a) describe the steps that run at query time, (b) explain why the model "never sees the whole corpus," and (c) give two reasons citations are worth returning with an answer.
+
+At query time, RAG first embeds the user’s question, then searches the document database for the most relevant chunks. These chunks are added to the prompt, and the LLM uses them to generate the final answer.
+
+The model never sees the whole corpus because only the most relevant chunks are retrieved and sent to it. This saves context space and makes the answer more focused.
+
+Citations are important because they show where the information came from and let users verify the answer. They also make the system more trustworthy and easier to debug when an answer is wrong.
+Resubmit
+571 / 1200

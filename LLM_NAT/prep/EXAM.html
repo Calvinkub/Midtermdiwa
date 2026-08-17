@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Apps — ข้อสอบจำลอง + เฉลย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{ --bg:#f7f8fc; --card:#fff; --ink:#191c22; --muted:#454b57; --dim:#767c89; --blue:#0060aa; --green:#137a2f; --red:#ba1a1a; --orange:#d9640c; --purple:#6b3fc4; --line:#e5e8f0; --mono:'Space Grotesk',monospace; --body:'Noto Sans Thai','Inter',sans-serif; }
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{ background:var(--bg); color:var(--ink); font-family:var(--body); line-height:1.5; padding:30px 16px 80px; }
+.wrap{ max-width:860px; margin:0 auto; }
+header{ text-align:center; margin-bottom:6px; }
+h1{ font-size:clamp(22px,4vw,31px); font-weight:800; letter-spacing:-.5px; }
+.lede{ color:var(--muted); font-size:clamp(13px,2vw,16px); margin-top:6px; }
+.bar{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:18px 0 8px; position:sticky; top:0; background:var(--bg); padding:10px 0; z-index:5; }
+.btn{ font-family:var(--body); font-size:14px; font-weight:600; cursor:pointer; border:1px solid var(--line); background:var(--card); color:var(--blue); padding:8px 16px; border-radius:9px; }
+.btn:hover{ border-color:var(--blue); }
+.wk{ font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--blue); margin:26px 0 12px; padding-bottom:6px; border-bottom:2px solid var(--line); }
+.q{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:15px 18px; margin-bottom:13px; box-shadow:0 2px 18px rgba(25,28,34,.03); }
+.q-head{ display:flex; align-items:baseline; gap:9px; margin-bottom:6px; flex-wrap:wrap; }
+.q-num{ font-family:var(--mono); font-weight:700; font-size:14px; background:#eef2fb; min-width:30px; height:26px; padding:0 6px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; }
+.tag{ font-family:var(--mono); font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px; letter-spacing:.5px; }
+.tag.mcq{ background:rgba(0,96,170,.1); color:var(--blue); } .tag.sa{ background:rgba(107,63,196,.1); color:var(--purple); } .tag.calc{ background:rgba(19,122,47,.1); color:var(--green); } .tag.hot{ background:rgba(186,26,26,.1); color:var(--red); }
+.q-body{ font-size:clamp(14px,1.9vw,16px); }
+.opts{ margin-top:8px; display:flex; flex-direction:column; gap:4px; font-size:14.5px; color:var(--muted); }
+code{ font-family:var(--mono); background:#eef2fb; color:#0b2d52; padding:1px 5px; border-radius:5px; font-size:.9em; }
+details{ margin-top:10px; border-top:1px dashed var(--line); padding-top:9px; }
+summary{ cursor:pointer; font-weight:700; color:var(--green); font-size:14px; list-style:none; display:flex; align-items:center; gap:7px; }
+summary::-webkit-details-marker{ display:none; } summary::before{ content:'▶'; font-size:10px; color:var(--green); } details[open] summary::before{ content:'▼'; }
+.ans{ margin-top:10px; padding:10px 14px; border-radius:0 10px 10px 0; font-size:14.5px; background:#ecf9ee; border-left:4px solid var(--green); }
+.ans .al{ font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--green); margin-bottom:3px; }
+.ans b{ color:var(--ink); } .ans .step{ display:block; font-family:var(--mono); font-size:12.5px; background:#e5f3e8; border-radius:6px; padding:5px 9px; margin:5px 0; color:#0b3d1a; }
+.foot{ text-align:center; color:var(--dim); font-size:13px; margin-top:36px; }
+@media print{ body{ background:#fff; } .bar{ display:none; } .q{ break-inside:avoid; } details{ display:block; } summary{ display:none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>ข้อสอบจำลอง + เฉลย — Building LLM-Powered Applications</h1>
+  <p class="lede">L1–L6 · MCQ + short answer (เชิง concept ไม่มีเขียนโค้ด) · แนวเดียวกับ revision · กดดูเฉลย + เหตุผล</p>
+</header>
+<div class="bar">
+  <button class="btn" onclick="tg(true)">เปิดเฉลยทั้งหมด</button>
+  <button class="btn" onclick="tg(false)">ปิดเฉลยทั้งหมด</button>
+  <button class="btn" onclick="print()">พิมพ์ / PDF</button>
+</div>
+
+<div class="wk">📘 L1 — Prompting & Chat API (1–10)</div>
+
+<div class="q"><div class="q-head"><span class="q-num">1</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">พิมพ์ "The capital of France is" เข้า LLM ก่อนตอบ มันคำนวณอะไร?</div>
+<div class="opts">A. ค้น fact จาก database ในตัว · B. probability ของ token ถัดไปทุกตัว แล้วเลือกหนึ่ง · C. search web · D. รัน grammar rule</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>LLM = next-token predictor: ออก probability distribution ของ token ถัดไป → sample. ไม่มี DB ในตัว (Paris คือ continuation ที่น่าจะเป็น — ตอบผิดก็ฟังมั่นใจได้)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">2</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">Dev A ใส่ rules ของแอปใน system message; Dev B prepend rules ทุก user message. ใครถูก?</div>
+<div class="opts">A. Dev A — persona/rules อยู่ใน system role ตั้งครั้งเดียว · B. Dev B — ย้ำทุก turn ชัวร์กว่า</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>system role = rules/persona ตั้งครั้งเดียว ใช้ทั้งบทสนทนา ไม่ใช่ย้ำต่อ turn</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">3</span><span class="tag sa">Short</span></div>
+<div class="q-body">multi-turn chatbot: user พิมพ์ "hi", บอทตอบ, แล้ว user ถาม "what did I just say?" — โมเดลไม่รู้เลย ทำไม และต้องส่งอะไรใน call ที่สอง?</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">คำตอบ</div>โมเดล <b>stateless</b> — ไม่มีความจำระหว่าง call. ต้องส่ง <b>messages list ทั้งหมด (history)</b> ใหม่ทุกครั้ง (system+user+assistant ก่อนหน้า)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">4</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">extract วันที่จาก invoice ต้องได้คำตอบ<b>เหมือนกันทุกรอบ</b> ตั้งค่าไหน?</div>
+<div class="opts">A. temperature = 0 · B. temperature = 0.7 · C. top_p=1.0 และ temperature=1.0 · D. เป็นไปไม่ได้</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>temperature=0 = deterministic (greedy argmax). ใช้กับ extraction/classification/RAG</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">5</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">extractor คืน fact ถูกแต่ <b>รูปแบบไม่นิ่ง</b> (บางทีเป็น list บางทีเป็น paragraph). แก้ format ยังไงดีสุด?</div>
+<div class="opts">A. Few-shot — โชว์ 2–5 ตัวอย่างรูปแบบที่ต้องการ · B. Chain-of-thought · C. raise temperature · D. เติม 'be consistent'</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>few-shot ให้โมเดลลอก <b>format</b> จากตัวอย่าง = fix รูปแบบได้แน่นอนสุด (CoT ช่วยเรื่อง reasoning, temperature สูง = แย่ลง)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">6</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">โมเดลแก้โจทย์หลายขั้นแต่<b>ได้เลขสุดท้ายผิด</b>บ่อย. move แรกที่ดีสุด?</div>
+<div class="opts">A. Chain-of-thought — ให้ reason ทีละขั้นก่อนตอบ · B. ลด max_tokens · C. raise temperature · D. เติม 'please'</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>CoT = ให้ room คิดทีละขั้น → ช่วยงาน math/logic หลายขั้น</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">7</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">showing 3 ตัวอย่าง input→output ให้โมเดลจับ pattern เรียกว่า?</div>
+<div class="opts">A. Few-shot prompting · B. Chain-of-thought · C. Fine-tuning · D. Zero-shot</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>Few-shot. (ทำงานได้เพราะ in-context learning — weights frozen, condition บนตัวอย่างใน context)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">8</span><span class="tag hot">ระวัง</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">เปิด `stream=True` ปรับปรุงอะไรเป็นหลัก?</div>
+<div class="opts">A. ความเร็ว generation รวม · B. perceived latency — token โผล่เร็วขึ้น · C. accuracy · D. token cost</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>streaming ลด <b>perceived latency</b> (เห็นเร็วขึ้น + หยุดได้) — total time เท่าเดิม, ไม่เพิ่ม speed/accuracy/ลด cost</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">9</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">support bot แต่ง refund policy ที่ไม่มีจริง. fix แรกดีสุด?</div>
+<div class="opts">A. Ground it: ให้ policy จริง + "ถ้าไม่มีในcontext บอกไม่รู้" · B. raise temperature · C. เติม 'be accurate' · D. 5-shot บอทขอโทษ</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>grounding + give-an-out = ตัวคุม hallucination ที่ถูกสุด (RAG ใน 1 prompt)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">10</span><span class="tag sa">Short</span></div>
+<div class="q-body">temperature กับ top_p ต่างกันยังไง และควร tune อะไร?</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">คำตอบ</div>ทั้งคู่ปรับ next-token odds: temperature หาร logit ก่อน softmax (0=greedy); top_p (nucleus) เก็บเซตเล็กสุด prob รวม=p. <b>tune อย่างใดอย่างหนึ่ง ไม่ใช่ทั้งคู่</b></div></details></div>
+
+<div class="wk">📗 L2 — Structured Output & JSON (11–18)</div>
+
+<div class="q"><div class="q-head"><span class="q-num">11</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">LLM ตอบ `Sure! The price is {'price': 19.99}`. เรียก `json.loads()` ทั้ง reply เกิดอะไร?</div>
+<div class="opts">A. คืน dict · B. คืน 19.99 · C. raise JSONDecodeError — มี prose ล้อม + single quotes · D. คืน None</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">C</div>มี prose รอบ + single quotes (ไม่ใช่ JSON) → JSONDecodeError</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">12</span><span class="tag hot">ระวัง</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">ตั้ง `response_format={"type":"json_object"}` บน class Gemma proxy แต่ยังได้ prose รอบ JSON. ทำไม + fix จริง?</div>
+<div class="opts">A. JSON mode ถูก silently ignored ที่นี่ — prompt for JSON แล้ว json.loads+validate (repair on fail) · B. temp สูงไป ตั้ง 0 · C. ใช้ eval() · D. ใช้โมเดลใหญ่ขึ้น</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>proxy IGNORES response_format → real path = <b>prompt → parse → validate → repair</b></div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">13</span><span class="tag sa">Short</span></div>
+<div class="q-body">plain JSON mode เปิดอยู่ มันการันตีว่า reply เป็นอะไร?</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">คำตอบ</div><b>Valid JSON syntax เท่านั้น — ไม่ใช่ shape/schema ของคุณ</b>. Valid JSON ≠ valid data</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">14</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">reply เป็น valid JSON, ผ่าน Pydantic types แต่ตั้ง `discount: 1.5` (150% off). layer ไหนต้อง reject?</div>
+<div class="opts">A. Semantic (business-rule) validation · B. JSON mode · C. JSON Schema · D. json.loads</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>schema เช็ค shape/type ไม่รู้ว่า 1.5 out of range → <b>semantic validation</b> เท่านั้น</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">15</span><span class="tag hot">ระวัง</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">`validate()` ใช้ `isinstance(qty, int)`. โมเดลคืน `{"qty": true}`. เกิดอะไร?</div>
+<div class="opts">A. Rejected — true เป็น bool · B. Accepted — bool subclass int, `isinstance(True,int)` เป็น True · C. json.loads raise ก่อน · D. Accepted, qty*price=25</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>bool subclass int → รับผิด. แก้ด้วย <code>type(qty) is int</code></div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">16</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">ขอ `{"item":...}` แต่โมเดลคืน `{"items":[...]}` (wrong key). layer ที่<b>อ่อนที่สุด</b>ที่กันได้?</div>
+<div class="opts">A. good prompt · B. JSON mode · C. JSON Schema — บังคับ keys/types · D. ไม่มี</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">C</div>JSON Schema บังคับ exactly those keys/types (prompt แค่โชว์, JSON mode แค่ syntax)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">17</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">Pydantic field `phone: str | None = None`. โมเดลคืน `{"phone": 42}`. `model_validate_json` ทำอะไร?</div>
+<div class="opts">A. รับ — Optional = ข้าม validation · B. รับ — None default = ค่าอะไรก็ได้ · C. Reject — Optional = absent/null แต่ถ้ามีค่าต้องเป็น str · D. coerce เป็น "42"</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">C</div>Optional = "absent หรือ null" ไม่ใช่ "type อะไรก็ได้"</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">18</span><span class="tag sa">Short</span></div>
+<div class="q-body">proxy ไม่ support schema-constrained output. design ที่ถูกเพื่อได้ typed order ที่เชื่อถือได้?</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">คำตอบ</div>Prompt for JSON + ตัวอย่าง + <b>temperature 0</b> → <code>json.loads</code> + <b>validate</b> → <b>repair loop</b> (cap) เมื่อ fail</div></details></div>
+
+<div class="wk">📕 L3 — Backend, REST & Data (19–32)</div>
+
+<div class="q"><div class="q-head"><span class="q-num">19</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">React เรียก OpenAI API ตรงจาก browser โดยมี API key ใน JS bundle. ผลร้ายจริงสุด?</div>
+<div class="opts">A. ไม่มีอะไร key อยู่ใน compiled code · B. ใครก็เปิด dev-tools copy key ไปใช้เงินคุณ · C. ช้าลง · D. CORS block</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>key รั่ว client-side → ต้องอยู่หลัง backend เสมอ</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">20</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">ซ่อน key บน server แล้ว สิ่งใดที่มัน<b>ยังไม่</b>ให้?</div>
+<div class="opts">A. validate input ก่อนใช้ token · B. rate-limit ต่อ user · C. โมเดลเร็วขึ้น — backend เร่ง generation · D. swap model โดยไม่แตะ UI</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">C</div>backend ไม่ได้เร่ง generation ของโมเดล</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">21</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">chat turn ใช้ token + รันโมเดล. HTTP verb ที่เหมาะกับ POST /api/chat?</div>
+<div class="opts">A. GET · B. POST — action มี side effect · C. PUT · D. DELETE</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>มี side effect (spends tokens) → POST (ไม่ใช่ GET ที่ไม่มี side effect)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">22</span><span class="tag hot">ระวัง</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">POST /api/chat body `{"message":123,"temperature":0.7}` (valid JSON แต่ message เป็นเลข). FastAPI+Pydantic คืนอะไร?</div>
+<div class="opts">A. 400 · B. 422 Unprocessable Entity — parse ได้ field fail validation · C. 200 coerce เป็น "123" · D. 500</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>JSON parse ได้ แต่ field ผิด validation → <b>422</b> (Pydantic reject ที่ edge ก่อน handler)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">23</span><span class="tag hot">ระวัง</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">body ขาด field `messages` และ load test ยิง 100 req/วินาที. status ที่คาด (ตามลำดับ)?</div>
+<div class="opts">A. 422 (missing field) แล้ว 429 (rate limit) · B. 400 แล้ว 500 · C. 429 แล้ว 422 · D. 200 แล้ว 503</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>422 = Pydantic reject missing field · 429 = ชน rate limit</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">24</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">LLM proxy คืน error ขณะ handler เรียกมัน. /api/chat ควรส่ง status อะไร?</div>
+<div class="opts">A. 200 ซ่อน failure · B. 422 client ผิด · C. 502 Bad Gateway — upstream fail · D. 404</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">C</div>upstream (model proxy) fail → 502 (504 ถ้า timeout, 500 = bug ของคุณ)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">25</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">ใน router→service→repository ชั้นไหนควร reject message 3000 ตัวอักษร?</div>
+<div class="opts">A. repository · B. router/edge — Pydantic validate body ก่อน handler · C. service · D. LLM</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>validate ที่ edge (Pydantic) ก่อน handler รัน → 422</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">26</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">API อนุญาต 30 req/min. request ที่ 31 ในนาทีนั้นมา. status + header บอกเวลา retry?</div>
+<div class="opts">A. 429 + Retry-After · B. 503 + Location · C. 403 + WWW-Authenticate · D. 400 + Allow</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>เกิน rate limit → 429 + <b>Retry-After</b></div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">27</span><span class="tag sa">Short</span></div>
+<div class="q-body">422 body กับ HTTPException(502,"...") body ต่างกันยังไง (shape)?</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">คำตอบ</div>422 = <b>list ของ per-field errors</b> (`detail:[{loc,msg,type}]`); HTTPException = <b>string เดียว</b> (`detail:"..."`). frontend branch ด้วย `isinstance(detail,list)`</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">28</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">เพิ่ม column ใน SQLAlchemy model. 2 ขั้น Alembic ตามลำดับที่นำ DB ทุกตัวขึ้น?</div>
+<div class="opts">A. (1) `alembic revision --autogenerate` (2) `alembic upgrade head` · B. upgrade head แล้วค่อย revision · C. downgrade -1 แล้ว revision · D. hand-edit ตาราง prod</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>สร้าง migration script ก่อน แล้ว upgrade head. migration = versioned/ordered/reversible</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">29</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">testing POST /api/chat. check ไหนควรอยู่ใน unit/e2e test (model mocked) — ไม่ใช่ eval?</div>
+<div class="opts">A. endpoint คืน 422 เมื่อ message ว่าง · B. คำตอบถูกต้อง factually · C. ไม่ invent source · D. ตอบสุภาพ on-brand</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>scaffolding (422/validation) deterministic → unit test; quality → eval (L8) เพราะโมเดล non-deterministic (assert property ไม่ใช่ equality)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">30</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">POST /api/chat message ว่าง. status?</div>
+<div class="opts">A. 200 · B. 404 · C. 422 · D. 500</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">C</div>bad input → 422</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">31</span><span class="tag sa">Short</span></div>
+<div class="q-body">token-bucket rate limit ทำงานยังไง?</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">คำตอบ</div>แต่ละ user มี bucket เติม token ตามเวลา (30/min → refill 0.5 tok/s, cap 30); ทุก request ใช้ 1 token; <b>bucket ว่าง → 429</b></div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">32</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">ทำไม handler เป็น async?</div>
+<div class="opts">A. เร็วกว่าเฉยๆ · B. event loop เดียว serve ทุก request — sync call ที่ block จะ freeze คนอื่น · C. Pydantic ต้องการ · D. ประหยัด token</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>sync OpenAI client ที่รอโมเดลจะ block loop → freeze ทุก request; ใช้ AsyncOpenAI + await</div></details></div>
+
+<div class="wk">📓 L4 — Frontend & SSE (33–42)</div>
+
+<div class="q"><div class="q-head"><span class="q-num">33</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">requirement: server push reply ทีละ token, browser ไม่ส่งอะไรกลับกลาง stream. transport ดีสุด?</div>
+<div class="opts">A. WebSockets — streaming ต้อง 2-way เสมอ · B. SSE — one-way server→client over HTTP พอ · C. plain fetch+JSON · D. long-polling</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>one-way = SSE พอ (WebSocket 2-way เกินจำเป็น/หนักกว่า)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">34</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">ทำไม SSE เหมาะกับ LLM token streaming กว่า plain JSON response?</div>
+<div class="opts">A. ส่ง token ทันทีที่ generate ผ่าน HTTP response ที่เปิดค้าง · B. เข้ารหัส default · C. ใช้ client memory น้อยกว่า · D. การันตี valid JSON</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>SSE = long-lived HTTP response ที่ส่ง token ทีละตัว</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">35</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">demo print หนึ่ง `data:` ต่อ token แล้วจบ. client รู้ได้ยังไงว่าไม่มี token แล้ว?</div>
+<div class="opts">A. connection close, read() คืน done · B. marker `data: [DONE]` ที่ client เฝ้า · C. empty data: line · D. นับ token</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div><code>data: [DONE]</code> = sentinel บอกจบ</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">36</span><span class="tag hot">ระวัง</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">server yield `data: {token}\n\n` ธรรมดา. ใช้ได้กับคำตอบสั้น แต่พอขอ bulleted list ทุกอย่างหลัง line break หาย. เพราะ + fix?</div>
+<div class="opts">A. proxy buffering — ตั้ง X-Accel-Buffering · B. token ที่เป็น `"\n"` ทำ frame จบเร็ว (`data: \n\n`); wrap ทุก token เป็น JSON · C. ลืม JSON.parse · D. TextDecoderStream ทิ้ง newline</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>newline token → `data: \n\n` = frame boundary พัง. <b>JSON-encode ทุก token</b> (`json.dumps`, ไม่ใช่ `{tok!r}`)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">37</span><span class="tag hot">ระวัง</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">SSE client บางที JSON-parse ครึ่ง token แล้ว crash — network reads ไม่ตรงกับ SSE events. read loop ที่ถูก?</div>
+<div class="opts">A. สะสม bytes ใน buffer, split บน blank line `\n\n`, เก็บ trailing partial, parse เฉพาะ event ที่ครบ · B. json.loads ทุก chunk · C. เปลี่ยนเป็น WebSocket · D. raise max_tokens</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>network chunks ≠ frames → buffer + split \n\n + keep partial frame</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">38</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">client ทำ `reply += value` ทุก reader.read() แทนที่จะ split `\n\n`. อะไรพัง?</div>
+<div class="opts">A. ไม่มีอะไร · B. ข้อความ `data: ` และ `[DONE]` โผล่ในคำตอบ + frame ที่ข้าม 2 reads พัง · C. connection ไม่ปิด · D. browser ปฏิเสธ</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>ไม่ strip `data: ` prefix + ไม่ handle [DONE] + partial frame พัง</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">39</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">SvelteKit: `let messages = $state([])`; reply มาแล้วรัน `messages.push({...})`. array ถูกใน console แต่ bubble ไม่โผล่. ทำไม?</div>
+<div class="opts">A. Svelte re-render บน reassignment; `.push` mutate in place → ใช้ `messages = [...messages, x]` · B. $state เก็บได้แค่ string/number · C. ต้องเรียก render() · D. {#each} แสดง object ไม่ได้</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>reactivity trigger บน reassignment ไม่ใช่ mutation → `[...messages, x]`</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">40</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">SSE chat type เองสวยบน localhost แต่ deploy หลัง nginx+Cloudflare กลับมาทีเดียวหลัง pause. สาเหตุ?</div>
+<div class="opts">A. token_stream generator buffering — เพิ่ม yield · B. proxy/CDN buffering — ตั้ง `X-Accel-Buffering: no` + ปิด compression บน event-stream · C. browser ปิด streaming เพราะไม่ใช่ localhost · D. gemma stream ได้แค่ HTTP</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>buffering reverse proxy/CDN = สาเหตุคลาสสิก</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">41</span><span class="tag sa">Short</span></div>
+<div class="q-body">"reactivity" คืออะไร (1 ประโยค)?</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">คำตอบ</div>เปลี่ยน <b>state</b> แล้ว UI update ตัวเอง (ไม่ต้องแก้ DOM มือ) — เช่น append token เข้า state, `<p>` redraw เอง</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">42</span><span class="tag sa">Short</span></div>
+<div class="q-body">SSE event 1 อันจบด้วยอะไร และ Content-Type อะไร?</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">คำตอบ</div><b>`text/event-stream`</b>; แต่ละ event จบด้วย <b>blank line `\n\n`</b> (บอก browser ให้ deliver event)</div></details></div>
+
+<div class="wk">📔 L5 — Embeddings & Vector Storage (43–52)</div>
+
+<div class="q"><div class="q-head"><span class="q-num">43</span><span class="tag calc">คำนวณ</span></div>
+<div class="q-body">a=[1,0,1], b=[1,1,0]. จงหา cosine similarity (แสดงวิธี)</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">วิธีทำ</div>
+<span class="step">dot a·b = 1·1 + 0·1 + 1·0 = 1</span>
+<span class="step">‖a‖ = √(1²+0²+1²) = √2 ; ‖b‖ = √(1²+1²+0²) = √2</span>
+<span class="step">cos = 1 / (√2·√2) = 1/2 = 0.5</span>
+<b>= 0.5</b> (60° — share 1 of 2 directions). ตรงข้ามจะเป็น −1</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">44</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">vector 2 ตัวชี้ทิศตรงข้ามพอดี. cosine similarity =?</div>
+<div class="opts">A. +1 · B. 0 · C. −1 · D. 0.5</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">C</div>+1 เหมือน, 0 ไม่เกี่ยว, <b>−1 ตรงข้าม</b></div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">45</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">query กับ chunk มี cosine ≈ 0. เกี่ยวกันแค่ไหน?</div>
+<div class="opts">A. เหมือนกัน · B. unrelated (orthogonal); −1 = ตรงข้าม · C. ตรงข้าม · D. เกือบเหมือน</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>≈0 = unrelated; +1 identical; −1 opposite</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">46</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">bge-m3 ให้แม้ line ที่ไม่เกี่ยวก็ ~0.3–0.5 (ไม่ 0). ตัดสินว่า chunk ไหน match ยังไง?</div>
+<div class="opts">A. RANK เอา cosine สูงสุด — ค่าดิบ crowded ไม่ calibrate · B. เก็บเฉพาะ > 0.8 · C. เฉลี่ยแล้วเอาที่เกิน · D. เชื่อทุกค่า > 0</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>rank, อย่า threshold ค่าดิบ (real embeddings scores crowded)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">47</span><span class="tag hot">ระวัง</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">pgvector `<=>` = cosine DISTANCE (น้อย=ใกล้). query คืน chunk ที่<b>เกี่ยวน้อยสุด</b>. bug?</div>
+<div class="opts">A. ใส่ DESC ใน ORDER BY — เอา distance มากสุด (ไกลสุด) ขึ้นก่อน · B. distance ต่ำ=ใกล้ ordering ถูกอยู่แล้ว · C. เปลี่ยนเป็น similarity · D. pgvector rank ไม่ได้</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>distance ต้อง <b>ASC</b> (ใกล้สุดขึ้นก่อน); ใส่ DESC = ได้ไกลสุด. (similarity สูง=DESC; distance ต่ำ=ASC)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">48</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">ANN index เร็วกว่า brute force. แลกกับอะไร?</div>
+<div class="opts">A. recall นิดหน่อย — อาจพลาด #1 จริง · B. ไม่แลกอะไร ANN exact และดีกว่า · C. เก็บ metadata ไม่ได้ · D. cosine — ANN รองรับแค่ Euclidean</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>ANN = approximate, แลก recall เล็กน้อยเพื่อความเร็ว (HNSW/IVFFlat)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">49</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">Q&A บน PDF 300 หน้า, คำตอบมัก 1–3 ประโยค. chunking default ดีสุด?</div>
+<div class="opts">A. ~300 tokens/chunk, ~15% overlap, split บน paragraph · B. ทั้ง PDF = 1 chunk · C. 1 ประโยค/chunk, no overlap · D. ~2000 tokens/chunk</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>200–500 tokens + 10–20% overlap, split บน boundary (ใหญ่ไป=เบลอ, เล็กไป=เสีย context)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">50</span><span class="tag hot">ระวัง</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">retrieval คืน garbage หลังเพื่อน 're-index ด้วย embedding model ใหม่' แต่ query path ยังใช้ model เก่า. สาเหตุ?</div>
+<div class="opts">A. docs กับ query embed ด้วย model ต่างกัน → vectors คนละสเปซ เทียบกันไม่ได้ · B. cosine มี sign bug · C. max_tokens ต่ำ · D. SSE ทิ้ง citations</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>ต้อง embed query+docs ด้วยโมเดล<b>เดียวกัน</b>เสมอ (space mismatch)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">51</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">embed ทั้ง page เป็น chunk เดียว เกิดอะไร?</div>
+<div class="opts">A. ใหญ่ยิ่งดี · B. vector เบลอหลาย topic → match ทุกอย่างจางๆ ไม่มีอะไรชัด · C. embedding fail · D. retrieval เร็วขึ้น</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>chunk ใหญ่ = vector เบลอ (blurry average)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">52</span><span class="tag sa">Short</span></div>
+<div class="q-body">metadata (source, page) ที่เก็บกับ chunk มีประโยชน์ 2 อย่างอะไร?</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">คำตอบ</div>(1) <b>citations</b> — โชว์ "from handbook.pdf p.7" ให้ verify (2) <b>filtering</b> ก่อน rank — filter source/lecture เพิ่ม speed+accuracy (seed hybrid search)</div></details></div>
+
+<div class="wk">📒 L6 — RAG (53–62)</div>
+
+<div class="q"><div class="q-head"><span class="q-num">53</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">RAG ทำอะไรตอน query time (1 บรรทัด)?</div>
+<div class="opts">A. Retrieve-then-read: embed คำถาม → top-k chunks → stuff เข้า prompt ก่อนตอบ · B. fine-tune บน docs · C. ยัด corpus ทั้งหมดใน system prompt · D. browse web</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>retrieve-then-read; โมเดลอ่านแค่ top-k chunks ไม่เคยเห็น corpus ทั้งหมด</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">54</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">สำหรับข้อมูล private ที่เปลี่ยนบ่อย RAG ชนะ fine-tuning หลักๆเพราะ?</div>
+<div class="opts">A. ไม่ต้อง retrain — แค่ update index, และ cite sources ได้ · B. ถูกกว่าตอน train · C. ไม่ต้องมี DB · D. กำจัด hallucination หมด</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>RAG เก็บ fact นอกโมเดล → update index แล้ว answer สด + cite ได้</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">55</span><span class="tag hot">ระวัง</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">RAG answer ผิดแม้ fact อยู่ใน corpus. ตาม debug ladder เช็คอะไร<b>ก่อน</b>?</div>
+<div class="opts">A. temperature · B. chunks ที่ retrieval คืนจริงสำหรับคำถามนั้น (print top-k) · C. SSE code · D. persona ใน system prompt</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>inspect what was retrieved FIRST — 9/10 bug อยู่ใน chunks (retrieval ไม่ใช่โมเดล)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">56</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">retrieval ถูก (gold chunk อยู่ใน top-8) แต่โมเดลเมิน. chunk อยู่ตำแหน่ง 5/8. สาเหตุ+fix?</div>
+<div class="opts">A. 'Lost in the middle' — LLM under-attend กลาง context; keep k small, best chunk first · B. embedding stale, re-index · C. cosine sign bug · D. rate limit</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>lost in the middle → k เล็ก, best chunk ที่ขอบ/แรก</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">57</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">bump k จาก 4 → 40 เพื่อ "ให้โมเดลมีข้อมูลมากขึ้น". ผลต่อคุณภาพคำตอบ?</div>
+<div class="opts">A. มักแย่ลง — fact เกี่ยวข้องจมใน noise + lost in the middle · B. ดีขึ้นเสมอ · C. ไม่เปลี่ยน อ่านแค่ chunk แรก · D. ตอบเหมือนเดิมเพราะ temp=0</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>more context ≠ better; 3–5 good chunks ชนะ 20 noisy</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">58</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">top scores [0.30, 0.20, 0.18], min_score floor = 0.45. answer() ควรทำ?</div>
+<div class="opts">A. assemble ทั้ง 3 ให้โมเดลตัดสิน · B. short-circuit ไม่เรียกโมเดล คืน "หาไม่เจอในเอกสาร" · C. เอา top (0.30) · D. ลด floor เป็น 0.15</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>ไม่มีอะไรผ่าน floor → ตอบ "I don't know" (ไม่ cite junk)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">59</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">app ตอบมั่นใจคำถามที่ fact <b>ไม่มี</b>ใน retrieved chunks. เรียกว่า + fix?</div>
+<div class="opts">A. Ungrounded hallucination; min_score floor + prompt "answer only from context, ถ้าไม่มีบอกไม่รู้" · B. rate limit · C. lost in the middle · D. stale index</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>ungrounded hallucination → floor + "ONLY context" + give-an-out</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">60</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">"When is the final exam?" corpus ไม่มีวันสอบ. คำตอบไหนแสดงว่าระบบทำงาน<b>ถูก</b>?</div>
+<div class="opts">A. "15 May 2026" — เจาะจงมั่นใจ · B. "หาวันสอบในเอกสารไม่เจอ" · C. "น่าจะพฤษภา เหมือนวิชาอื่น" · D. "Error: no matching chunk"</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">B</div>grounded system ต้องปฏิเสธเมื่อ fact ไม่อยู่ใน context (ไม่ invent, ไม่ crash)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">61</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">คำตอบถูก + grounded แล้ว ทำไมยังต้องแนบ citation (file+page)?</div>
+<div class="opts">A. ให้ user verify claim + ให้คุณ debug คำตอบผิดย้อนไป chunk ต้นเหตุ · B. ทำให้ retrieve ดีขึ้นครั้งหน้า · C. citation หยุด hallucination ตั้งแต่แรก</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>citation = trust (verify) + debuggability</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">62</span><span class="tag sa">Short</span></div>
+<div class="q-body">ทำไม prompt "Answer using ONLY the context. If not there, say you don't know." ลด hallucination?</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">คำตอบ</div>"ONLY the context" หยุดโมเดลใช้ frozen memory ที่อาจผิด; "say I don't know" ให้ทางออกที่ตรวจสอบได้แทนการแต่ง fact มั่นใจ; number chunks [1][2] ให้ cite ได้; + temperature 0</div></details></div>
+
+<div class="wk">📎 Lecture-notes extras (63–74)</div>
+
+<div class="q"><div class="q-head"><span class="q-num">63</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">ประโยคภาษาไทยกับประโยคอังกฤษยาวเท่ากัน อันไหนมัก cost token มากกว่า (และทำไม)?</div>
+<div class="opts">A. ไทย — tokenizer เทรนบนอังกฤษเป็นหลัก, ไทย tokenize แย่กว่า → token/ตัวอักษรมากกว่า · B. อังกฤษ · C. เท่ากันเสมอ (~4 chars/token คงที่) · D. ขึ้นกับ temperature</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>~4 chars/token เป็นแค่ rule of thumb; ไทย/โค้ด tokenize แย่กว่า = แพงกว่า</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">64</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">chatbot คุยไปเรื่อยๆ ทำไม prompt_tokens (และค่าใช้จ่าย) ต่อ turn ยิ่งเพิ่ม?</div>
+<div class="opts">A. โมเดล stateless → resend history ทั้งหมดทุก turn; turn 50 จ่ายค่า 49 turn ก่อน · B. โมเดลจำ context ไว้ในตัว · C. temperature เพิ่มเอง · D. bug</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>stateless → resend ทั้ง history; real apps trim/summarise (+ ชน context window → ตัด oldest = "ลืม")</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">65</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">high-stakes reasoning ที่โมเดลพลาดเป็นครั้งคราว เทคนิคไหนช่วย?</div>
+<div class="opts">A. Self-consistency — sample หลาย CoT ที่ temp สูง แล้ว majority vote · B. ลด max_tokens · C. temperature=0 อย่างเดียว · D. เพิ่ม 'be accurate'</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>self-consistency = consensus จากหลาย reasoning path (cost N× tokens, เก็บไว้ high-stakes)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">66</span><span class="tag sa">Short</span></div>
+<div class="q-body">temperature=0 กับ top_p ปรับอะไรของ softmax step และควร tune อะไร? และ stop ใช้ทำอะไร?</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">คำตอบ</div>ทั้งคู่ปรับ softmax step เดียว (temp หาร logit; top_p/top_k prune) → tune <b>อย่างใดอย่างหนึ่ง</b>. <b>stop</b> = ลำดับที่หยุด generation (เช่น `stop=["ANSWER:"]` หยุดก่อนบรรทัดที่จะ parse). หมายเหตุ: temp=0 ไม่การันตี 100% เหมือน (FP บน GPU)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">67</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">โมเดลคืน `{"a":1} junk } {"b":2}`. `extract_json` แบบ `first { … last }` พังยังไง + fix?</div>
+<div class="opts">A. over-grab จาก { แรกถึง } สุดท้าย = invalid JSON; ใช้ brace-counter (first_object) นับ depth คืน object แรกที่ balanced · B. ไม่พัง · C. ใช้ eval() · D. เพิ่ม temperature</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>`rfind("}")` over-grab เมื่อมี 2 objects/stray } → brace-counter ชนะ</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">68</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">โมเดลคืน curly quotes `{“item”: “tea”}` vs single quotes `{'a':1}`. อันไหน repair แบบ mechanical (regex/translate) ปลอดภัย?</div>
+<div class="opts">A. curly quotes ปลอดภัย (ไม่ใช่ JSON punctuation แน่ๆ); single quotes ห้าม → ใช้ loop (อาจเป็น apostrophe ในค่า) · B. ทั้งคู่ปลอดภัย · C. ทั้งคู่ต้องใช้ loop · D. curly ต้อง loop, single regex ได้</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>curly quotes flatten ปลอดภัย; single quotes ambiguous → re-ask loop</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">69</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">test LLM endpoint: assertion แบบไหนถูกสำหรับ unit test (model mocked)?</div>
+<div class="opts">A. `assert "96" in reply` (property) + roles ถูก · B. `assert reply == "The total is 96 baht."` · C. `assert คำตอบสุภาพ` · D. `assert คำตอบ factually ถูก`</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>โมเดล non-deterministic → assert <b>property</b> ไม่ใช่ equality; quality → eval (L8). unit/e2e mock model, eval ใช้ real</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">70</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">ทำไม chat streaming ใช้ fetch-reader แทน browser `EventSource`?</div>
+<div class="opts">A. EventSource เป็น GET-only ส่ง POST body (ข้อความยาว) ไม่ได้ · B. EventSource ช้ากว่า · C. EventSource ไม่รองรับ SSE · D. fetch เข้ารหัสกว่า</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>EventSource auto-frame/reconnect (Last-Event-ID) แต่ GET-only, no body → chat ข้อความยาวต้อง POST → fetch-reader (ไม่ auto-reconnect)</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">71</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">SSE stream ตายระหว่างโมเดล "คิด" นานก่อน token แรก (idle connection ถูก proxy ตัด). fix?</div>
+<div class="opts">A. ส่ง heartbeat comment frame (`: keep-alive\n\n`) ทุก ~15s — client ignore แต่ proxy เห็น bytes · B. เพิ่ม max_tokens · C. เปลี่ยนเป็น WebSocket · D. temperature=0</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>บรรทัดขึ้นต้น `:` = comment (client ignore) แต่คง connection warm; client `if(!ev.startsWith("data: "))` skip ให้ฟรี</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">72</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">คุณ embed docs ด้วย bge-m3 (1024-dim) แต่ query ด้วย text-embedding-3-small (1536-dim). เกิดอะไร?</div>
+<div class="opts">A. เทียบกันไม่ได้ — vector คนละสเปซ + มิติต่างกัน; ต้องใช้โมเดลเดียวกันทั้ง query+docs · B. ทำงานปกติ · C. ช้าลงเฉยๆ · D. cosine coerce มิติให้เท่ากัน</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>dimension คงที่ต่อโมเดล (bge-m3=1024, OpenAI 3-small=1536, MiniLM=384); mix/เทียบไม่ได้</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">73</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">user พิมพ์ "how do i run my code?" retrieval พลาด chunk "Students execute Python in a sandbox" ที่มีอยู่จริง. fix ที่ leverage สูงสุด?</div>
+<div class="opts">A. Query rewriting — expand keywords + decontextualise ก่อน embed ("run execute Python sandbox Piston") · B. เปลี่ยน embedding model ใหญ่ขึ้น · C. ลด min_score เป็น 0 · D. เพิ่ม k เป็น 40</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>retriever ไม่พัง query ต่างหาก → rewrite (expand synonyms + resolve pronouns จาก history) ก่อน retrieve</div></details></div>
+
+<div class="q"><div class="q-head"><span class="q-num">74</span><span class="tag mcq">MCQ</span></div>
+<div class="q-body">คำตอบ RAG พูด fact เดิมซ้ำ 3 ครั้ง / 2 ใน top-k slots พูดเรื่องเดียวกัน. สาเหตุ + fix?</div>
+<div class="opts">A. near-duplicate chunks (จาก overlap/สำเนา doc); dedupe ก่อน assembly ให้ slot ว่างไปที่ chunk ใหม่ · B. temperature สูง · C. lost in the middle · D. stale index</div>
+<details><summary>เฉลย</summary><div class="ans"><div class="al">A</div>dedupe near-dups (best-first, ทิ้งที่คล้ายเกิน threshold) → เก็บ highest-ranked ของแต่ละกลุ่ม</div></details></div>
+
+<p class="foot">74 ข้อ · L1–L6 · MCQ/short-answer เชิง concept (รวมส่วนขยายจาก lecture notes) · เฉลยเต็มพร้อมเหตุผล · ขอให้สอบผ่าน 🍀</p>
+</div>
+<script>function tg(o){ document.querySelectorAll('details').forEach(d=>d.open=o); }</script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+Lecture 7: Revision 1
+Consolidate: from prompting to RAG.
+
+▶ Slides
+⤓ PDF
+Lecture 7 — Revision 1
+Goal of this lecture: consolidate everything from Lectures 1–6 into one mental model — an end-to-end RAG application — and build the habit of debugging a failing retrieval pipeline systematically. By the end you should be able to draw the whole architecture from prompt to streaming UI, and reason your way from a wrong answer back to the box that caused it.
+This is a revision lecture. There is little new material here. Instead it is a structured review of the first block, a self-test question bank, and a checklist you can run down when you build (or fix) a RAG app for HW3 and your project.
+
+1. The one-picture mental model
+Everything in Lectures 1–6 fits into a single application. Split it into two phases:
+
+Offline — build the index once.
+
+Load documents (PDF, Markdown, HTML…).
+Chunk them into ~200–500-token passages with a small overlap, and attach metadata (source file, page, section).
+Embed each chunk with an embedding model → a vector.
+Store the vectors + text + metadata in a vector store (pgvector; Qdrant / Pinecone for scale).
+Online — answer a question.
+
+The UI sends the question to your backend (POST /api/chat).
+The backend embeds the question with the same embedding model.
+It searches the store for the top-k nearest chunks (cosine similarity).
+It assembles a prompt: the retrieved chunks as context + the question.
+It calls the LLM at temperature=0 and streams the answer (SSE) back to the UI, with citations built from the chunks' metadata.
+            OFFLINE                                 ONLINE
+docs → chunk+meta → embed → [vector store] ← embed-query ← question (UI → backend)
+                                  │
+                          top-k chunks → assemble prompt → LLM(temp=0) → SSE → UI
+Each lecture owns one part of this diagram:
+
+Lecture	Owns
+L1 Prompting & sampling	The messages, roles, temperature, prompting patterns
+L2 Structured output	Getting parseable, validated JSON out of the model
+L3 Backend & REST	The POST /api/chat endpoint; Pydantic; rate limit
+L4 Frontend & SSE	The reactive UI; streaming tokens with Server-Sent Events
+L5 Vector storage	Embeddings, cosine similarity, chunking, the index
+L6 RAG	Retrieve-then-read; prompt assembly; citations
+If you can name what each box does and why the arrows point the way they do, you understand the course so far.
+
+2. Block A review — prompting, sampling & structured output
+The model (L1). An LLM is a next-token predictor. It is stateless — each call sees only the messages you send, so you resend the whole conversation each turn. Messages carry a role:
+
+system — rules, persona, output format.
+user — the human's input.
+assistant — the model's prior replies (simulated memory).
+Sampling. temperature controls randomness: 0 is (near-)deterministic, 0.7–1.0 is creative. Tune *temperature or top_p, not both*. max_tokens caps length and cost; stop ends generation early. For extraction, classification, and RAG, use temperature=0.
+
+Prompting patterns. Zero-shot (just ask), few-shot (show 2–5 examples — the single most reliable way to fix output format), chain-of-thought (ask it to reason step by step on hard tasks), and putting structure in the system prompt.
+
+Structured output (L2). When you need data your code can rely on, ask for JSON and then:
+
+import json
+
+try:
+    data = json.loads(raw)            # never eval() — that's a code-execution hole
+except json.JSONDecodeError as e:
+    data = repair(raw, str(e))        # feed the error back to the model and retry
+
+# valid JSON is not valid data — check it yourself
+assert isinstance(data.get("price"), (int, float)), "price missing or wrong type"
+The three moves: prompt for JSON, parse with json.loads, validate the fields. A schema (JSON mode / response schema) helps but does not replace your own validation — the model can still return a plausible-but-wrong value.
+
+Caveat for the class model. Provider "JSON mode" (response_format={"type": "json_object"} or a json_schema) is a real feature of some providers (OpenAI etc.), but it is silently ignored by the class proxy / Gemma — accepted with no effect. So you cannot rely on response_format here. The real, portable mechanism is: prompt for JSON → json.loads → validate → repair on failure. The realistic validate step is Pydantic: define a model and call Model.model_validate_json(raw) (available in the sandbox), which parses and type-checks in one line and raises a clear error you can feed into the repair loop.
+3. Block B review — backend, frontend & streaming
+Why a backend (L3). The LLM call belongs behind your server so the API key never reaches the browser, and so you can add auth, validation, logging, and rate limits. Expose it as a REST endpoint — POST /api/chat — and model the request and response with Pydantic so the I/O is typed and self-validating.
+
+House style. router → service → repository: the router handles HTTP, the service holds business logic, the repository does pure data access. Errors are part of the API — return clear status codes, not stack traces. A simple in-process token-bucket rate limit (e.g. 30 calls/min/user) stops one user from draining the quota.
+
+Reactivity & SSE (L4). A reactive UI is one where state drives the view: update the state, the framework re-renders. Because the model emits tokens one at a time, you stream them to the browser with Server-Sent Events instead of making the user wait for the whole reply. The server sends text/event-stream and yields chunks; the client reads the stream and appends each token.
+
+# server: stream chunks as SSE
+async def stream():
+    for chunk in resp:                       # resp = ...create(stream=True)
+        token = chunk.choices[0].delta.content or ""
+        yield f"data: {token}\n\n"           # SSE frame
+Streaming doesn't make generation faster — it lowers perceived latency and lets the user stop early.
+
+Block B in one line. Status codes carry meaning: 422 = the body was well-formed JSON but a field was missing or the wrong type (Pydantic rejected it); 429 = you hit the rate limit, back off and retry. And an SSE consumer must buffer partial frames: a single data: event can arrive split across reads, so accumulate bytes and only parse a frame once you see the blank-line (\n\n) boundary — don't json.loads a half-received chunk.
+4. Block C review — vector storage & RAG
+Meaning as geometry (L5). An embedding model maps text → a fixed-length vector; texts that mean similar things land near each other. Rank matches by cosine similarity (the angle between vectors; +1 = same direction, −1 = opposite, 0 = unrelated). You must embed documents and queries with the same model. Don't embed whole documents — chunk them (200–500 tokens, ~10–20% overlap) and attach metadata, then store the vectors in an index (brute-force kNN for a toy; pgvector / Qdrant / Pinecone for scale).
+
+Retrieve-then-read (L6). RAG grounds answers in your data:
+
+Embed the question.
+Search the store for the top-k nearest chunks.
+Assemble a prompt: number the chunks, say "use ONLY the context", and tell the model to say it doesn't know when the answer is absent.
+Generate at temperature=0, and return citations from the chunks' metadata.
+The model never sees your whole corpus — only the top-k chunks. So quality is gated by retrieval first, the model second.
+
+5. Debugging a failing retrieval pipeline
+This is a named learning outcome, so make it a reflex. When a RAG answer is wrong, do not start with the model. Walk the pipeline in order and look at the data at each boundary:
+
+Was the right chunk even retrieved? Print the top-k for the failing question. If the gold chunk isn't there, it's a retrieval problem — stop blaming the model.
+If it wasn't retrieved — is it in the index at all? A stale index (docs changed, embeddings didn't) or a chunk lost to bad chunking never had a chance. Re-index; check chunk boundaries and overlap.
+Is the query/chunk a vocabulary mismatch? Keyword retrieval misses synonyms ("car" vs "automobile"). Switch to embedding similarity.
+*If it was retrieved but ignored — "lost in the middle."* LLMs attend best to the start and end of long context. Keep k small and put the best chunk first.
+If retrieval is fine but the answer invents facts — the prompt. Add "use ONLY the context" and allow the model to decline. Confirm temperature=0.
+The rule: inspect what was retrieved before you touch the model. Nine times out of ten the bug is visible in the chunks.
+Debug this broken RAG (runnable). The same toy retriever as the deck, but with a one-line ranking bug: sorted(..., reverse=False) returns the least similar chunks first, so the gold chunk falls out of the top-k even though it's in the index. Walk the ladder: inspect what came back, confirm the chunk is indexed (so it's a ranking bug, not a missing-doc/chunking bug), then fix reverse=True. Notice that even once fixed, the 2nd chunk is junk (x9, the cafeteria line) — pulled in only because it shares stop-words like "the"; a chunk can land in the top-k while being irrelevant.
+
+import math
+
+KB = [
+    {"id": "h3", "text": "The term code 1/2026 means semester 1 of academic year 2026."},
+    {"id": "s7", "text": "Students run Python in an in-browser sandbox powered by Piston."},
+    {"id": "l6", "text": "RAG grounds answers in your own documents to reduce hallucination."},
+    {"id": "x9", "text": "The cafeteria serves lunch from eleven until two each weekday."},
+]
+
+def tokens(t): return t.lower().replace(".", "").split()
+vocab = sorted({w for c in KB for w in tokens(c["text"])})
+def vec(t):
+    c = {}
+    for w in tokens(t): c[w] = c.get(w, 0) + 1
+    return [c.get(w, 0) for w in vocab]
+def cosine(a, b):
+    dot = sum(x * y for x, y in zip(a, b))
+    na, nb = math.sqrt(sum(x * x for x in a)), math.sqrt(sum(y * y for y in b))
+    return dot / (na * nb) if na and nb else 0.0
+
+# THE BUG: reverse=False ranks the LEAST similar chunk first.
+def retrieve(q, k=2):
+    qv = vec(q)
+    return sorted(KB, key=lambda c: cosine(qv, vec(c["text"])), reverse=False)[:k]
+
+q = "what does the term code 1/2026 mean"
+
+# Step 1 (inspect): gold 'h3' is missing from the buggy top-2.
+print("buggy top-2:", [c["id"] for c in retrieve(q)])
+# Step 2 (is it indexed?): 'h3' scores HIGHEST -> a RANKING bug, not missing-doc.
+print("scores:", sorted(((round(cosine(vec(q), vec(c["text"])), 3), c["id"]) for c in KB), reverse=True))
+# Step 3 (fix): highest cosine first -> reverse=True.
+def retrieve_fixed(q, k=2):
+    qv = vec(q)
+    return sorted(KB, key=lambda c: cosine(qv, vec(c["text"])), reverse=True)[:k]
+print("fixed top-2:", [c["id"] for c in retrieve_fixed(q)])
+Output:
+
+buggy top-2: ['s7', 'l6']
+scores: [(0.603, 'h3'), (0.158, 'x9'), (0.0, 's7'), (0.0, 'l6')]
+fixed top-2: ['h3', 'x9']
+6. Self-test question bank
+Try to answer before reading the brief answer.
+
+Why does an LLM need the whole conversation resent on every call? It's stateless — it has no memory between requests; the messages you send are the only context it has.
+You need the same extraction result every run. What's the first setting to check? temperature — set it to 0.
+Why parse model JSON with json.loads and not eval? eval executes arbitrary code (an RCE hole); json.loads only parses data. And valid JSON still needs field/type validation.
+Why put the LLM call behind your own backend? To keep the API key off the client, and to add auth, validation, logging, and rate limiting.
+What does SSE buy you over a plain request? Tokens stream to the user as they're generated — lower perceived latency and the ability to stop early.
+Why must documents and queries use the same embedding model? Vectors from different models live in different spaces and aren't comparable.
+What does cosine similarity measure, and what's its range? The angle between two vectors; +1 (same direction) to −1 (opposite), 0 = unrelated.
+Why chunk documents instead of embedding each whole? A whole-doc vector is a blurry average and won't fit the context window; chunks pinpoint the right passage. Use ~200–500 tokens with overlap.
+In RAG, what is "retrieve-then-read"? Embed the question → fetch top-k chunks → stuff them into the prompt → generate a grounded answer.
+What single prompt instruction most reduces hallucination in RAG? "Use ONLY the context; if the answer isn't there, say you don't know."
+Your RAG answer is wrong. What do you inspect first? The chunks that retrieval actually returned.
+What is "lost in the middle"? LLMs under-attend to information in the middle of a long context; keep k small and front-load the best chunk.
+Can you rely on response_format (JSON mode / schema) on the class model? Why not, and what do you do instead? No — the class proxy / Gemma silently ignores it (accepted, no effect). Some providers (OpenAI etc.) enforce it, but the portable mechanism is: prompt for JSON → json.loads → validate (e.g. Model.model_validate_json(raw) with Pydantic) → repair on failure.
+Your backend returns 422 for one request and 429 for another — what does each mean? 422 = the request was well-formed JSON but a field was missing or the wrong type (validation failed); 429 = rate-limited (too many requests — back off and retry).
+Why must an SSE client buffer partial frames? A single data: event can arrive split across network reads, so you accumulate bytes and only parse a frame at the blank-line (\n\n) boundary — parsing a half-received chunk would error or drop data.
+7. Build-a-RAG-app checklist
+Run down this list when you build HW3 (Vector Search & RAG) or your project:
+
+[ ] Documents loaded and converted to clean plain text.
+[ ] Chunked at ~200–500 tokens with ~10–20% overlap, split on natural boundaries where possible.
+[ ] Metadata (source, page, section) attached to every chunk — you can't cite what you didn't capture.
+[ ] One embedding model used for both chunks and queries.
+[ ] Index built in a vector store; re-indexed whenever sources change.
+[ ] Backend endpoint (POST /api/chat) with typed Pydantic I/O, error handling, and a rate limit — the LLM key stays server-side.
+[ ] Retrieval returns top-k by similarity; you can print the hits for any question.
+[ ] Prompt assembly numbers the chunks, says "use ONLY the context," and allows "I don't know."
+[ ] temperature=0 for the answer.
+[ ] Structured output validated in code, not trusted to provider JSON mode — response_format is ignored on the class model, so prompt for JSON then Model.model_validate_json(raw) (Pydantic) and repair on failure.
+[ ] Citations returned from chunk metadata.
+[ ] Streaming (SSE) wired from backend to UI.
+Key terms
+Next-token predictor / stateless — the model and the fact that it keeps no memory between calls.
+temperature / top_p — sampling controls; 0 for deterministic tasks.
+json.loads + validation — parse model JSON safely, then check the fields.
+router → service → repository — the backend layering house style.
+SSE (Server-Sent Events) — text/event-stream token streaming to the browser.
+Embedding / cosine similarity — text → vector; rank matches by angle.
+Chunk / overlap / metadata — the unit of retrieval and what's stored with it.
+Retrieve-then-read — the core RAG loop: embed → top-k → assemble → generate.
+Lost in the middle — LLMs under-attend to the middle of long contexts.
+Practice
+Draw the architecture from memory (the §1 diagram). Then label which lecture owns each box and each arrow. Check yourself against the table.
+Run the consolidation toy (the code slide in this deck): a pure-Python embed → cosine → top-k → assemble pipeline. Add a KB entry and a matching question and watch which chunks come back.
+Break retrieval on purpose. In your HW3 mini-RAG, set chunk overlap=0 and find a question whose answer now falls across a boundary; then restore overlap and confirm retrieval recovers.
+Run the §5 debugging drill on a real wrong answer from your pipeline: print the retrieved chunks first, and only then decide whether the bug is in chunking, retrieval, or the prompt.
+Fill in the §7 checklist for HW3 — turn every unchecked box into a task.

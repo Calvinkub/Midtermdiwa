@@ -1,0 +1,626 @@
+Lecture 5: Building a vector storage
+Meaning as vectors.
+
+▶ Slides
+⤓ PDF
+Lecture 5 — Building a Vector Storage
+Goal of this lecture: understand how text becomes vectors, how to measure the similarity between two vectors with cosine similarity, why we store those vectors in a specialised index (pgvector), and how to chunk documents and attach metadata so they can be retrieved.
+By the end you should be able to embed and index a set of documents and run a nearest-neighbor semantic search — the retrieval foundation that Lecture 6 (Retrieval-Augmented Generation) is built on.
+
+1. Why vectors? Meaning as geometry
+A language model only knows what it was trained on. Your company handbook, your course PDFs, last week's meeting notes — none of it is in the model's weights. To let an LLM answer questions about your data, you first need a way to find the relevant pieces of that data for a given question. That is the job of a vector store.
+
+Plain keyword search is not enough. If a user asks "How do I reset my password?" but the document says "changing your login credentials", a keyword match finds nothing — there are no shared words. We need search that understands meaning, not just spelling.
+
+The trick is to turn each piece of text into a vector: a fixed-length list of numbers. A good embedding places texts that mean similar things close together in this space, and unrelated texts far apart.
+
+"a cat sat on the mat"  →  [0.12, -0.04, 0.88, ... ]   # e.g. 1024 numbers (bge-m3)
+The direction a vector points encodes its meaning. The classic illustration is that vector arithmetic captures relationships: 
+king
+−
+man
++
+woman
+≈
+queen
+king−man+woman≈queen, because the difference "man → woman" points in a similar direction to "king → queen". You will not do that arithmetic in practice, but it captures the core idea: meaning has become geometry, and geometry is something a computer can measure.
+
+2. Embedding models
+An embedding model is what produces these vectors. You give it a string, it returns a vector (its embedding). Unlike the chat models from Lecture 1, an embedding model does not generate text — it only maps text to numbers.
+
+Three ways to get embeddings:
+
+Hosted APIs. OpenAI (text-embedding-3-small, 1536 dimensions), Cohere, and Voyage all expose an embeddings endpoint. One HTTP call returns a vector.
+Local models. The sentence-transformers library runs models like all-MiniLM-L6-v2 (384 dimensions) on your own machine — no API cost, your data never leaves your server.
+Our class model. The class LLM proxy serves bge-m3 (1024 dimensions), a strong multilingual model (good on English and Thai). It speaks the same OpenAI API as the chat models, so the same client.embeddings.create(...) call works — and unlike the others below, this one runs in the class sandbox and from your own machine with your personal key.
+The call is identical regardless of provider — only the model name changes. This one is runnable right here:
+
+from openai import OpenAI
+
+client = OpenAI()   # in the sandbox the proxy URL + key are already set
+vec = client.embeddings.create(
+    model="bge-m3",
+    input="a cat sat on the mat",
+).data[0].embedding
+print("dimensions:", len(vec))   # -> 1024
+print("first 5:", [round(x, 3) for x in vec[:5]])
+The hosted/local variants look the same — swap the model and (for local) the library:
+
+# Hosted OpenAI:  model="text-embedding-3-small"  -> 1536 floats
+# Local:
+from sentence_transformers import SentenceTransformer
+model = SentenceTransformer("all-MiniLM-L6-v2")
+vec = model.encode("a cat sat on the mat")   # -> numpy array of 384 floats
+Batch your calls. Embedding one string at a time is slow and wasteful. Every real API takes a list and returns one vector per item — pass input=[chunk1, chunk2, …] and read resp.data[i].embedding for the i-th chunk. A 300-page PDF might be thousands of chunks; batch them (a few hundred per call) instead of firing thousands of requests.
+
+Two rules that trip people up:
+
+Dimensionality is fixed per model. Every vector from bge-m3 has exactly 1024 numbers (and every text-embedding-3-small vector exactly 1536). You cannot mix vectors of different lengths.
+You can only compare vectors from the same model. A vector from bge-m3 and a vector from MiniLM live in different spaces and are not comparable. Pick one embedding model for a project and use it for both your documents and your queries.
+Meaning crosses languages
+bge-m3 is multilingual — that's why we picked it. It places a sentence and its translation near each other even though they share not one character. For a Thai-and-English cohort this is the feature: retrieval over Thai course notes with an English question (or the reverse) just works. Run it in the sandbox:
+
+import math
+from openai import OpenAI
+
+client = OpenAI()
+
+texts = [
+    "how do I reset my password",          # EN query
+    "ฉันจะรีเซ็ตรหัสผ่านได้อย่างไร",          # same meaning, Thai
+    "the cat sat on the mat",              # unrelated EN
+    "ตลาดหุ้นร่วงลงอย่างหนักวันนี้",          # unrelated Thai (stock market fell)
+]
+
+def cosine(a, b):
+    dot = sum(x * y for x, y in zip(a, b))
+    na = math.sqrt(sum(x * x for x in a))
+    nb = math.sqrt(sum(y * y for y in b))
+    return dot / (na * nb) if na and nb else 0.0
+
+resp = client.embeddings.create(model="bge-m3", input=texts)
+vecs = [d.embedding for d in resp.data]
+q = vecs[0]   # the English password question
+for text, v in sorted(zip(texts[1:], vecs[1:]), key=lambda p: -cosine(q, p[1])):
+    print(f"{cosine(q, v):.3f}  {text}")
+The Thai "reset my password" line scores ~0.90 — far above the unrelated Thai (~0.49) and English (~0.34) sentences. The model matched meaning across a language barrier, with zero shared characters. Same model="bge-m3", same cosine; only the text changed. (Note the unrelated lines still sit around 0.3–0.5, not 0: real embedding spaces are crowded, so you rank — take the highest — rather than trust an absolute threshold.)
+
+3. Cosine similarity
+Once two texts are vectors, "how similar are they?" becomes "how aligned are these two arrows?". We measure the angle between them with cosine similarity:
+
+cos
+⁡
+(
+a
+,
+b
+)
+=
+a
+⋅
+b
+∥
+a
+∥
+∥
+b
+∥
+cos(a,b)= 
+∥a∥∥b∥
+a⋅b
+​
+ 
+
+where the dot product 
+a
+⋅
+b
+=
+∑
+i
+a
+i
+b
+i
+a⋅b=∑ 
+i
+​
+ a 
+i
+​
+ b 
+i
+​
+  and the length (norm) 
+∥
+a
+∥
+=
+∑
+i
+a
+i
+2
+∥a∥= 
+∑ 
+i
+​
+ a 
+i
+2
+​
+ 
+​
+ . Dividing by the lengths cancels out magnitude, so we compare direction only. The result ranges from:
+
++1 — same direction (as similar as possible),
+0 — orthogonal (unrelated),
+−1 — opposite direction.
+To find the best match for a query, embed the query, compute its cosine similarity against every stored vector, and take the highest score. That is a nearest-neighbor search.
+
+Here is cosine similarity in pure Python — no libraries, just the formula:
+
+import math
+
+def cosine(a, b):
+    dot = sum(x * y for x, y in zip(a, b))
+    na = math.sqrt(sum(x * x for x in a))
+    nb = math.sqrt(sum(y * y for y in b))
+    return dot / (na * nb) if na and nb else 0.0
+A worked example by hand. Take a = [1, 0, 1] and b = [1, 1, 0]. The dot product is 
+1
+⋅
+1
++
+0
+⋅
+1
++
+1
+⋅
+0
+=
+1
+1⋅1+0⋅1+1⋅0=1. Each norm is 
+1
+2
++
+0
+2
++
+1
+2
+=
+2
+1 
+2
+ +0 
+2
+ +1 
+2
+ 
+​
+ = 
+2
+​
+ . So 
+cos
+⁡
+(
+a
+,
+b
+)
+=
+1
+/
+(
+2
+⋅
+2
+)
+=
+1
+/
+2
+=
+0.5
+cos(a,b)=1/( 
+2
+​
+ ⋅ 
+2
+​
+ )=1/2=0.5 — the two vectors share one of two directions, a 60° angle. Plug those into the cosine() function above and you get 0.5.
+
+Why normalise? If you divide each vector by its own length first, comparing them later costs a single dot product:
+
+def normalize(v):
+    n = math.sqrt(sum(x * x for x in v)) or 1.0
+    return [x / n for x in v]
+
+# After normalising, cosine == dot product:
+ua, ub = normalize(a), normalize(b)
+print(sum(x * y for x, y in zip(ua, ub)))   # -> 0.4999999999999999  (i.e. 0.5)
+A note on normalisation. If you scale every vector to length 1 up front (a unit vector), then 
+∥
+a
+∥
+=
+∥
+b
+∥
+=
+1
+∥a∥=∥b∥=1 and cosine similarity is just the dot product 
+a
+⋅
+b
+a⋅b. Some indexes expect you to normalise on insert so a plain inner product is cosine; pgvector's cosine-distance operator <=> handles the normalisation internally, so you don't have to.
+4. A working toy: bag-of-words + cosine
+Before we call a real model, let's build the cheapest possible "embedding" by hand so the whole pipeline is visible end to end. A bag-of-words vector counts how many times each vocabulary word appears in a text. It is a crude embedding, but it is a real vector, and cosine similarity works on it exactly the same way. Its failure is the whole point — it sets up why a trained model is worth the call.
+
+import math
+
+docs = [
+    "the cat sat on the mat",
+    "a dog barked at the mailman",
+    "kittens are baby cats that purr",
+    "the stock market fell sharply today",
+]
+query = "where did the cat sit"
+
+def tokens(text):
+    return text.lower().split()
+
+# A shared vocabulary across every text we want to compare.
+vocab = sorted({w for t in docs + [query] for w in tokens(t)})
+
+def vectorize(text):
+    counts = {}
+    for w in tokens(text):
+        counts[w] = counts.get(w, 0) + 1
+    return [counts.get(w, 0) for w in vocab]
+
+def cosine(a, b):
+    dot = sum(x * y for x, y in zip(a, b))
+    na = math.sqrt(sum(x * x for x in a))
+    nb = math.sqrt(sum(y * y for y in b))
+    return dot / (na * nb) if na and nb else 0.0
+
+qv = vectorize(query)
+ranked = sorted(((cosine(qv, vectorize(d)), d) for d in docs), reverse=True)
+for score, doc in ranked:
+    print(f"{score:.3f}  {doc}")
+print("Nearest neighbor ->", ranked[0][1])
+Running it ranks "the cat sat on the mat" first — correct. But look closely: "kittens are baby cats that purr" scores 0.0 even though it is clearly about cats, because bag-of-words only matches identical words and the query shares no token with it. This is exactly the weakness real embedding models fix: a trained model would place "cat" and "kitten" near each other even with no shared spelling. The toy teaches the mechanism; the production model brings the meaning.
+
+The same search with a real embedding model
+Now swap the hand-made vectorize() for the class embedding model — one call, the exact same cosine ranking — and watch the kitten sentence climb off zero. This runs in the sandbox:
+
+import math
+from openai import OpenAI
+
+client = OpenAI()
+
+docs = [
+    "the cat sat on the mat",
+    "a dog barked at the mailman",
+    "kittens are baby cats that purr",
+    "the stock market fell sharply today",
+]
+query = "where did the cat sit"
+
+def cosine(a, b):
+    dot = sum(x * y for x, y in zip(a, b))
+    na = math.sqrt(sum(x * x for x in a))
+    nb = math.sqrt(sum(y * y for y in b))
+    return dot / (na * nb) if na and nb else 0.0
+
+# One batched call embeds every doc AND the query with the same model.
+resp = client.embeddings.create(model="bge-m3", input=docs + [query])
+vecs = [d.embedding for d in resp.data]
+doc_vecs, qv = vecs[:-1], vecs[-1]
+
+ranked = sorted(zip((cosine(qv, v) for v in doc_vecs), docs), reverse=True)
+for score, doc in ranked:
+    print(f"{score:.3f}  {doc}")
+Now "kittens are baby cats that purr" scores well above the unrelated stock-market sentence — it shares no words with the query, yet the model knows kittens are cats. That is the difference between matching spelling and matching meaning, and it is why production retrieval uses a trained embedding model. The pipeline shape is identical to the toy; only vectorize() changed.
+
+A tiny in-memory vector store
+The pieces so far — vectorize, store with metadata, search by cosine — are exactly what a vector store does. Here is the whole thing as a small pure-Python class: add() puts a chunk in, search() returns the top-k nearest. Swap the bag-of-words vectorize() for a real embedding model and this is, conceptually, a production vector store (minus the fast index, which §5 adds):
+
+import math
+
+def tokens(text):
+    return text.lower().split()
+
+def cosine(a, b):
+    dot = sum(x * y for x, y in zip(a, b))
+    na = math.sqrt(sum(x * x for x in a))
+    nb = math.sqrt(sum(y * y for y in b))
+    return dot / (na * nb) if na and nb else 0.0
+
+class VectorStore:
+    def __init__(self):
+        self.items = []                       # each: id, text, vec, meta
+
+    def add(self, id, text, vec, meta):
+        self.items.append({"id": id, "text": text, "vec": vec, "meta": meta})
+
+    def search(self, query_vec, k=3):
+        scored = [(cosine(query_vec, it["vec"]), it["id"], it["meta"], it["text"])
+                  for it in self.items]
+        scored.sort(reverse=True)
+        return scored[:k]
+
+# 1. Chunk a short document (one sentence per chunk here, for clarity).
+document = (
+    "To reset your password, open account settings. "
+    "The cat sat quietly on the warm mat. "
+    "Login problems are fixed from the security page. "
+    "Kittens are baby cats that like to purr."
+)
+chunks = [c.strip() + "." for c in document.split(".") if c.strip()]
+
+# 2. Build a shared vocabulary, then a BoW vector per chunk.
+vocab = sorted({w for c in chunks for w in tokens(c)})
+def vectorize(text):
+    counts = {}
+    for w in tokens(text):
+        counts[w] = counts.get(w, 0) + 1
+    return [counts.get(w, 0) for w in vocab]
+
+# 3. Index each chunk WITH metadata.
+store = VectorStore()
+for i, chunk_text in enumerate(chunks):
+    store.add(id=f"notes.md#{i}", text=chunk_text, vec=vectorize(chunk_text),
+              meta={"source": "notes.md", "page": 1 + i // 2})
+
+# 4. Embed the query with the SAME vectorizer and search.
+query = "how do I reset my login password"
+for score, id, meta, text in store.search(vectorize(query), k=2):
+    print(f"{score:.3f}  [{id}]  (source={meta['source']}, page={meta['page']})")
+    print(f"        {text}")
+The password-reset chunk ranks first and the login chunk second — a nearest-neighbor search over an indexed document set, end to end. With a real embedding model the same code would also surface paraphrases that share no words.
+
+From this toy to your HW3 functions
+HW3 has you re-implement these primitives as auto-graded functions, with a few precise contract details the toy glosses over. Match them exactly or the hidden tests will dock you:
+
+cosine_similarity(a, b) — the same formula as above, but round(value, 4) the result, and return 0.0 when either vector is all-zeros (guard the zero-norm case before dividing). Sanity check: cosine_similarity([1,0,1], [1,1,0]) == 0.5 — the worked example from §3.
+chunk_text(text, size) — fixed-size, non-overlapping word chunks (the §6 toy adds overlap on purpose; HW3's version does not). An empty string returns []; the last chunk may be shorter.
+top_k(query, docs, k) — return the indices of the nearest vectors (not the texts or scores), highest first, and on a tie the lower index wins (sort on (-score, index)).
+The shape is identical to the VectorStore above — embed, score by cosine, sort, take the top. HW3 just pins the return types so a grader can check them.
+
+5. Vector indexes: why brute force does not scale
+The toy compares the query against every document. That is brute-force k-nearest-neighbor (kNN): O(N) comparisons per query. With four documents it is instant. With one million 1024-dimensional vectors, every single query becomes a million dot products — too slow for an interactive app, and it grows linearly with your data.
+
+When is brute force fine? Don't reach for an index too early. Scanning every vector is perfectly fast into the low tens of thousands of chunks — a few thousand course-PDF chunks search in milliseconds with the plain loop above. Once you climb past roughly 10k–100k vectors (or need sub-millisecond latency under load), the linear scan starts to hurt and an index earns its complexity.
+
+The fix is a vector index that avoids scanning everything. The dominant family is Approximate Nearest Neighbor (ANN): build a clever data structure once (a navigable graph, or clusters of vectors), then at query time visit only a small, promising part of it. You trade a tiny amount of accuracy (you might occasionally miss the true #1 neighbor) for orders of magnitude more speed.
+
+Common implementations:
+
+Tool	What it is	Use when
+pgvector	A Postgres extension adding a vector column type	Your data is already in Postgres and you want SQL + filters. This is what we use.
+Pinecone / Qdrant / Weaviate	Managed vector databases	You want a hosted service with scaling and metadata filtering built in.
+A vector store is the whole package: the vectors, the original text and metadata for each, and an index that answers "give me the top-k nearest" quickly.
+
+pgvector: our index
+We use pgvector — a Postgres extension — so the vectors live right next to the rest of your data and retrieval is a normal SQL query: you can filter and rank in one statement. An ANN index (ivfflat or hnsw) on the embedding column keeps it fast as the table grows.
+
+CREATE EXTENSION vector;
+
+CREATE TABLE chunks (
+    id        bigserial PRIMARY KEY,
+    content   text,
+    source    text,
+    embedding vector(1024)             -- bge-m3 returns 1024-dim vectors
+);
+
+-- <=> is cosine distance; smaller is closer. Order by it and take the top 5.
+SELECT content, source
+FROM chunks
+WHERE source = 'handbook.pdf'          -- metadata filter
+ORDER BY embedding <=> $1              -- $1 = the query's embedding
+LIMIT 5;
+6. Chunking and metadata
+You do not embed a whole document as a single vector. A 30-page PDF squeezed into one vector becomes a vague average of everything in it, and retrieval returns the entire document when the answer is one paragraph. Instead you chunk: split the document into smaller pieces and embed each piece separately. The chunk is the unit that gets returned by a search, so its size directly shapes the quality of your retrieval.
+
+Choosing a chunk size:
+
+Too large → the vector is a blurry average; you retrieve a lot of irrelevant text alongside the useful part, wasting context-window budget in Lecture 6.
+Too small → individual chunks lose the surrounding context that gave them meaning ("it doubles every year" — what doubles?).
+A common starting point is 200–500 tokens per chunk, then tune for your data.
+Overlap. If you cut strictly at chunk boundaries, a sentence (or the answer) can be split across two chunks and lost. Add a small overlap — typically 10–20% of the chunk size — so consecutive chunks share their edges and no idea falls through the crack.
+
+def chunk(text, size=12, overlap=2):   # overlap ~15% of size — in the 10-20% range
+    words = text.split()
+    step = size - overlap
+    out = []
+    for start in range(0, len(words), step):
+        piece = words[start:start + size]
+        if piece:
+            out.append(" ".join(piece))
+        if start + size >= len(words):
+            break
+    return out
+(The toy uses tiny size=12 for readability; with overlap=2 consecutive chunks share their last/first two words. The trailing break just exits once a window reaches the end — the final chunk is always complete, though it may be shorter than size and overlap the previous one by more than overlap.)
+
+Metadata. Store useful fields alongside each chunk's vector: the source file, page number, section heading, author, date. Metadata earns its keep twice over:
+
+Citations. When the LLM answers in Lecture 6, you can show which document and page the answer came from — essential for trust.
+Filtering. You can restrict a search to one source, a date range, or a section before (or alongside) ranking, which improves both speed and accuracy. We build on this with hybrid search in Lecture 8.
+A stored record typically looks like:
+
+record = {
+    "id": "handbook.pdf#42",
+    "text": "To reset your password, visit the account settings page ...",
+    "source": "handbook.pdf",
+    "page": 7,
+    "embedding": [0.01, -0.22, 0.13, ...],   # from your embedding model
+}
+7. Putting it together
+The full retrieval pipeline you now understand:
+
+Load your documents.
+Chunk them (with overlap) and attach metadata.
+Embed each chunk with an embedding model → a vector.
+Index the vectors in a vector store (pgvector).
+At query time, embed the query with the same model.
+Search the index for the top-k nearest chunks by cosine similarity.
+Hand those chunks to the LLM — that final step is RAG, next lecture.
+8. A wider toolkit: pitfalls and the fixes that save you
+Sections 1–7 give you the happy path. This section is the part you reach for when the happy path misbehaves: the small numeric and ordering details that quietly wreck retrieval. Each item leads with the symptom you'll actually observe.
+
+8.1 Symptom → fix table
+Symptom	Cause	Fix
+Every result looks "kind of related," nothing is clearly best	Chunks too large — each vector is a blurry average	Smaller chunks (200–500 tokens); split on paragraph/sentence boundaries
+The answer sentence is never retrieved, even verbatim	Answer got cut at a chunk boundary	Add 10–20% overlap
+pgvector returns the worst matches first	<=> is a distance; you sorted descending	ORDER BY embedding <=> $1 ASC (smaller = closer)
+top_k returns the wrong texts entirely	data[i] misaligned with your inputs	Read embeddings back in input order; never re-sort resp.data
+Cosine of two clearly-related texts is ~0.3, looks "unrelated"	Real embedding spaces are crowded; 0 is not the floor	Rank (take the highest), don't threshold on an absolute number
+ZeroDivisionError on a chunk	Empty/whitespace chunk → zero-norm vector	Guard: return 0.0 when either norm is 0
+Cross-source results leak in	No metadata filter	Pre-filter on source/page before ranking
+8.2 Distance vs similarity — the sign flip that reverses your results
+This is the single most common "my retrieval is backwards" bug. Cosine similarity is higher = better (max +1). Cosine distance, which pgvector's <=> operator returns, is 1 − similarity, so it is lower = better (min 0). Mix them up and you sort the wrong way and return your worst matches.
+
+import math
+
+def cosine_similarity(a, b):
+    dot = sum(x * y for x, y in zip(a, b))
+    na = math.sqrt(sum(x * x for x in a))
+    nb = math.sqrt(sum(y * y for y in b))
+    return dot / (na * nb) if na and nb else 0.0
+
+def cosine_distance(a, b):
+    return 1.0 - cosine_similarity(a, b)
+
+a, b = [1, 0, 1], [1, 1, 0]
+print("similarity:", round(cosine_similarity(a, b), 4))  # 0.5  -> sort DESC, highest wins
+print("distance:  ", round(cosine_distance(a, b), 4))    # 0.5  -> sort ASC,  lowest  wins
+You computed...	Best match is the...	SQL / Python ordering
+cosine similarity	highest value	sort(reverse=True) · ORDER BY ... DESC
+cosine distance (<=>)	lowest value	sort() · ORDER BY ... ASC LIMIT k
+Whenever they happen to be equal (like the 0.5 above) it's a coincidence of that pair; trust the direction of the rule, not the number.
+
+8.3 Batching embedding calls — and keeping data[i] aligned
+Embedding one chunk per request is slow and burns rate limit. Every embeddings API takes a list and returns one vector per item, in the same order. The contract you must not break: resp.data[i].embedding is the vector for input[i]. Don't sort resp.data, don't filter inputs after the fact, and read everything back by index. This runs in the sandbox:
+
+from openai import OpenAI
+
+client = OpenAI()
+
+chunks = [
+    "To reset your password, open account settings.",
+    "Kittens are baby cats that like to purr.",
+    "Login problems are fixed from the security page.",
+]
+
+# ONE call for all three chunks — not three calls.
+resp = client.embeddings.create(model="bge-m3", input=chunks)
+
+# Re-pair each chunk with ITS vector by index. resp.data[i] <-> chunks[i].
+records = []
+for i, chunk in enumerate(chunks):
+    vec = resp.data[i].embedding
+    assert len(vec) == 1024            # bge-m3 is always 1024-dim
+    records.append({"text": chunk, "vec": vec})
+
+print(len(records), "records;", "dim =", len(records[0]["vec"]))   # 3 records; dim = 1024
+For a 300-page PDF that's thousands of chunks: batch a few hundred per call rather than firing thousands of requests. The alignment rule is identical at any batch size — data[i] always belongs to input[i].
+
+8.4 Chunking strategies, compared on one paragraph
+"Chunk size" is not one knob; how you split matters as much as how big. Take this paragraph as a running example (numbered words so you can see the splits):
+
+To reset your password open account settings then choose security and follow the link emailed to you. (14 words)
+Fixed-size, no overlap (size=6): [w1..w6] [w7..w12] [w13..w14]. Simple and deterministic — but "follow the link emailed to you" is stranded in a tiny final chunk, divorced from "reset your password," so a query about the reset link may miss it.
+
+Fixed-size, with overlap (size=6, overlap=2): [w1..w6] [w5..w10] [w9..w14]. Consecutive chunks share their edges, so the reset action and the link now co-occur in chunk 2/3 — the answer survives. Costs ~30% more chunks to embed.
+
+Sentence/paragraph boundaries: split on ./\n\n instead of a word count. Each chunk is a complete thought, which embeds cleanly — but lengths vary wildly (a one-line heading vs. a 200-word paragraph), so you often then re-pack sentences up to a token budget.
+
+def fixed(words, size, overlap=0):
+    step = size - overlap
+    out = []
+    for start in range(0, len(words), step):
+        piece = words[start:start + size]
+        if piece:
+            out.append(piece)
+        if start + size >= len(words):
+            break
+    return out
+
+text = ("To reset your password open account settings then choose "
+        "security and follow the link emailed to you")
+words = text.split()
+
+print("no overlap: ", [" ".join(c) for c in fixed(words, 6)])
+print("overlap=2:  ", [" ".join(c) for c in fixed(words, 6, overlap=2)])
+print("sentences:  ", [s.strip() for s in
+                       "First sentence here. Second one follows.".split(".") if s.strip()])
+Strategy	Pro	Con	Use when
+Fixed-size, no overlap	Simplest, predictable	Splits ideas at boundaries	Uniform text, recall not critical
+Fixed-size + overlap	Ideas survive the cut	~10–30% more chunks	Default for HW3
+Sentence/paragraph	Each chunk a clean thought	Uneven sizes; needs re-packing	Well-structured docs (Markdown, papers)
+Picking the numbers. Start at ~300 tokens, ~15% overlap (the 200–500 / 10–20% sweet spot). Then look at what failed: answers truncated → raise overlap; results too diffuse / off-topic neighbors → shrink chunk size; lots of tiny heading-only chunks → re-pack on token budget.
+
+8.5 Pre-filtering on metadata before ranking
+If you know the answer is in handbook.pdf, don't rank a million unrelated vectors first. Filter on metadata, then cosine-rank only the survivors — faster and more accurate (fewer chances for a spurious high-cosine match from the wrong source). In pgvector it's one WHERE clause; in pure Python it's a guard before scoring:
+
+import math
+
+def cosine(a, b):
+    dot = sum(x * y for x, y in zip(a, b))
+    na = math.sqrt(sum(x * x for x in a))
+    nb = math.sqrt(sum(y * y for y in b))
+    return dot / (na * nb) if na and nb else 0.0
+
+items = [
+    {"id": "handbook.pdf#1", "source": "handbook.pdf", "vec": [1.0, 0.0, 0.2]},
+    {"id": "minutes.md#7",   "source": "minutes.md",   "vec": [0.9, 0.1, 0.1]},
+    {"id": "handbook.pdf#9", "source": "handbook.pdf", "vec": [0.2, 0.0, 1.0]},
+]
+query = [1.0, 0.0, 0.1]
+allow = "handbook.pdf"
+
+# PRE-FILTER on metadata, THEN rank only the survivors.
+candidates = [it for it in items if it["source"] == allow]
+ranked = sorted(((round(cosine(query, it["vec"]), 4), it["id"]) for it in candidates),
+                reverse=True)
+for score, id in ranked:
+    print(f"{score}  {id}")
+# minutes.md#7 never appears — it was filtered out before any scoring happened.
+The SQL equivalent is exactly §5's query: WHERE source = $1 ORDER BY embedding <=> $2 LIMIT k. Filter narrows the candidate set; <=> (ascending!) ranks it.
+
+Key terms
+Embedding — a fixed-length vector representing the meaning of a text.
+Embedding model — a model that maps text → embedding. The class model is bge-m3 (1024-dim, multilingual); other examples are text-embedding-3-small (OpenAI) and all-MiniLM-L6-v2 (local).
+Cosine similarity — the cosine of the angle between two vectors; +1 = same direction, 0 = unrelated. The standard way to rank semantic matches.
+Nearest-neighbor (kNN) search — finding the stored vectors most similar to a query vector.
+ANN (Approximate Nearest Neighbor) — index structures that find almost the nearest neighbors much faster than brute force.
+Vector index / vector store — a structure (pgvector, Pinecone, Qdrant) holding vectors + metadata for fast top-k retrieval.
+Chunk — a small slice of a document that is embedded and indexed as one unit.
+Overlap — shared text between consecutive chunks so ideas are not split.
+Metadata — fields stored with a chunk (source, page, date) for citation and filtering.
+Cosine distance — 1 − cosine similarity; lower = closer. pgvector's <=> operator returns this, so you sort ascending.
+Batched embedding — embedding a list of texts in one API call; resp.data[i] is the vector for input[i], so order must be preserved.
+Pre-filtering — narrowing candidates by metadata (source, page, date) before cosine-ranking, for speed and accuracy.
+Chunking strategy — how you split (fixed-size, with-overlap, sentence / paragraph boundary), as distinct from how big each chunk is.
+Practice
+Run the bag-of-words toy from §4. Then change the query to "who barked at the mailman" and confirm the dog sentence wins. Why does the cats sentence still score 0?
+Modify the toy to print the top-2 neighbors instead of just the nearest.
+Run the chunking function from §6 on a paragraph of your own. Set overlap=0 and find a sentence that gets split across two chunks; then raise the overlap so it survives.
+Sketch (on paper or in pseudocode) the schema and query you would use to store and search 10,000 course-PDF chunks in pgvector, including a source filter.
+Extend the VectorStore from §4: add a delete(id) method and a meta filter to search() so you can restrict results to one source.
+Start HW3 — Vector Search & RAG: chunk the course PDFs, embed each chunk, build an index, and run a semantic search. (In Lecture 6 you will feed the results to the LLM.)
+Using §8.2's cosine_similarity/cosine_distance, embed three sentences with bge-m3 and print both metrics for each pair. Confirm that ranking by highest similarity and by lowest distance give the same order — then state which ordering pgvector's <=> needs.
+Take §8.4's 14-word paragraph. Run the fixed() splitter with overlap=0, find the idea that gets stranded in the short final chunk, then raise overlap until it co-occurs with "reset your password" in a single chunk. What was the smallest overlap that worked, and how many extra chunks did it cost?
+Answers
+With the query "who barked at the mailman", the dog sentence shares the content words barked, at, the, mailman, so it ranks first for the right reason. (Contrast the old query "a puppy was loud near the house": it would still beat the others, but only on the shared stopword a — another bag-of-words weakness, since stopwords carry no meaning yet sway the score.) The cats sentence still scores 0 because bag-of-words only matches identical tokens, and it shares none with either query — the exact gap a trained embedding model closes.
+Replace ranked[0] with a slice: sort as before, then iterate ranked[:2] (the VectorStore.search(query_vec, k=2) in §4 does exactly this).
+With overlap=0 the windows are disjoint, so any sentence spanning a boundary is split in two; raising overlap to a few words makes consecutive chunks share their edges, and the split sentence reappears whole in one of them. (The final chunk is always complete — it's never truncated, just possibly short.)
+A chunks table with embedding vector(1024) plus content, source, page; the query adds WHERE source = $1 before ORDER BY embedding <=> $2 LIMIT k (the metadata filter narrows the scan, then cosine distance ranks).
+delete(id) rebuilds self.items without that id; the filter passes a source into search() and skips items whose meta["source"] does not match before scoring.
+The two orders are always identical because distance = 1 − similarity is monotonically decreasing in similarity — the highest similarity is the lowest distance, for the same pair. pgvector's <=> returns distance, so you ORDER BY embedding <=> $1 ascending (LIMIT k) to get the nearest first.
+With overlap=0 the splits are [w1..w6] [w7..w12] [w13..w14], stranding "...to you" (the emailed link) away from "reset your password." overlap=2 is enough: chunk 3 becomes [w9..w14] ("...follow the link emailed to you") while chunk 1 still holds the reset action — but if your query needs both in one chunk you must overlap further or use a larger size. The overlap turned 3 chunks into 3 here (short text); on longer text expect ~10–30% more chunks.

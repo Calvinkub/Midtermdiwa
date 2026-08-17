@@ -1,0 +1,373 @@
+Lecture 2: Structured Output and JSON
+Reliable, parseable answers.
+
+▶ Slides
+⤓ PDF
+Lecture 2 — Structured Output & JSON
+📋 In class: please fill out this form now → Google Form
+Goal of this lecture: get strict, schema-valid JSON out of an LLM, then validate and repair the output so the rest of your program can rely on it. By the end you should be able to prompt for JSON, constrain it with a schema, parse it with json.loads, validate the fields by hand, and run a repair loop that feeds parse errors back to the model.
+This lecture builds directly on Lecture 1 (the chat API, roles, and temperature). Everything that comes after it — backends (Lecture 3), RAG (Lectures 5–7), and tool-calling agents (Lecture 10) — assumes you can turn a model's reply into a typed object your code trusts.
+
+1. Why "just parse the text" fails
+An LLM returns a string. The moment your program needs a number, a list, or a set of named fields, you have to turn that string into data — and a chat model is helpful in all the wrong ways. Ask it for a price and you might get any of these:
+
+"The price is $19.99."             # a number wrapped in prose
+"Sure! Here's the JSON:\n```json\n{...}\n```"   # wrapped in markdown fences
+"{'price': 19.99}"                 # single quotes — valid Python, not JSON
+"{\"price\": 19.99,}"              # a trailing comma — invalid JSON
+Each of these breaks a naive str.split or regular expression. You can patch the regex for the case you saw today, but tomorrow the model phrases it differently and your pipeline throws. The model is non-deterministic text, and text is the wrong contract between two pieces of software.
+
+The fix has two halves:
+
+A format the model commits to — JSON, ideally constrained by a schema.
+A parser that gives a clear yes/no — json.loads, plus a check that the parsed object actually has the fields and types you need.
+Think of the LLM the way you'd think of a web form submitted by a stranger: an untrusted input source. You would never eval form data; don't trust raw model output either. Parse it defensively.
+
+Why not just eval or ast.literal_eval? eval on model output is a remote-code-execution hole. ast.literal_eval is safer but accepts Python literals (single quotes, True/None), not JSON — so it hides bugs and won't match what a real client expects. Use json.loads.
+2. Prompting for JSON
+The cheapest, most portable technique is simply to ask precisely and show the exact shape you want. Put the instruction and an example schema in the system message:
+
+SYSTEM = (
+    "Extract the order from the user's message. "
+    "Reply with ONLY a JSON object, no markdown and no prose. "
+    'Schema: {"item": string, "qty": integer, "price": number}'
+)
+Three things earn their keep here:
+
+"ONLY a JSON object, no markdown" — this is what removes the ``` `json ``` fences. Models love to wrap code blocks; tell them not to.
+An example object — one concrete {"item": "...", "qty": 1, "price": 1.0} is worth a paragraph of description (the few-shot idea from Lecture 1). The model copies the format.
+temperature=0 — extraction should be repeatable. Same input, same JSON. A non-zero temperature is the most common cause of "it worked yesterday".
+Prompting alone is the fallback when nothing stronger is available. It reduces errors but does not eliminate them — the model can still slip in prose or a trailing comma. So even with a good prompt, you validate.
+
+3. JSON mode and response schemas
+Some providers offer stronger guarantees than prompting. They come in two levels, and it's important to understand that they promise different things.
+
+Caveat for this course: on our class proxy (Gemma), response_format — both json_object and json_schema — is accepted but silently ignored (verified). It has no effect on the output. So you cannot rely on provider JSON mode in your homework. The sections below explain what JSON mode does on providers that support it (OpenAI and others); your HW code must rely on prompt + validate + repair, which is exactly the pattern in §5–6.
+JSON mode
+Passing response_format={"type": "json_object"} puts the API into JSON mode: the server constrains decoding so the output is syntactically valid JSON. No fences, no trailing commas, no single quotes. This eliminates the entire class of parse errors.
+
+resp = client.chat.completions.create(
+    model="gemma-4-E4B-it",
+    response_format={"type": "json_object"},   # IGNORED by our class proxy!
+    messages=[{"role": "system", "content": SYSTEM}, ...],
+)
+(On our proxy this line is accepted but does nothing — see the caveat above. On a provider that honours it, it removes the parse-error class entirely.)
+
+What JSON mode does not guarantee is the shape. You can still get {"items": [...]} when you asked for {"item": ...}, or "qty": "three" instead of an integer.
+
+Schema-constrained output
+The stronger option is to pass an actual JSON Schema (often called json_schema / "structured outputs" mode). The decoder is constrained so the output must match the schema — exactly those keys, exactly those types:
+
+{
+  "type": "object",
+  "properties": {
+    "item":  {"type": "string"},
+    "qty":   {"type": "integer"},
+    "price": {"type": "number"}
+  },
+  "required": ["item", "qty", "price"],
+  "additionalProperties": false
+}
+Layer	Guarantees	Does not guarantee
+Good prompt	Usually the right shape	Anything — best-effort only
+JSON mode	Valid JSON syntax	The right keys / types
+JSON Schema	Right keys and types	Values are correct (price could still be wrong)
+Valid JSON ≠ valid data. A schema stops missing fields and wrong types, but it can't tell you the model invented a plausible-but-wrong price. Validation on your side is still your job. Treat provider features as help, not a replacement for checking.
+Not every model or proxy supports schema mode — ours does not. Write your code so it works with just a prompt and gets safer when the provider offers more — which is exactly what the validate-and-repair pattern below gives you, and the only thing you can count on for HW1.
+
+4. Pydantic and function-calling schemas
+Hand-writing JSON Schema is tedious and easy to get out of sync with your code. In a real backend (Lecture 3 onward) you define the shape once as a Pydantic model and derive everything from it:
+
+from pydantic import BaseModel
+
+class Order(BaseModel):
+    item: str
+    qty: int
+    price: float
+
+Order.model_json_schema()        # → the JSON Schema to send the model
+Order.model_validate_json(raw)   # → parse + validate in one call; raises on bad data
+One class gives you both halves: the schema to constrain the model and the validator to check the reply. model_validate_json raises a ValidationError with a precise message ("qty: input should be a valid integer") — which, as we'll see, is exactly what you feed back into a repair loop.
+
+This is also the foundation of function/tool calling (Lecture 10): when you give a model a "tool", you describe its arguments with the same JSON Schema. A tool call is structured output where the schema is the function's parameters. Master structured output here and tool calling is a small step later.
+
+Pydantic in the sandbox. The in-browser runner ships the standard library, openai, and pydantic — so model_json_schema() and model_validate_json() run there. Pydantic is the realistic validation path for a real backend, and you'll lean on it from Lecture 3 onward. The runnable examples in this lecture use stdlib json plus a hand-written check on purpose: it makes the validation logic fully visible and is portable to any environment. Treat them as two views of the same idea — once you trust the hand check, let Pydantic do it for you.
+
+Here is the same Order validated with Pydantic — this runs in the sandbox:
+
+from pydantic import BaseModel, ValidationError
+
+class Order(BaseModel):
+    item: str
+    qty: int
+    price: float
+
+try:
+    order = Order.model_validate_json('{"item": "mango", "qty": 3, "price": 45}')
+    print("OK:", order, "total", order.qty * order.price)
+except ValidationError as e:
+    print("rejected:", e)   # precise, repair-loop-ready message
+5. Validating with the standard library
+Here is the core pattern with no third-party dependencies: ask for JSON, parse it with json.loads, and check the fields by hand.
+
+import json
+
+def validate(data):
+    if not isinstance(data, dict):
+        raise ValueError("expected a JSON object")
+    for key, typ in (("item", str), ("qty", int), ("price", (int, float))):
+        if key not in data:
+            raise ValueError(f"missing key: {key}")
+        if not isinstance(data[key], typ):
+            raise ValueError(f"{key} should be {typ}")
+    return data
+
+raw = resp.choices[0].message.content
+try:
+    order = validate(json.loads(extract_json(raw)))   # extract_json: see below
+except (json.JSONDecodeError, ValueError) as e:
+    print("rejected:", e)
+Two distinct failure modes, two exception types:
+
+json.JSONDecodeError — the string isn't valid JSON at all (a syntax problem). This is what JSON mode prevents.
+ValueError from validate — it parsed, but the shape is wrong (a semantic problem). This is what a schema prevents.
+Catching both means you handle every way the output can disappoint you.
+
+Strip fences before you parse: extract_json
+Because our proxy ignores JSON mode, the single most common real failure is the model wrapping its JSON in a ``` `json `` fence or adding a polite preamble. json.loads("``json\n{...}\n`") raises immediately. Harden the parse step with a small helper that strips fences, then falls back to the first { … last }:
+
+def extract_json(text):
+    t = text.strip()
+    if t.startswith("```"):
+        t = t.split("```")[1]            # content between the first pair of fences
+        if t.lstrip().startswith("json"):
+            t = t.lstrip()[4:]           # drop the language tag
+        t = t.strip()
+    start, end = t.find("{"), t.rfind("}")
+    if start != -1 and end != -1:
+        t = t[start:end + 1]             # keep just the object
+    return t
+Call it before json.loads, as shown above. Prefer fixing the prompt or using JSON mode where you can — but on this course's model, fence-stripping is not optional.
+
+This helper is a starting point, not the final word. It handles the cases you actually see on our proxy — a fenced object, a polite preamble — but it is deliberately simple: first { … last } grabs too much if the model emits two objects, or includes a stray } inside a prose sentence after the JSON. That's fine for these demos. In HW1 you'll harden the same function against trickier inputs (it's auto-graded by json.loads-ing the result). The lesson repeats the theme: even your own parser treats the model's text as untrusted — start permissive, then tighten until every case parses cleanly.
+Semantic validation: valid JSON ≠ valid data
+Types alone don't make data correct. A reply of {"item": "mango", "qty": -3, "price": -45} parses and type-checks, yet a negative quantity is nonsense. Add semantic checks — the kind no schema can express:
+
+def validate(data):
+    if not isinstance(data, dict):           # guards the [ {...} ] list case too
+        raise ValueError("expected a JSON object")
+    item, qty, price = data.get("item"), data.get("qty"), data.get("price")
+    if not isinstance(item, str):
+        raise ValueError("item must be a string")
+    if type(qty) is not int or qty <= 0:     # type() not isinstance — see below
+        raise ValueError("qty must be a positive integer")
+    if not isinstance(price, (int, float)) or isinstance(price, bool) or price < 0:
+        raise ValueError("price must be a non-negative number")
+    return data
+A few pitfalls worth calling out:
+
+The number type. JSON has one number type, so an integer like 45 is a perfectly valid "number" — accept (int, float) for price, not just float.
+The bool/int trap. In Python, isinstance(True, int) is True (bool subclasses int). So isinstance(qty, int) happily accepts True. Guard an integer field with type(qty) is int, or explicitly reject bool.
+List instead of object. Models sometimes return [ {...} ] (a one-element list) instead of {...}. The leading isinstance(data, dict) check rejects it with a clear message instead of letting data["qty"] blow up later.
+6. The repair loop
+When validation fails, you don't have to give up. The model is good at fixing its own mistakes if you tell it what went wrong. So feed the parse/validation error back as a new user turn and let it try again — with a hard cap on retries.
+
+def get_order(messages, max_tries=3):
+    raw = call(messages)                 # call() wraps chat.completions.create
+    for _ in range(max_tries):
+        try:
+            return validate(json.loads(extract_json(raw)))
+        except (json.JSONDecodeError, ValueError) as e:
+            messages.append({"role": "assistant", "content": raw})
+            messages.append({"role": "user",
+                             "content": f"That failed: {e}. Return ONLY valid JSON."})
+            raw = call(messages)
+    raise RuntimeError("could not get valid JSON after retries")
+The data flow:
+
+LLM reply → json.loads → validate fields → typed data
+              │ error        │ error
+              └──────┬───────┘
+                     ▼
+        feed the error back, retry (capped)
+Why cap the retries? Each attempt costs tokens, latency, and money, and a model that's wrong twice may loop forever. Three tries is a sensible default. When you do have schema-constrained output, repairs become rare — but the loop is the safety net for the (common) case where you only have a prompt, which is exactly our situation.
+
+When repair is exhausted. After the last try, don't let the RuntimeError crash your app. Catch it at the call site and pick a deliberate fallback:
+
+try:
+    order = get_order(messages)
+except RuntimeError:
+    order = None            # or a safe default, or surface a friendly error
+    print("Sorry, I couldn't read that order — could you rephrase it?")
+Which fallback you pick is a product decision: a default value, handing off to a human, or telling the user plainly. The rule is just never let unparseable model output silently become bad data downstream.
+
+A subtle point: include the model's bad reply as the assistant turn before the correction. The model sees its own mistake next to your error message, which makes the fix far more reliable than a correction floating without context.
+
+Local repair: fixing the string before you re-prompt
+"Repair" means two different things, and HW1 asks for both — keep them straight:
+
+Loop repair (above): the error is semantic or structural and you need the model's help, so you re-prompt with the error. Costs a round-trip.
+Local repair (here): the error is a known, mechanical malformation you can fix in-process — no model call. The classic one is a trailing comma: {"a": 1,} is valid Python but invalid JSON, and a model that has seen a lot of Python emits it constantly.
+Always try the cheap local fix first; only fall back to a model round-trip when the string is broken in a way you can't safely patch. A trailing comma is the textbook patchable case — one regex removes it before a closing } or ]:
+
+import json, re
+
+def repair_json(text):
+    t = extract_json(text)                  # strip fences / prose first (§5)
+    t = re.sub(r",\s*([}\]])", r"\1", t)    # drop a trailing comma before } or ]
+    try:
+        data = json.loads(t)
+    except (json.JSONDecodeError, ValueError):
+        return None                          # give up cleanly — never raise
+    return data if isinstance(data, dict) else None
+Two design choices, both pure "untrusted string" hygiene:
+
+It returns None, never raises. A repair helper is a fallback path; if it could throw, every caller would have to wrap it, defeating the point. The caller decides what to do with None (default value, ask again, surface an error) — exactly the deliberate-fallback rule above.
+The regex is deliberately narrow. It only kills a comma immediately before a closing bracket. Resist "repairing" single quotes or bare keys with more regex: each extra rule can corrupt a valid string (a comma inside a JSON string value, an apostrophe in "it's"). When a malformation isn't safely mechanical, that's the loop's job, not the regex's.
+extract_json and repair_json together are the two stdlib helpers you'll write for HW1 — no network, no model in the loop, fully testable.
+
+7. A repair toolkit and richer schemas
+§5–6 gave you the two workhorses (extract_json, the trailing-comma fix) and the loop. This section widens both ends: a small catalog of local repairs for the malformations our Gemma proxy actually emits (because it ignores response_format, you are the JSON mode), and the schema shapes — nested, enum, optional — that real extraction needs once the toy {item, qty, price} grows up. Lead with the symptom; reach for the loop only when no mechanical fix is safe.
+
+7.1 A catalog of mechanical repairs
+Every repair below is a pure-string transform — no model call, fully testable in sqlite3-free isolation. The discipline from §6 still holds: each rule must be narrow enough that it can't corrupt a string that was already valid. When in doubt, return None and let the loop handle it.
+
+Symptom (before)	Repaired (after)	Mechanical fix	Safe?
+``` `json\n{...}\n` ```	{...}	strip fences, first {…last }	yes
+{"a": 1,}	{"a": 1}	regex: comma before }/]	yes (narrow)
+Sure! {"a": 1}	{"a": 1}	first {…last }	yes
+{"a": 1}\n\n{"b": 2}	first object only	slice to first balanced }	needs care
+{'a': 1} (smart/single quotes)	{"a": 1}	quote rewrite	no — use the loop
+{"t": “hi”} (curly “ ”)	{"t": "hi"}	replace “ ” ‘ ’ → ASCII	yes (whitespace-like)
+Two of these are worth code. Smart (curly) quotes appear when a model echoes text it "typeset" — “ (U+201C) and ” (U+201D) instead of ASCII ". They are unambiguously not JSON syntax, so swapping them is safe (unlike rewriting single quotes, which could be an apostrophe inside a value):
+
+def normalize_quotes(text):
+    # Curly quotes are never valid JSON punctuation -> safe to flatten to ASCII.
+    table = {ord("“"): '"', ord("”"): '"',
+             ord("‘"): "'", ord("’"): "'"}
+    return text.translate(table)
+
+print(normalize_quotes('{“item”: “tea”}'))
+# -> {"item": "tea"}   (now json.loads-able once you also fix the keys, if any)
+The two-objects case ({...}{...} or {...}\n{...}) is where the cheap first { … last } from §5 over-grabs: it returns everything from the first { to the last }, gluing two objects into invalid JSON. The robust fix walks the string tracking brace depth and stops at the first balanced close — this also correctly ignores braces that live inside a string value:
+
+def first_object(text):
+    start = text.find("{")
+    if start == -1:
+        return None
+    depth, in_str, esc = 0, False, False
+    for i in range(start, len(text)):
+        ch = text[i]
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+        elif ch == '"':
+            in_str = True
+        elif ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return text[start:i + 1]   # first balanced object, prose after ignored
+    return None
+
+print(first_object('Here: {"a": {"b": 1}} and then {"c": 2}'))
+# -> {"a": {"b": 1}}
+This is the upgrade HW1 hints at when it says "harden extract_json against trickier inputs": the brace-counter beats rfind("}") whenever there's a stray } in trailing prose or a second object.
+
+7.2 Which failure → which fix
+When a reply disappoints you, classify it first, then pick the cheapest fix that applies. Spending a model round-trip on a trailing comma is wasteful; trying to regex a hallucinated price is hopeless.
+
+What you observe	Class	Cheapest correct fix
+``` `json ``` fence, polite preamble	parse (mechanical)	extract_json — strip + slice
+trailing comma before }/]	parse (mechanical)	regex in repair_json
+curly “smart” quotes	parse (mechanical)	normalize_quotes
+two objects / } in prose	parse (mechanical)	first_object brace-counter
+single quotes {'a': 1}	parse (ambiguous)	re-ask loop (§6) — not regex
+missing key / wrong type	shape	validate → re-ask loop with the error
+qty: -3, price out of range	semantic	your validate, then loop or reject
+plausible-but-wrong value	semantic	can't auto-fix — out of scope, flag it
+The pattern: mechanical → fix locally; shape/semantic → feed the error to the loop; wrong-but-valid → no parser saves you. A repair function that tries to do all three is the classic over-reaching helper that corrupts good input.
+
+7.3 Richer schemas: nested, enum, Optional
+The {item, qty, price} order is the "hello world" of extraction. Real schemas nest objects, restrict a field to a fixed set (an enum), and mark fields optional. Pydantic expresses all three, and model_validate_json checks them in one call — the same accept/reject behaviour as your hand-written validate, with messages precise enough to drop straight into the §6 loop. This runs in the sandbox:
+
+from enum import Enum
+from pydantic import BaseModel, ValidationError
+
+class Size(str, Enum):
+    small = "small"
+    large = "large"
+
+class Customer(BaseModel):
+    name: str
+    phone: str | None = None        # Optional: absent or null both allowed
+
+class Order(BaseModel):
+    item: str
+    qty: int
+    size: Size                      # must be one of the enum values
+    customer: Customer              # nested object, validated recursively
+
+good = '{"item":"latte","qty":2,"size":"large","customer":{"name":"Mai"}}'
+bad  = '{"item":"latte","qty":2,"size":"venti","customer":{"name":"Mai"}}'
+print("OK:", Order.model_validate_json(good))
+try:
+    Order.model_validate_json(bad)
+except ValidationError as e:
+    print("rejected size:", e.errors()[0]["msg"])   # -> not a valid enumeration member
+Three things to notice, each a reason to prefer a schema over hand-rolled checks once the shape gets this deep:
+
+Enum = closed set. Size rejects "venti" for free. Doing this by hand means a membership test you'll forget to update; a str-subclassed Enum serialises straight to JSON and is the right tool when a field has fixed values (status, role, size).
+Optional (str | None) ≠ "any type". It means this field may be absent or null, not "skip validation". A present phone still must be a string. New students reach for Optional to silence an error; that hides the bug instead of fixing the prompt.
+Nested models validate recursively. customer is validated as a Customer with its own rules. Hand-written validation of nested objects is exactly where the "for key, typ in (...)" loop collapses into a mess — let Pydantic recurse.
+When you prompt for a nested/enum shape, show the model the example object with the enum value spelled out ("size": "large") — the same few-shot trick from §2, just applied to a bigger schema. The proxy still won't enforce it (no response_format), so the validate-and-repair loop is still what makes it stick.
+
+8. Multimodal: structured data from an image
+Everything so far assumed the input was text. But a vision-language model (also called a multimodal model) accepts an image in the same chat message and can read it — and our class chat model, gemma-4-E4B-it, is one of them. That opens a new source for the exact pipeline you just built: instead of parsing a sentence the user typed, you point the model at a receipt, a form, or a screenshot and ask it to return the fields as JSON.
+
+The OpenAI-style API carries the image by making the user message content a list that mixes text and an image part, rather than a plain string. The image travels inline as a base64 data: URL:
+
+content = [
+    {"type": "text", "text": "Extract invoice_number, date, total as JSON."},
+    {"type": "image_url",
+     "image_url": {"url": "data:image/png;base64,iVBORw0KGgo..."}},
+]
+resp = client.chat.completions.create(
+    model="gemma-4-E4B-it",
+    temperature=0,
+    messages=[{"role": "user", "content": content}],
+)
+Here is the key point for this lecture: once the reply comes back, nothing changes. The model returns a string, you extract_json it, json.loads it, validate the fields, and run the repair loop if it disappoints you — the identical pipeline from §5–6. The proxy still ignores response_format, so you still coax JSON with the prompt and parse it yourself. Your structured-output skills transfer wholesale; only the input part of the message is new.
+
+A concrete example: feed a photo of a shop receipt with the prompt above and the model returns {"invoice_number": "INV-2042", "date": "2026-06-18", "total": 189.0} — which you validate exactly like the Order from §5 (is total a non-negative number? is date a string?) and repair if a field is missing or the JSON arrives fenced. Extraction → parse → validate → repair is one pattern; the receipt is just a richer input than a typed sentence.
+
+See it live: the reference app's 📎 Extract structured data from an image panel at <https://rag-demo.nat-d.uk> does exactly this — its extract_from_image() helper (and POST /api/extract) builds the text-plus-image_url content list above, then parses and validates the reply with the same helpers you wrote here.
+Key terms
+JSON mode — an API setting (response_format={"type": "json_object"}) that, on providers that support it, guarantees syntactically valid JSON but not its shape. Ignored by this course's proxy — don't depend on it for homework.
+JSON Schema — a declarative description of allowed keys/types; used both to constrain a model's output and to validate it.
+Structured outputs / schema-constrained decoding — provider feature that forces output to match a supplied JSON Schema.
+Pydantic model — a Python class that yields a JSON Schema (model_json_schema) and a validator (model_validate_json) from one definition.
+Validation — checking parsed data against expected keys and types (json.loads + a check, or Pydantic). Semantic validation goes further: checking values make sense (qty > 0, a temperature in range) — valid JSON ≠ valid data.
+extract_json — a small helper that strips ``` `json `` fences and any prose before json.loads`, so the most common real failure doesn't crash the parse step.
+Repair loop — re-prompting the model with the parse/validation error so it can correct its own malformed output, with a retry cap.
+Function / tool schema — the JSON Schema describing a tool's arguments; structured output applied to tool calling (Lecture 10).
+Mechanical (local) repair — a pure-string fix applied with no model call (strip fences, drop a trailing comma, flatten curly quotes). Cheap and testable; only safe when the rule can't corrupt an already-valid string.
+Brace-counting extraction — walking the reply tracking {/} depth (and string state) to return the first balanced object, instead of the naive first { … last }. Beats rfind("}") when there's a stray } in prose or a second object.
+Curly / smart quotes — typographic “ ” ‘ ’ (U+2018–U+201D) the model sometimes emits instead of ASCII quotes; never valid JSON punctuation, so safe to flatten before parsing.
+Enum field — a schema field restricted to a fixed set of values (a str-subclassed Enum in Pydantic); rejects anything off the list automatically, unlike a hand-written membership check.
+Vision-language (multimodal) model — a model that accepts an image alongside text in the chat message and can read it. The image rides in the user message content list as an image_url part (a base64 data: URL). gemma-4-E4B-it is multimodal; the reply is still text, so the same parse → validate → repair pipeline applies.
+Practice
+Run the parse-JSON code slide. Change the system prompt to remove the "ONLY a JSON object" instruction and run several times — how often does prose or a markdown fence sneak in? With extract_json in place it still parses; delete that call and watch the fence trip json.loads.
+Add a field to the schema (e.g. currency: str) and update the validate function. Confirm a reply that omits it is rejected with a clear message.
+Run the repair-loop code slide. It seeds a deliberately broken reply; watch the error get fed back and fixed. Then lower max_tries to 1 and see it give up.
+Make validate stricter: reject qty <= 0 or a negative price, and seed a reply with True for qty — does type(qty) is int catch the bool? This is semantic validation a schema alone won't do.
+Swap the hand-written validate for a Pydantic Order.model_validate_json (Pydantic is installed in the sandbox). Confirm you get the same accept/reject behaviour with a tighter error message.
+Toward HW1 — extract_json. HW1's second question asks you to implement extract_json(text) as a stdlib-only, no-network helper returning the first embedded JSON object as a string (strip a ``` `json `` / `` ` `` fence, drop surrounding prose, return first { to the last }). Start from the version in §5, then stress it: feed it a reply with prose *after* the object and a bare object with no fence. Make every case json.loads` cleanly.
+Toward HW1 — repair_json. HW1's third question asks for repair_json(text): strip fences, remove a trailing comma before a closing }/], parse, and return the resulting dict (or None if it still won't parse). Implement the local fix from §6, then confirm repair_json('`json\n{"a": 1,}\n`') returns {"a": 1} and repair_json("not json at all") returns None — it must never raise.
+Brace-counter vs. rfind. Take the first_object walker from §7.1 and feed it '{"a": 1} junk } more' and '{"a": {"b": 2}} {"c": 3}'. Confirm it returns {"a": 1} and {"a": {"b": 2}} respectively — then run the naive text[text.find("{"):text.rfind("}")+1] on the same inputs and watch it over-grab into invalid JSON. Which inputs from the §7.2 table does the walker fix that extract_json alone does not?
+Enum and Optional. Run the §7.3 Order/Customer example. Add a note: str | None = None field, then validate a reply that omits note and one with "note": 42. Confirm absence is accepted but the wrong type is rejected — that's why Optional is "absent or null", not "any type".

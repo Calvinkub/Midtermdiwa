@@ -1,0 +1,434 @@
+Lecture 6: Retrieval Augmented Generation
+Grounding answers in your data.
+
+▶ Slides
+⤓ PDF
+Lecture 6 — Retrieval-Augmented Generation (RAG)
+Goal of this lecture: ground an LLM's answers in your own documents. You'll build a mini-RAG pipeline — retrieve the relevant passages, stuff them into the prompt, and generate an answer that cites its sources.
+By the end you should be able to take a small corpus (a list of passages, or a handful of PDFs), answer a question against it, and return that answer with a source citation — the core of HW3. This lecture builds directly on the vector store you built in Lecture 5; here we put that store to work.
+
+1. Why RAG?
+An LLM knows two things: whatever was in its training data, and whatever you put in the messages you send it. It does not know your PDFs, your company wiki, last week's support tickets, or anything that happened after its training cutoff. Ask it about those and it will answer anyway — fluently, confidently, and often wrongly. That confident-but-wrong output is a hallucination, and it's the same next-token machinery from Lecture 1 working exactly as designed.
+
+Retrieval-Augmented Generation (RAG) fixes this by feeding the model the relevant facts at question time. Instead of hoping the answer is baked into the weights, you look it up in your data and hand it to the model as context. Three wins fall out of this:
+
+Grounding — answers come from real passages you control, not the model's fuzzy memory.
+Less hallucination — when the facts are sitting in the prompt, the model has far less reason to invent them (and a good prompt tells it to say "I don't know" when they're absent).
+Citations — because you know which passages you retrieved, you can show the user exactly where each claim came from.
+Why not just fine-tune?
+Fine-tuning bakes knowledge into the weights — expensive, slow, and stale the moment your data changes. RAG keeps knowledge in an external store you can update any time: edit a document, re-index it, and the next answer is current. It's cheaper, auditable, and the source of truth stays outside the model. For knowledge that changes (docs, policies, catalogues), RAG is almost always the right tool.
+
+2. Retrieve-then-read
+The entire pattern fits in one sentence: find the relevant chunks, then let the model read them to answer. Concretely, four steps run at query time:
+
+# 1. embed the user's question into a vector
+q = embed(question)
+# 2. search the vector store for the nearest chunks
+hits = store.search(q, k=4)
+# 3. stuff those chunks into the prompt as context
+prompt = assemble(question, hits)
+# 4. generate an answer grounded in that context
+answer = llm(prompt)
+The key idea: the model never sees your whole corpus. It only ever reads the top-k chunks that retrieval selected. So the quality of a RAG system is gated by retrieval first and the model second — if the right passage isn't in the top-k, no amount of prompting will save the answer.
+
+Sandbox note: the runnable demo in §5 uses plain keyword overlap for retrieve to keep the focus on the RAG loop itself. The pipeline shape is identical (retrieve → assemble → generate → cite); only the retrieve function changes. §8 upgrades it to real bge-m3 embeddings — which also run in the sandbox — so you can see meaning-based retrieval working for yourself.
+3. Indexing: from PDF to chunks
+Retrieval needs something to retrieve from. You build that index once, offline, before any question is asked:
+
+Load — extract plain text from your sources (PDF, Markdown, HTML…).
+Chunk — split each document into passages of roughly 200–500 tokens, usually with a small overlap (e.g. 50 tokens) so a sentence split across a boundary isn't lost.
+Embed — turn each chunk into a vector with an embedding model.
+Store — save the vector alongside the chunk's text and its source metadata (file name, page number).
+chunks = [
+    {"text": "...passage text...", "source": "handbook.pdf p.3", "vector": [...]},
+    {"text": "...passage text...", "source": "syllabus.pdf p.7", "vector": [...]},
+]
+Why chunk at all? Two reasons. First, a whole PDF won't fit in the context window — and even if it did, you'd pay for thousands of irrelevant tokens. Second, fine-grained chunks let retrieval pinpoint the right paragraph instead of the right book, which makes both retrieval and the model's job much easier.
+
+Chunking is a real engineering choice. Too large and a chunk mixes several topics, diluting its relevance score and burning context. Too small and it loses the context needed to make sense (a stray sentence with no subject). Splitting on natural boundaries — paragraphs, headings, sentences — beats splitting at a fixed character count.
+
+You implemented the embedding + storage side of this in Lecture 5 (Building a Vector Storage). RAG is what we do with that store.
+A runnable chunker
+Here is the chunk step as pure Python — a sliding window over words with a little overlap, carrying the source and page through so citations survive into every chunk. This is the missing half of HW3 (the other half is the retrieve loop in section 5). It needs no model, so it runs anywhere, including the sandbox.
+
+def chunk(text, size=12, overlap=4, source="doc", page=1):
+    """Slide a window over the words; carry source + page so citations survive."""
+    words = text.split()
+    out = []
+    step = size - overlap                      # overlap > 0 keeps split sentences whole
+    for start in range(0, len(words), step):
+        window = words[start:start + size]
+        if not window:
+            break
+        out.append({"text": " ".join(window), "source": f"{source} p.{page}"})
+        if start + size >= len(words):
+            break
+    return out
+
+doc = ("RAG grounds answers in your own documents. First you load the text, "
+       "then you chunk it into passages, then embed each chunk, then store the "
+       "vectors with their source and page so every answer can cite where it came from.")
+
+for c in chunk(doc, size=12, overlap=4, source="lecture-6.pdf", page=1):
+    print(c["source"], "::", c["text"])
+Real corpora use ~200–500 tokens per chunk; the small size here just makes the output easy to read. The output shape — {"text": ..., "source": "file p.N"} — is exactly what retrieve consumes in section 5, so the page number flows all the way to the citation.
+
+Getting text out of a PDF
+The chunk function above needs plain text, but real sources are PDFs. Extracting that text is a separate step with its own libraries — pypdf or pdfplumber:
+
+# Run this in your OWN virtualenv on your machine, NOT in the class sandbox
+# (pypdf is not installed there). pip install pypdf
+from pypdf import PdfReader
+
+reader = PdfReader("handbook.pdf")
+pages = []
+for n, page in enumerate(reader.pages, start=1):
+    pages.append({"text": page.extract_text() or "", "source": f"handbook.pdf p.{n}"})
+Sandbox limit: pypdf / pdfplumber are not available in the class sandbox (no third-party PDF libs). For the in-browser demos, paste the text or ship a pre-extracted .txt file. The key is the shape — keep each page as {"text": ..., "source": "file p.N"} so the page number survives into the citation. Extract once on your machine, then feed the text to chunk.
+4. Prompt assembly & context injection
+Once retrieval hands you the top chunks, you assemble them into a prompt that pins the model to that context. A robust template looks like this:
+
+Answer the question using ONLY the context below.
+If the answer isn't in the context, say you don't know.
+
+[1] {chunk_1.text}  (source: {chunk_1.source})
+[2] {chunk_2.text}  (source: {chunk_2.source})
+
+Question: {question}
+Cite the sources you used as [1], [2].
+Three details make this template work:
+
+Number the chunks ([1], [2]). This gives the model a stable handle to cite, and it gives you a way to map citations back to sources.
+"Use ONLY the context" — without this, the model happily blends in its training-data guesses, defeating the point of grounding.
+"Say you don't know" — the single most important line for curbing hallucination. It gives the model an explicit, acceptable way out when the answer genuinely isn't in the retrieved passages.
+In the chat API, this assembled text goes in a user message, with the rules in the system message:
+
+messages = [
+    {"role": "system", "content":
+        "Answer using ONLY the context. If absent, say you don't know. "
+        "Cite sources as [1], [2]."},
+    {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {question}"},
+]
+Set temperature=0 — RAG answers should be faithful to the context, not creative. This makes decoding greedy (always take the most likely next token), which is as close to deterministic as you can get. On a hosted proxy the text won't always be bit-for-bit identical across runs, but it stays stable and on-context.
+
+5. A mini-RAG you can run
+Here is the full pipeline in pure Python. The "vector store" is just a list of dicts, and retrieval is simple keyword overlap — no embeddings call — so it runs in the class sandbox unchanged. The shape is identical to a production system; only the retrieval function differs.
+
+Two details make this faithful rather than a toy:
+
+A stopword filter drops filler words (the, is, how…) before scoring, so an off-topic question shares no real words with any chunk and retrieve returns an empty list. That gives the "I don't know" path a clean trigger.
+We parse the [1]/[2] markers out of the answer and print only those chunks' sources — closing the citation loop, so the "Sources:" line reflects what the model actually used, not just what retrieval returned.
+import re
+from openai import OpenAI
+
+client = OpenAI()
+
+KB = [
+    {"text": "The KMITL term code 1/2026 means semester 1 of the 2026 academic year.",
+     "source": "handbook.pdf p.3"},
+    {"text": "Students run Python in an in-browser sandbox powered by Piston.",
+     "source": "syllabus.pdf p.7"},
+    {"text": "RAG grounds answers in your own documents to reduce hallucination.",
+     "source": "lecture-6.pdf p.1"},
+]
+
+# Drop filler words so an off-topic query shares NO real words -> score 0 -> [].
+STOP = {"the", "a", "an", "of", "is", "are", "what", "how", "do", "does",
+        "in", "on", "to", "for", "and", "or", "that", "this", "it", "your"}
+
+def words(text):
+    return {w for w in re.findall(r"[a-z0-9]+", text.lower()) if w not in STOP}
+
+def retrieve(question, k=2):
+    q = words(question)
+    scored = [(len(q & words(c["text"])), c) for c in KB]
+    scored.sort(key=lambda x: x[0], reverse=True)
+    return [c for score, c in scored[:k] if score > 0]  # keep only real matches
+
+def answer(question):
+    hits = retrieve(question)
+    context = "\n".join(f"[{i+1}] {c['text']} (source: {c['source']})"
+                        for i, c in enumerate(hits)) or "(no relevant context found)"
+    resp = client.chat.completions.create(
+        model="gemma-4-E4B-it",
+        temperature=0,
+        messages=[
+            {"role": "system", "content":
+                "Answer using ONLY the context. If the context is empty or does not "
+                "contain the answer, say you don't know. Cite sources as [1], [2]."},
+            {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {question}"},
+        ],
+    )
+    text = resp.choices[0].message.content
+    print("Q:", question)
+    print(text)
+    # Only list sources the answer actually cited (parse the [n] markers).
+    cited = {int(n) for n in re.findall(r"\[(\d+)\]", text)}
+    used = [hits[i - 1] for i in sorted(cited) if 1 <= i <= len(hits)]
+    print("Sources:", ", ".join(c["source"] for c in used) or "(none)")
+
+answer("How do students run Python?")      # in the KB -> grounded + cited
+answer("What is the capital of France?")    # NOT in the KB -> retrieve() is [], declines
+The second call asks something the KB doesn't cover. Because retrieve returns an empty list, the context is empty and a well-prompted model declines instead of inventing — that's grounding doing its job. (You can confirm retrieval is empty directly: print(retrieve("What is the capital of France?")) prints [].)
+
+The one seam in the whole pipeline. Notice answer() never mentions embeddings, keywords, or scores — it only calls retrieve(question) and trusts the contract: given a question, return a list of {"text": ..., "source": ...} chunks, possibly empty. That empty-list case is the "I don't know" trigger. Everything else — assembly, generation, citation parsing — is fixed. That's why §8 can drop in a bge-m3 retriever without touching another line, and it's the exact seam you own in HW3: keep the contract, change the insides.
+6. Returning citations
+A grounded answer with no source is just a nicer-looking guess. Always return where the answer came from. There are two layers:
+
+In-text markers — [1], [2] inside the answer, pointing at specific claims.
+A source list — built from the retrieved chunks' metadata (file + page), shown under the answer.
+Citations matter for two audiences. For the user, they turn an opinion into something verifiable — click through and check the claim yourself. For you, the developer, they're a debugging tool: when an answer is wrong, the citation tells you which chunk caused it, so you can fix the chunk, the chunking, or the retrieval rather than guessing.
+
+The practical consequence: you must store source metadata on every chunk at index time. You can't cite metadata you never captured. Carry file name, page, and ideally a section heading through the whole pipeline.
+
+7. Failure modes
+Most "bad RAG" is bad retrieval, not a bad model. Learn to recognise these:
+
+Bad chunks — retrieval returns wrong, partial, or off-topic passages, so the model answers from garbage. Garbage in, garbage cited. Fix the chunking or the retrieval, not the prompt.
+Nothing relevant — the answer simply isn't in your corpus, but a weak prompt lets the model invent one. The "say you don't know" instruction is the guard.
+Lost in the middle — LLMs attend best to the start and end of a long context; facts buried in the middle of many chunks get ignored. Keep k small and put the most relevant chunks first.
+Stale index — the documents changed but the embeddings didn't, so retrieval serves outdated passages. Re-index whenever a source changes.
+Whenever a RAG answer is wrong, inspect what was retrieved first. Nine times out of ten the problem is visible in the chunks before you ever look at the model.
+
+8. From toy to production
+Our demo scored chunks by keyword overlap. That's a real family of techniques (lexical / bag-of-words search; BM25 is the production-grade version, adding term-frequency and rarity weighting), but it has a blind spot: it matches words, not meaning. Ask about a "car" and it won't find a chunk that says "automobile".
+
+Production RAG uses embedding similarity instead. The query and every chunk are embedded into the same vector space (Lecture 5), and retrieval finds the chunks whose vectors are closest to the query's by cosine similarity — matching on meaning, synonyms and all. The good news: the class model bge-m3 runs in the sandbox, so we can swap the keyword retrieve for a real embedding one and keep everything else identical:
+
+import math
+from openai import OpenAI
+
+client = OpenAI()
+
+KB = [
+    {"text": "The KMITL term code 1/2026 means semester 1 of the 2026 academic year.",
+     "source": "handbook.pdf p.3"},
+    {"text": "Students run Python in an in-browser sandbox powered by Piston.",
+     "source": "syllabus.pdf p.7"},
+    {"text": "RAG grounds answers in your own documents to reduce hallucination.",
+     "source": "lecture-6.pdf p.1"},
+]
+
+def embed(texts):
+    resp = client.embeddings.create(model="bge-m3", input=texts)
+    return [d.embedding for d in resp.data]
+
+# Embed the whole KB once, up front — this is the "index".
+kb_vecs = embed([c["text"] for c in KB])
+
+def cosine(a, b):
+    dot = sum(x * y for x, y in zip(a, b))
+    na = math.sqrt(sum(x * x for x in a)); nb = math.sqrt(sum(y * y for y in b))
+    return dot / (na * nb) if na and nb else 0.0
+
+def retrieve(question, k=2, min_score=0.45):
+    qv = embed([question])[0]
+    scored = sorted(((cosine(qv, v), c) for v, c in zip(kb_vecs, KB)), reverse=True)
+    return [c for score, c in scored[:k] if score >= min_score]
+
+print(retrieve("How do learners use the coding environment?"))  # finds Piston chunk by MEANING
+print(retrieve("What is the capital of France?"))               # all scores low -> []
+Two things to notice. First, "How do learners use the coding environment?" shares no real words with "Students run Python in an in-browser sandbox" — the §5 keyword retrieve would return nothing at all, but the embedding finds it by meaning (it scores ~0.60 while the others sit near 0.4). Second, with embeddings every pair has some nonzero similarity, so the "I don't know" path now comes from a score threshold (min_score) instead of an empty word set — the France question tops out around 0.26 and returns []. Drop this retrieve into the §5 pipeline unchanged; answer() doesn't care how the chunks were found.
+
+min_score is corpus-dependent. bge-m3 similarities run high and compressed, so the right cut-off depends on your chunks — tune it against your own corpus rather than treating 0.45 as universal. When in doubt, prefer ranking (take the top-k) and use the threshold only to catch the truly-off-topic case.
+In a real system you wouldn't re-embed the whole KB on every run or scan it in Python — you'd store the vectors in pgvector and let Postgres do the nearest-neighbour search (Lecture 5). But the logic is exactly the lines above:
+
+Concern	Toy (§5)	Production
+Store	Python list of dicts	pgvector (Postgres), Qdrant, Pinecone
+Retrieval	Keyword overlap	Embedding nearest-neighbour (bge-m3)
+Scale	A few chunks	Millions of chunks
+The pipeline shape is identical — embed, search, assemble, generate — which is why the toy is a faithful model of the real thing. Lecture 8 adds hybrid search (combine keyword + embedding retrieval to get the strengths of both), plus how to evaluate whether your RAG answers are actually any good.
+
+9. Sharpening the middle of the pipeline
+You have the two ends — a retriever (§5/§8) and a generator (§4). This section is about everything between them: the unglamorous text-handling that decides whether a correct retrieval becomes a correct answer. The symptoms below all look like "the model is dumb." They almost never are.
+
+Symptom → fix
+Reach for this table when an answer is wrong but the right chunk was retrieved (confirm that first — print retrieve(q)). If the right chunk wasn't retrieved, you're back in §7 territory (fix chunking/retrieval), not here.
+
+Symptom	Likely cause	Fix
+Answer is right but cites the wrong [n]	Marker numbering drifted from chunk order	Number chunks at assembly time; parse [n] back to sources (§5)
+Right chunk retrieved, but the model ignores it	It's buried in the middle of a long context	Reorder: best chunk first or last, not 5th of 8 (§9.2)
+Confident answer to an off-topic question	Low-but-nonzero top score slipped through	Add a min_score floor → empty list → "I don't know" (§9.3)
+Same fact repeated 3× in the answer	Near-duplicate chunks all retrieved	Dedupe before assembly (§9.4)
+"I don't know" even though the corpus has it	Query phrased unlike the chunks	Rewrite the query before retrieving (§9.1)
+Answer pulls in outside facts not in context	Grounding instruction too weak	Tighten the system prompt: "ONLY the context" + refusal clause (§4)
+The rest of this section works each fix as a small, runnable transformation. None of them touch the retriever or the model — they're all string-handling on the chunks.
+
+9.1 Query rewriting before retrieval
+Symptom: a user types "how do i run my code?" and retrieval misses the chunk that says "Students execute Python in an in-browser sandbox." The retriever isn't broken; the query is. Conversational phrasing, pronouns ("it", "that one"), typos, and missing keywords all push the query vector away from the chunk vector.
+
+The fix is a cheap pre-step: rewrite the raw query into a clean, keyword-rich search query before embedding it. This is one extra LLM call (or a template), and it's the single highest-leverage thing you can add to a retriever that "sometimes misses."
+
+Raw query:      "how do i run my code?"
+Rewritten:      "run execute Python code in-browser sandbox Piston environment"
+Two patterns matter in practice:
+
+Expansion — add synonyms and likely keywords ("run" → "run execute launch") so a lexical retriever can match and an embedding retriever lands closer.
+Decontextualisation — in a chat, resolve pronouns against history. "And how much does it cost?" becomes "How much does the in-browser sandbox cost?" — a query that stands on its own, because the retriever has no memory of the chat.
+A blunt rule of thumb: if you can't tell what a query is about by reading it in isolation, neither can your retriever. Rewrite it first.
+
+9.2 Reordering against lost-in-the-middle
+Symptom: you retrieve 6 good chunks, the answer is in chunk #3, and the model acts like it never saw it. §7 named this — models attend best to the start and end of a long context and skim the middle. The cheap, well-known mitigation is to reorder the retrieved chunks so the highest-scoring ones sit at the edges.
+
+Retrieval already gives you chunks sorted best-first. A common reorder ("lost in the middle" reordering) places the best chunk first, the second-best last, the third second, and so on — folding the ranking outward so the strongest evidence frames the context and the weakest sinks to the middle where attention is thinnest.
+
+def reorder_for_attention(hits):
+    """Best chunk first, 2nd-best last, 3rd second, 4th 2nd-last, ...
+    Strong evidence sits at the edges; weak evidence sinks to the middle."""
+    head, tail = [], []
+    for i, h in enumerate(hits):          # hits already sorted best-first
+        (head if i % 2 == 0 else tail).append(h)
+    return head + tail[::-1]
+
+ranked = ["A-best", "B", "C", "D", "E-worst"]
+print(reorder_for_attention(ranked))
+# ['A-best', 'C', 'E-worst', 'D', 'B']  -> A and B now frame the context
+Two caveats. This only matters once your context is long (many chunks); with 3–4 chunks it's noise. And it interacts with citation numbering — number the chunks after reordering, so [1] is whatever you actually placed first. Keeping k small (§7) is the better first move; reorder when you genuinely need many chunks.
+
+9.3 The low-confidence / "I don't know" path, made explicit
+Symptom: an off-topic question gets a confident, fabricated answer. §8 introduced min_score; here is the full low-confidence decision laid out, because in practice you want a third state between "answer" and silence.
+
+A robust retriever returns one of three signals, and the pipeline branches on them:
+
+Top score	State	What answer() does
+≥ min_score	Confident	Assemble those chunks, generate, cite
+< min_score (all of them)	No-context	Skip the model entirely, return "I don't know"
+just above floor, thin margin	Weak	Answer, but flag it / widen k / ask to rephrase
+def retrieve_with_state(scored, k=4, min_score=0.45):
+    """scored: list of (score, chunk), best-first. Returns (state, chunks)."""
+    top = scored[:k]
+    keep = [c for s, c in top if s >= min_score]
+    if not keep:
+        return "no_context", []                 # -> short-circuit to "I don't know"
+    best = top[0][0]
+    state = "confident" if best >= min_score + 0.08 else "weak"
+    return state, keep
+
+demo = [(0.61, "chunkA"), (0.47, "chunkB"), (0.22, "chunkC")]
+print(retrieve_with_state(demo))                 # ('confident', ['chunkA', 'chunkB'])
+print(retrieve_with_state([(0.30, "x"), (0.20, "y")]))   # ('no_context', [])
+The no_context branch is the important one: don't call the model at all. A generator handed an empty context will still try to be helpful — short-circuiting to a fixed "I couldn't find that in the documents" is cheaper and safer than trusting the prompt to suppress a hallucination every time. The "weak" state is where you put product polish: a "low confidence — here's my best guess" banner beats silent overconfidence.
+
+9.4 Deduping near-identical chunks
+Symptom: the same sentence appears in your answer two or three times, or two of your top-k slots are spent on chunks that say the same thing — wasting context and crowding out a different fact that should have made the cut. This happens because chunk overlap (§3) and near-duplicate source documents (a doc and its copy in an FAQ) put very similar passages in the store.
+
+Dedupe after retrieval, before assembly: walk the ranked hits and drop any chunk that's too similar to one you've already kept. "Too similar" can be exact-text, a normalised-text hash, or a similarity threshold on the vectors.
+
+def dedupe(hits, threshold=0.8):
+    """Keep a chunk only if it shares < threshold of its words with a kept chunk.
+    Walk best-first so the highest-ranked of each near-duplicate group survives."""
+    def words(t):
+        return set(t.lower().split())
+    kept = []
+    for h in hits:                                # hits sorted best-first
+        hw = words(h)
+        if all(len(hw & words(k)) / max(len(hw), 1) < threshold for k in kept):
+            kept.append(h)
+    return kept
+
+hits = [
+    "Students run Python in an in-browser sandbox powered by Piston.",
+    "Students run Python in an in-browser sandbox (Piston).",   # near-dup of #1
+    "The term code 1/2026 means semester 1 of academic year 2026.",
+]
+for h in dedupe(hits):
+    print(h)
+# -> the Piston line ONCE, then the term-code line. The duplicate is gone.
+Dedupe before you spend a top-k slot, so the freed slot goes to a genuinely new chunk. With embeddings you'd compare vectors (cosine ≥ threshold) instead of words — same loop, better notion of "similar".
+
+9.5 A full retrieve → rewrite → assemble → answer trace
+Putting §9.1–§9.4 together with §8's embedding retriever, here is one end-to-end run with every intermediate value printed, so you can see the data actually flow through the seams. It rewrites the query (§9.1), retrieves by meaning (§8), applies the min_score floor (§9.3), dedupes near-identical chunks (§9.4), assembles a numbered prompt (§4), generates at temperature=0, and maps the cited [n] markers back to real sources.
+
+import math, re
+from openai import OpenAI
+
+client = OpenAI()
+
+KB = [
+    {"text": "Students run Python in an in-browser sandbox powered by Piston.",
+     "source": "syllabus.pdf p.7"},
+    {"text": "Students execute Python in the browser; Piston runs the sandbox.",
+     "source": "faq.pdf p.2"},                      # near-duplicate of the line above
+    {"text": "The KMITL term code 1/2026 means semester 1 of academic year 2026.",
+     "source": "handbook.pdf p.3"},
+]
+
+def embed(texts):
+    return [d.embedding for d in client.embeddings.create(model="bge-m3", input=texts).data]
+kb_vecs = embed([c["text"] for c in KB])
+
+def cosine(a, b):
+    dot = sum(x*y for x, y in zip(a, b))
+    na = math.sqrt(sum(x*x for x in a)); nb = math.sqrt(sum(y*y for y in b))
+    return dot / (na*nb) if na and nb else 0.0
+
+raw = "how do i run my code?"
+rewritten = "run execute Python code in-browser sandbox Piston"      # §9.1 query rewrite
+print("rewritten:", rewritten)
+
+qv = embed([rewritten])[0]
+scored = sorted(((cosine(qv, v), c) for v, c in zip(kb_vecs, KB)), reverse=True)
+print("scores:", [round(s, 2) for s, _ in scored])
+
+hits = [c for s, c in scored[:3] if s >= 0.45]                       # §9.3 min_score floor
+def overlap(a, b): w = set(a["text"].lower().split()); return len(w & set(b["text"].lower().split())) / max(len(w), 1)
+deduped, kept = [], []                                               # §9.4 dedupe near-dups
+for h in hits:
+    if all(overlap(h, k) < 0.6 for k in kept): kept.append(h); deduped.append(h)
+print("after dedupe:", [c["source"] for c in deduped])
+
+context = "\n".join(f"[{i+1}] {c['text']} (source: {c['source']})" for i, c in enumerate(deduped))
+resp = client.chat.completions.create(
+    model="gemma-4-E4B-it", temperature=0,
+    messages=[
+        {"role": "system", "content":
+            "Answer using ONLY the context. If absent, say you don't know. Cite as [1], [2]."},
+        {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {raw}"},
+    ])
+text = resp.choices[0].message.content
+print("answer:", text)
+cited = sorted({int(n) for n in re.findall(r"\[(\d+)\]", text)})     # map [n] -> sources
+print("sources:", [deduped[i-1]["source"] for i in cited if 1 <= i <= len(deduped)])
+Watch the trace: the rewritten query retrieves both Piston chunks (they're near duplicates), dedupe collapses them to one and frees a slot, and the numbered context that reaches the model is clean — one Piston chunk, ready to cite as [1]. Every stage is a few lines of string-handling, and every stage is inspectable — which is exactly what you want when an answer comes out wrong.
+
+Key terms
+RAG — Retrieval-Augmented Generation: retrieve relevant text, then generate an answer grounded in it.
+Retriever — the swappable function question → top-k chunks (possibly empty); keyword overlap (§5) and embedding similarity (§8) are two implementations of the same contract.
+Chunk — a passage of a document (~200–500 tokens) that is embedded and stored as a retrievable unit.
+Top-k — the k highest-scoring chunks retrieval returns for a query.
+Context injection / prompt assembly — building the prompt by inserting retrieved chunks as context.
+Citation — a reference (file + page) tying an answer back to its source chunk.
+Lost in the middle — the tendency of LLMs to ignore information in the middle of a long context.
+Grounding — constraining the model to answer from supplied facts rather than its parametric memory.
+Query rewriting — transforming the raw user query (expand keywords, resolve pronouns) into a clean search query before retrieval, so it matches the chunks.
+Reordering (lost-in-the-middle) — placing the highest-ranked chunks at the start and end of the assembled context, where the model attends best.
+min_score — a similarity floor below which retrieval returns nothing, turning a low-confidence retrieval into the explicit "I don't know" path.
+Deduplication — dropping near-identical chunks after retrieval so a top-k slot isn't wasted on a passage that repeats one you already kept.
+Self-check
+Q. Your RAG answer ends with "…as stated in [2]", but the claim it makes actually appears in chunk [1], not [2] — and chunk [1] was retrieved. Is this a retrieval bug or something else? A. Not retrieval — the right chunk was in the top-k. The fault is in assembly / citation: the model picked the wrong marker (or your numbering of the chunks doesn't match the markers you fed it). Fix the citation-handling, not the retriever. This is exactly why we parse the [n] markers back to sources in section 5: it makes a mismatch like this visible instead of silent.
+Practice
+Run the mini-RAG example, then ask a question the KB doesn't cover — confirm the model declines instead of inventing an answer.
+Remove the "use ONLY the context / say you don't know" lines from the system prompt and re-run the unanswerable question. On a strong instruct model the refusal often survives even without the guard, so don't expect a hallucination every time. To force one, ask a leading question that presupposes an answer (e.g. answer("On which date in May is the final exam?")). The guard's real value shows on harder, ambiguous queries — note when it changed the answer and when it didn't.
+Confirm the empty-retrieval behaviour directly: call print(retrieve("What is the capital of France?")) and check it returns []. Then remove a word from the STOP set (say the) and re-run — see how a query can now "match" a chunk on filler words, and why the stopword filter matters for clean grounding.
+Add a few more chunks to the KB and a question whose answer needs two of them; bump k and check both get cited.
+Replace the keyword retrieve with a tiny bag-of-words cosine similarity (pure Python lists) and compare which chunks each method returns.
+Start HW3 — Vector Search & RAG: extract page text on your machine (pypdf), chunk it carrying source/page, retrieve the relevant passages, and return answers that cite the file and page.
+Add a dedupe step (§9.4) to the §8 embedding pipeline. Put a near-duplicate of one chunk into the KB (reword it slightly), retrieve, and confirm both copies come back. Drop in dedupe before assembly and verify only one survives — and that the freed top-k slot now goes to a different chunk.
+Run the §9.5 trace, then break it one stage at a time. First skip the query rewrite (use raw as the query) and watch the scores drop and the right chunk maybe fall below min_score. Then lower min_score to 0.0 and confirm the off-topic question now returns chunks (and the model is tempted to answer). Each change should produce a visible shift in one printed intermediate — that's the whole point of printing them.
+Further reading
+Lewis et al. — Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks (the original RAG paper)
+Liu et al. — Lost in the Middle: How Language Models Use Long Contexts
+OpenAI — Retrieval / embeddings use cases
+pgvector — vector similarity search in PostgreSQL
+Ma et al. — Query Rewriting for Retrieval-Augmented Large Language Models (the rewrite-before-retrieve idea of §9.1)
+LangChain docs — LongContextReorder — the production version of §9.2's edge-reordering
+Reference app
+Study the reference app: the retrieval pipeline with a min_score floor and citations — read app/rag.py and app/store.py at tag l06-rag. To see exactly what RAG adds on top of a plain index, run git diff l05-index l06-rag. Try it live: <https://rag-demo.nat-d.uk>. It's a reference to learn from, not a homework answer.
+
+Full-stack version — see every piece wired together
+The reference app above is deliberately compact (a few files). For the version we walk through component by component — a real vector database, a layered backend, and a UI that shows each step — study the full-stack RAG demo. It's the same ideas as this lecture, assembled into a runnable app:
+
+Postgres + pgvector as the vector store (its own Docker image), with an Alembic migration that creates the vector(1024) column and an HNSW cosine index.
+A FastAPI backend in the course's router → service → repository layering, where SQLAlchemy runs the cosine-similarity search (ORDER BY embedding <=> query).
+A Svelte frontend with two pages: Ingest — upload a file and watch how it's chunked (with the overlap highlighted) before it's embedded and stored — and Ask — see a question get embedded, retrieved (ranked chunks + scores), augmented into the system prompt, and answered.
+git clone it, add your personal key, and docker compose up. The README has a step-by-step setup guide and a guided reading order for the files — start there, then read the code in the order it suggests to trace one document from upload to grounded answer.

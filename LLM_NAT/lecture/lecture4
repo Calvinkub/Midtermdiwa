@@ -1,0 +1,519 @@
+Lecture 4: Frontend, Reactivity and SSE
+A responsive UI that streams tokens.
+
+▶ Slides
+⤓ PDF
+Lecture 4 — Frontend, Reactivity & SSE
+Goal of this lecture: build a reactive UI that calls the /api/chat backend you wrote in Lecture 3, and stream the LLM's reply to the browser token by token using Server-Sent Events — so the answer types itself out instead of appearing all at once after a long wait.
+By the end you should be able to wire a reactive front end to your backend and stream an LLM response to the browser with SSE.
+
+1. What "reactivity" means
+A reactive UI is one where you change state — a plain variable — and the interface updates itself to match. You never reach into the page to "find the paragraph and set its text". You describe what the UI should look like for a given state, and the framework keeps the DOM in sync as the state changes.
+
+In SvelteKit (the framework this course's frontend uses), a reactive variable is declared in a component's <script> block, and the markup below references it:
+
+<script>
+  let reply = $state("");   // a reactive variable
+</script>
+
+<p>{reply}</p>
+The key consequence for us: if you append a token to reply, the <p> re-renders on its own. That single idea is the whole reason streaming feels alive — we push tokens into a reactive variable and the screen fills in by itself.
+
+In Svelte 5, reactivity triggers on reassignment of a $state value — reply += tok reassigns reply, so the DOM updates. (Svelte 4 used $: reactive statements; React makes you call a setState setter rather than assign the variable directly.)
+
+A slightly fuller chat box binds an input to state and a button to a handler:
+
+<script>
+  let prompt = $state("");
+  let reply = $state("");
+</script>
+
+<input bind:value={prompt} placeholder="Ask something…" />
+<button onclick={send}>Send</button>
+<p>{reply}</p>
+bind:value is two-way: typing updates prompt, and setting prompt in code updates the box. We never touch the DOM directly.
+
+The exact syntax ($state, bind:) is SvelteKit's; React, Vue, and Solid have their own spellings. The concept — state drives the UI — is universal. Focus on the concept; the syntax is a detail you can look up.
+Watch out — reassign, don't mutate. Reactivity keys off reassigning a $state variable. reply += tok reassigns reply, so the UI updates. But mutating inside an array or object — messages.push(x), or messages[i].content += tok — can fail to trigger an update, because the variable messages still points at the same array. The safe idiom is to build a new value and assign it: messages = [...messages, x], and messages[i] = { ...messages[i], … }. Reach for "make a new thing and assign it," not "poke the old thing." This is the single most common bug in a runes-based chat history (your HW2).
+2. Calling your API from the browser
+The browser talks to your Lecture 3 backend over HTTP using the built-in fetch function. To send the user's message and get a reply back:
+
+async function send() {
+  const messages = [{ role: "user", content: prompt }];  // a history list
+  const res = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ messages }),
+  });
+  const data = await res.json();
+  reply = data.answer;   // reactive — the UI updates itself
+}
+We send a messages list (not a single message string): the server handler in §6 takes body.messages, and carrying the whole history is what lets the model remember earlier turns — exactly what Practice #5 asks for.
+
+A few things to notice:
+
+The URL is a relative path (/api/chat). In development, Vite proxies /api to the backend on :8000; in production, FastAPI serves both the built UI and the API from the same origin. Either way the browser just sees one host, so there is no CORS to configure.
+fetch is asynchronous — it returns a Promise, so we await it. The body is also read asynchronously (await res.json()).
+Assigning to reply is all it takes to update the screen. No DOM code.
+This works, but it has a problem: await res.json() waits for the entire response. If the model is writing 300 tokens, the user watches a spinner for several seconds and then the whole wall of text appears at once.
+
+3. The streaming problem
+Recall from Lecture 1 that an LLM produces its answer one token at a time. The backend already receives those tokens incrementally from the proxy. The waste is that, with plain fetch, the server buffers the whole reply and the client waits for all of it before showing anything.
+
+Streaming fixes the perceived latency, not the total time:
+
+Wait for everything	Stream as you go
+First text on screen	~8 s (the whole reply)	~200 ms (first token)
+Total time	~8 s	~8 s
+Can the user stop early?	No	Yes
+Feel	"Is it broken?"	Alive, responsive
+To stream we need a transport that lets the server push chunks after the response has already started — instead of computing one complete body and returning it. That is exactly what Server-Sent Events provide.
+
+4. SSE vs WebSockets vs plain fetch
+Three options for moving data from server to browser:
+
+Plain fetch / JSON — one request, one whole response. Simple and perfect for most endpoints, but it can't deliver partial output as it's produced.
+Server-Sent Events (SSE) — a long-lived HTTP response that the server keeps writing to. It is one-way (server → client) and rides on ordinary HTTP, so there is no new protocol to deploy. The browser's built-in EventSource client even auto-reconnects — though, as §7 explains, we'll use a POST fetch reader instead (which does not auto-reconnect). This is the right tool for token streaming.
+WebSockets — a separate protocol giving a two-way, full-duplex channel. You need it for genuinely bidirectional, low-latency apps: chat rooms, multiplayer games, live cursors. It's more machinery to run and manage.
+For "the server pushes the assistant's reply at me", the data only flows one direction, so SSE is the simpler, sufficient choice. Reach for WebSockets only when the client must also push a stream up at the same time.
+
+5. The text/event-stream format
+SSE is deliberately low-tech: it's plain text sent with the response header Content-Type: text/event-stream. The stream is a sequence of events, and each event is one or more field: value lines. The only field we need is data:, and each event is terminated by a blank line — i.e. \n\n.
+
+So a stream of three tokens plus an end marker looks like this on the wire:
+
+data: Hello
+
+data:  there
+
+data: !
+
+data: [DONE]
+Each data: line is one chunk; the blank line after it is what tells the browser "this event is complete, deliver it". The payload after data: can be anything — a raw token (as above), or a JSON object you JSON.parse on the client if you want to attach metadata. [DONE] is a widely used convention (it's what the OpenAI API itself sends) to signal the end of the stream; it isn't part of the SSE spec, just a sentinel we agree on.
+
+data: is the only field we need, but SSE defines more. An event may also carry an event: line (a named event type the client can listen for separately), an id: line (so a reconnecting EventSource can resume via Last-Event-ID), and a retry: line (reconnect delay in ms). A line beginning with : is a comment (often used as a keep-alive heartbeat). And a single event may carry multiple data: lines — the client joins them with \n to form the payload.
+
+Seeing the bytes for real
+You can watch a real model's output become SSE frames without any browser. This runs in the course sandbox — it streams from the proxy and prints each token as an SSE event, which is exactly the text your server will send:
+
+from openai import OpenAI
+
+client = OpenAI()
+
+stream = client.chat.completions.create(
+    model="gemma-4-E4B-it",
+    messages=[
+        {"role": "system", "content": "You are terse. One short sentence."},
+        {"role": "user", "content": "Why is the sky blue?"},
+    ],
+    stream=True,
+)
+
+for chunk in stream:
+    token = chunk.choices[0].delta.content or ""
+    if token:
+        print(f"data: {token}\n", flush=True)   # print adds the 2nd \n → \n\n frame
+
+print("data: [DONE]\n")
+Output (your tokens will differ):
+
+data: Ray
+
+data: leigh
+
+data:  scattering
+
+data:  makes
+
+data:  the
+
+data:  sky
+
+data:  blue
+
+data: .
+
+data: [DONE]
+print adds its own trailing newline, so f"data: {token}\n" actually emits data: {token}\n\n — a complete SSE frame. Note that tokens are sub-word pieces ("Ray", "leigh"), which is why concatenating them, not joining with spaces, is what reconstructs the text.
+
+Caveat — raw tokens can contain newlines. This bare framing works only while a token has no newline of its own. Real replies do emit "\n" tokens (paragraph breaks, list items), and a token that is a newline turns data: \n\n\n — a premature frame boundary that corrupts the stream the moment you ask for a longer answer. That's the real reason production code wraps each token in JSON (data: {json.dumps({'token': token})}\n\n) and JSON.parses it on the client: the payload is a single safe line regardless of its contents. Practice #2 has you do exactly this.
+Why the or ""? On a streamed completion, not every chunk carries text. delta.content is None on the chunks that only carry metadata — the first chunk announces the assistant role, and the last one carries a finish_reason instead of content. delta.content or "" turns those Nones into empty strings so the if token: guard skips them cleanly.
+
+6. Server side: yielding chunks in FastAPI
+On the backend, you turn a streamed completion into an SSE response by returning a StreamingResponse over an async generator that yields frames. Each yield is flushed to the client immediately:
+
+from fastapi.responses import StreamingResponse
+from openai import AsyncOpenAI
+
+client = AsyncOpenAI()
+
+async def token_stream(messages):
+    stream = await client.chat.completions.create(
+        model="gemma-4-E4B-it", messages=messages, stream=True)
+    async for chunk in stream:
+        token = chunk.choices[0].delta.content or ""
+        if token:
+            yield f"data: {token}\n\n"
+    yield "data: [DONE]\n\n"
+
+@router.post("/api/chat")
+async def chat(body: ChatIn):
+    return StreamingResponse(
+        token_stream(body.messages),
+        media_type="text/event-stream",
+    )
+Use the async client (AsyncOpenAI) and async for here: a synchronous for over the blocking client would stall the event loop on every network read and defeat both concurrency and per-token flushing. The structure mirrors the sandbox demo above — the only change is yield instead of print, so FastAPI sends each frame down the open connection as it's produced. The media_type sets the text/event-stream content type the browser needs to treat the body as a stream.
+
+7. Client side: reading the stream
+Because our chat sends a request body (the user's message), we POST — which means we read the response's stream ourselves with the Fetch API and append each token to reactive state:
+
+const res = await fetch("/api/chat", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ messages }),   // same history list as §2 / §6
+});
+
+const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+let buffer = "";
+
+while (true) {
+  const { value, done } = await reader.read();
+  if (done) break;
+  buffer += value;
+  const events = buffer.split("\n\n");
+  buffer = events.pop();              // keep the last, possibly-partial frame
+  for (const ev of events) {
+    if (ev.startsWith("data: ")) {
+      const token = ev.slice(6);
+      if (token === "[DONE]") return;
+      reply += token;                 // reactive — the UI types itself out
+    }
+  }
+}
+The important detail: network chunks do not line up with SSE events. One reader.read() might hand you half a frame, or three frames at once. We keep a buffer, split on \n\n, and stash the trailing partial piece until more bytes arrive. Each complete data: event appends one token to reply, and reactivity redraws the paragraph.
+
+What about EventSource?
+The browser has a built-in SSE client, EventSource, that handles framing and reconnection for you:
+
+const es = new EventSource("/api/chat?message=hi");
+es.onmessage = (e) => { reply += e.data; };
+It's lovely — but it can only issue GET requests with no custom body, so you can only pass small inputs in the query string. For a chat message (which may be long, and which you usually want in a POST body) the streamed-fetch approach above is the standard workaround. Use EventSource when a GET is enough; use the fetch reader when you need a POST body.
+
+8. The whole component, end to end
+Here is the complete reactive chat box — input, Send button, the <p> that types itself out, and the buffered fetch-reader inside send(). This is the literal deliverable of Practice #4:
+
+<script>
+  let prompt = $state("");
+  let reply = $state("");
+
+  async function send() {
+    reply = "";
+    const messages = [{ role: "user", content: prompt }];
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages }),
+    });
+
+    const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+    let buffer = "";
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += value;
+      const events = buffer.split("\n\n");
+      buffer = events.pop();              // keep the partial trailing frame
+      for (const ev of events) {
+        if (!ev.startsWith("data: ")) continue;
+        const token = ev.slice(6);
+        if (token === "[DONE]") return;
+        reply += token;                   // reactive — repaints the <p>
+      }
+    }
+  }
+</script>
+
+<input bind:value={prompt} placeholder="Ask something…" />
+<button onclick={send}>Send</button>
+<p>{reply}</p>
+The full loop is: the reactive component holds prompt and reply; the user types and clicks send; fetch POSTs the messages list to /api/chat; FastAPI streams the LLM's tokens as data: frames; the client buffers, splits, and appends each token to reply; reactivity repaints the <p> on every token. The result is a chat box whose answer types itself out in real time — the exact experience users now expect from an LLM app.
+
+8.5 Keeping the conversation: rendering history
+The box above shows a single reply. A real chat keeps the whole conversation and sends it back every turn — that history list is what lets the model remember earlier messages (§2), and it's exactly what HW2 grades. Hold the turns in one reactive array and render them with {#each}:
+
+<script>
+  let prompt = $state("");
+  let messages = $state([]);            // [{ role, content }, …] — the history
+
+  async function send() {
+    // Append the user's turn. Reassign — don't messages.push(...) — see §1.
+    messages = [...messages, { role: "user", content: prompt }];
+    prompt = "";
+    // Add an empty assistant turn we'll grow token-by-token.
+    messages = [...messages, { role: "assistant", content: "" }];
+    const i = messages.length - 1;
+
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages }),   // send the FULL history
+    });
+
+    const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+    let buffer = "";
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += value;
+      const events = buffer.split("\n\n");
+      buffer = events.pop();
+      for (const ev of events) {
+        if (!ev.startsWith("data: ")) continue;
+        const token = ev.slice(6);
+        if (token === "[DONE]") return;
+        // Reassign the changed slot so reactivity sees it (§1).
+        messages[i] = { ...messages[i], content: messages[i].content + token };
+      }
+    }
+  }
+</script>
+
+{#each messages as m}
+  <p class={m.role}>{m.content}</p>
+{/each}
+<input bind:value={prompt} placeholder="Ask something…" />
+<button onclick={send}>Send</button>
+It's the same buffered reader as §7 — the only change is where the token lands: instead of one reply string, it grows messages[i].content, the last (assistant) turn. Each token reassigns that slot, the {#each} re-renders, and the newest bubble types itself out while earlier turns stay on screen. That's the literal shape HW2 asks for: keep the history on the client and stream each turn.
+
+8.6 One source of truth: deriving the UI from state
+A chat box is a little state machine: idle, then streaming, then back to done (or error, or aborted). Rather than juggle separate booleans, keep the primitive facts in $state and let $derived compute the rest — a $derived value recomputes automatically whenever the state it reads changes:
+
+<script>
+  let prompt = $state("");
+  let streaming = $state(false);                  // true while a stream is open
+
+  // Derived: can the user send right now? Recomputes on every change above.
+  let canSend = $derived(!streaming && prompt.trim().length > 0);
+
+  async function send() {
+    streaming = true;
+    try {
+      // …append turns and run the buffered reader from §8.5…
+    } finally {
+      streaming = false;                          // back to idle however we exit
+    }
+  }
+</script>
+
+<input bind:value={prompt} disabled={streaming} />
+<button onclick={send} disabled={!canSend}>Send</button>
+disabled={!canSend} greys the button out by itself the instant streaming flips or the box empties — you never wire that up by hand. While the answer types itself out you also want the view pinned to the bottom; an $effect runs a side-effect after the DOM updates, re-running whenever the state it reads changes:
+
+<script>
+  let log;                                        // bound to the scroll container
+  let messages = $state([]);
+
+  $effect(() => {
+    messages;                                     // read it so the effect tracks changes
+    log?.scrollTo({ top: log.scrollHeight });
+  });
+</script>
+
+<div bind:this={log} class="log">
+  {#each messages as m}<p class={m.role}>{m.content}</p>{/each}
+</div>
+That's the full set of runes you'll use in HW2: $state (the facts), $derived (values computed from them), $effect (side-effects like scrolling), plus $props/$bindable for splitting the chat into reusable components.
+
+9. Stopping early (cancel / abort)
+One promised payoff of streaming was "the user can stop early". To make the Stop button real, give the fetch an AbortController signal and call abort():
+
+<script>
+  let controller = null;
+
+  async function send() {
+    controller = new AbortController();
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages }),
+      signal: controller.signal,          // wire the abort signal in
+    });
+    // …read loop as before…
+  }
+
+  function stop() {
+    controller?.abort();                  // cancels the fetch + closes the stream
+  }
+</script>
+
+<button onclick={stop}>Stop</button>
+Aborting closes the connection, which makes the server generator's loop end too — but only if the server notices the disconnect. In FastAPI you can check await request.is_disconnected() inside the token_stream loop and break, so you stop pulling tokens from the proxy the moment the user gives up (and stop paying for them).
+
+10. Handling errors
+The happy path above assumes everything works. Two failure points to guard:
+
+const res = await fetch("/api/chat", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ messages }),     // headers/body as in §7
+});
+if (!res.ok) {                            // 4xx / 5xx never throw on their own
+  reply = `Error: ${res.status}`;
+  return;
+}
+
+try {
+  const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+  // …read loop…
+} catch (err) {
+  if (err.name !== "AbortError") reply += `\n[stream error: ${err.message}]`;
+}
+fetch only rejects on a network failure — an HTTP 500 still resolves, so you must check res.ok yourself. Wrap the read loop in try/catch to surface a mid-stream drop (and ignore the AbortError you cause on purpose with Stop). On the server, if the LLM call throws partway, you can yield an error frame the client recognises, e.g. yield 'data: {"error": "upstream failed"}\n\n', instead of letting the connection die silently.
+
+11. Why streaming "doesn't stream" in production
+The single most common deployment surprise: it works on localhost, then in production the reply arrives all at once again. The culprit is almost always a buffering reverse proxy between your server and the browser. nginx and many ingress controllers buffer responses by default and only flush once they have a big block — which defeats per-token streaming. Tell them not to:
+
+Set the response header X-Accel-Buffering: no (nginx and nginx-based ingress controllers honour it to disable buffering for that response).
+Make sure no gzip/compression layer sits in front of text/event-stream — compressors coalesce small frames to fill their window.
+CDNs such as Cloudflare can also buffer or coalesce small chunks. This very app runs behind Cloudflare and an ingress, so streaming endpoints must opt out of buffering or the tokens clump.
+If your stream works locally but clumps once deployed, suspect the proxy first — not your code.
+
+This UI consumes the very backend you built in Lecture 3, and the streaming mechanism is the stream=True loop first shown in Lecture 1, now carried all the way to the screen.
+
+12. Hardening the stream: framing, errors, reconnect, heartbeats
+The §7 reader works in the demo. Then a student asks for a numbered list, the reply contains a \n, and the whole answer below the break vanishes. Another day the proxy 500s mid-stream and the box just… stops, mid-word, with no clue why. The happy path is easy; production is the edge cases. This section walks each symptom to its fix, with runnable parsing you can poke at in the sandbox.
+
+12.1 The symptom: a newline token splits a frame
+The §5 caveat warned that bare data: {token}\n\n framing assumes the token has no newline of its own. Watch it break. Suppose the model emits these three deltas: "a", "\n", "b" — perfectly normal for "give me a two-line list". Bare framing serialises them as:
+
+data: a
+
+data: 
+
+data: b
+The middle frame is data: followed by the token's own \n, then the blank line — so the bytes are data: \n\n. Your client splits on \n\n, sees an event whose payload is the empty string, and (worse) the next split lands in the wrong place. A single newline token has desynchronised the whole stream.
+
+12.2 The fix: one token = one JSON object = one safe line
+Wrap every token in JSON on the server. json.dumps escapes the newline to the two characters \ + n, so the payload is always a single line no matter what the token contains — newlines, data:, even [DONE] as literal text:
+
+import json
+
+for token in ["a", "\n", "b"]:
+    print(f"data: {json.dumps({'token': token})}\n", flush=True)
+emits — note the escaped newline, no premature blank line:
+
+data: {"token": "a"}
+
+data: {"token": "\n"}
+
+data: {"token": "b"}
+The client splits frames on \n\n exactly as before, then JSON.parses the payload and reads .token. The newline is now data inside a string, not a frame boundary. (This is Practice #2, here carried all the way through the client.) Use json.dumps — not Python's {token!r}, which emits single-quoted text that is not valid JSON and will throw in JSON.parse.
+
+12.3 Buffering across misaligned chunks — a worked trace
+The other half of robustness is the buffer. It is worth seeing why it is not optional. TCP hands your reader bytes in whatever sizes the network felt like; those boundaries have nothing to do with your \n\n frame boundaries. Say the server sent three complete frames but the OS delivered them in two reads:
+
+read 1:  "data: {\"token\": \"Ray\"}\n\ndata: {\"tok"
+read 2:  "en\": \"leigh\"}\n\ndata: [DONE]\n\n"
+Read 1 ends mid-frame ({"tok). If you parsed each read on its own you'd choke on {"tok and lose leigh entirely. The fix is the §7 idiom: append to a buffer, split("\n\n"), and keep the last piece because it may be a partial frame to be completed by the next read. Here is the entire algorithm in pure stdlib Python — a faithful model of what the browser reader does, runnable as-is:
+
+import json
+
+# Two network reads; frame boundaries (\n\n) do NOT line up with read boundaries.
+chunks = [
+    'data: {"token": "Ray"}\n\ndata: {"tok',
+    'en": "leigh"}\n\ndata: [DONE]\n\n',
+]
+
+buffer = ""
+out = []
+for chunk in chunks:                 # each `chunk` = one reader.read()
+    buffer += chunk
+    frames = buffer.split("\n\n")
+    buffer = frames.pop()            # last item may be a partial frame — carry it
+    for frame in frames:
+        if not frame.startswith("data: "):
+            continue
+        payload = frame[len("data: "):]
+        if payload == "[DONE]":
+            break
+        out.append(json.loads(payload)["token"])
+
+print("".join(out))                  # -> Rayleigh   (concatenate, never space-join)
+It prints Rayleigh even though leigh arrived split down the middle. Delete the buffer = frames.pop() line and run it again: the partial frame is dropped and you get Ray — the exact bug, reproduced. The buffer is the whole point.
+
+12.4 Error frames the client can recognise
+If the upstream LLM call throws after you've already started streaming, the response status is long gone (it was 200 the moment the first byte left). You cannot send a 500 anymore. The convention is to yield a distinguishable error frame — same JSON envelope, an error key instead of token — so the client can tell "the model finished" from "the model fell over":
+
+async def token_stream(messages):
+    try:
+        stream = await client.chat.completions.create(
+            model="gemma-4-E4B-it", messages=messages, stream=True)
+        async for chunk in stream:
+            token = chunk.choices[0].delta.content or ""
+            if token:
+                yield f"data: {json.dumps({'token': token})}\n\n"
+    except Exception as e:                       # upstream died mid-stream
+        yield f"data: {json.dumps({'error': str(e)})}\n\n"
+    yield "data: [DONE]\n\n"                      # always close cleanly
+On the client, branch on which key is present — surface the error in the UI instead of letting the answer trail off into silence:
+
+const msg = JSON.parse(payload);
+if (msg.error) { reply += `\n[stream error: ${msg.error}]`; return; }
+reply += msg.token;
+The [DONE] after the except matters: it lets the client end its loop the same way on success or failure, so the "is it still streaming?" spinner always clears.
+
+12.5 Reconnection and Last-Event-ID
+If you do use the browser's EventSource (GET-only, §7), it auto-reconnects when the connection drops — but by default the server replays from the top, and the user sees duplicated tokens. SSE's answer is the id: field: tag each event with a sequence number, and on reconnect the browser automatically sends the last id it saw back in a Last-Event-ID request header. The server reads that header and resumes after that id:
+
+# server: number every frame
+yield f"id: {n}\ndata: {json.dumps({'token': token})}\n\n"
+
+# on reconnect, FastAPI receives header "Last-Event-ID: 41";
+# skip everything up to and including 41, resume at 42.
+This only helps if the server can actually replay from an offset — for a freshly-generated LLM answer it usually can't, which is one more reason this course's chat uses a plain POST fetch reader (no auto-reconnect) and simply lets the user re-send on failure. Know the mechanism; reach for it when you're streaming a replayable resource (a log tail, a job's progress), not a one-shot generation.
+
+12.6 Heartbeats: the comment frame
+Idle connections die. Load balancers, proxies, and phones-on-mobile drop a TCP connection that has been silent for 30–60 s — and an LLM that is "thinking" before its first token can be silent exactly that long. The keep-alive trick is SSE's comment frame: a line starting with : is ignored by every client but counts as traffic, so the connection stays warm:
+
+yield ": keep-alive\n\n"     # a comment frame — clients ignore it, proxies see bytes
+Send one every ~15 s while you wait for the model. The §7 client already skips it for free: : keep-alive does not start with data: , so the if (!ev.startsWith("data: ")) continue; guard drops it without a special case.
+
+12.7 Symptom → fix
+Symptom	Likely cause	Fix
+Text after a line break disappears	bare data: {token} + a \n token	JSON-wrap each token (§12.2)
+leigh / random tokens missing	parsing each read() alone, no buffer	buffer + keep the trailing partial (§12.3)
+JSON.parse throws on a frame	used {token!r} not json.dumps	emit real JSON (§12.2)
+Answer trails off, no error shown	upstream threw after 200	yield an error frame (§12.4)
+Reconnect replays from the top	no id: / Last-Event-ID handling	number frames, resume after last id (§12.5)
+Stream dies during the "thinking" pause	idle connection reaped by a proxy	heartbeat comment frame (§12.6)
+Works locally, clumps in prod	buffering reverse proxy / gzip / CDN	opt out of buffering (§11)
+The §7 reader is the skeleton; this section is the muscle that keeps it standing when the model writes a newline, the proxy hiccups, or the network stalls.
+
+Key terms
+JSON token framing — wrapping each streamed token as a JSON object (data: {"token": …}\n\n) so a literal newline in the token cannot break the \n\n frame boundary.
+Error frame — an SSE frame carrying an error key instead of a token, yielded when the upstream LLM fails after the 200 has been sent, so the client can surface the failure instead of silently stopping.
+Comment frame / heartbeat — an SSE line beginning with : that every client ignores; sent periodically to keep an idle connection from being reaped by a proxy or load balancer.
+Last-Event-ID — the request header EventSource automatically sends on reconnect, carrying the last id: it saw, so a server can resume a replayable stream instead of starting over.
+Reactivity — state drives the UI; assigning to a variable re-renders the view automatically. No manual DOM updates.
+fetch — the browser's built-in HTTP client; returns a Promise.
+Server-Sent Events (SSE) — a one-way, server→client stream over plain HTTP, content type text/event-stream.
+data: frame — one SSE event: a data: line terminated by a blank line (\n\n).
+StreamingResponse — FastAPI response that streams an (async) generator's yielded chunks to the client.
+EventSource — the browser's built-in SSE reader (GET-only).
+WebSocket — a separate, two-way/full-duplex protocol; use it only when the client must also stream data up.
+Practice
+Run the sandbox demo from §5 and watch the data: frames. Change the system prompt to ask for a longer answer and notice how many more frames you get.
+Modify the demo to send JSON payloads instead of raw tokens — use import json; print(f"data: {json.dumps({'token': token})}\n") (NOT f-string repr, which emits single-quoted, invalid JSON) — and describe how the client would JSON.parse each frame.
+In your own backend, add a streaming /api/chat endpoint using StreamingResponse and the token_stream generator from §6.
+Build a minimal reactive chat box (one input, one button, one reply paragraph) and wire it to your endpoint with the streamed-fetch reader from §7. Confirm the reply types itself out.
+Continue HW2 — Backend & a streaming chat UI: stream your backend's replies into a web UI — keep the message history on the client and stream each turn.
+Run the buffering trace in §12.3 in the sandbox; confirm it prints Rayleigh. Now delete the buffer = frames.pop() line and run again — you should get just Ray. Explain in one sentence why dropping that line loses the split token.
+Take the §12.4 server snippet and add the matching client branch from §12.4 to your HW2 reader: parse each frame as JSON, and if msg.error is set, append [stream error: …] to the visible reply instead of a token. Force it by pointing the model name at a typo (e.g. gemma-NOPE) and watch the error frame surface in the UI rather than the answer trailing off silently.
+Further reading
+MDN — Last-Event-ID and reconnection
+web.dev — Streaming responses with the Fetch API
+MDN — Using server-sent events
+MDN — Streams API / reading a fetch response
+Svelte — State and reactivity ($state)
+FastAPI — Custom & streaming responses
+WHATWG — Server-sent events spec
