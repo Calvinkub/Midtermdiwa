@@ -45,6 +45,7 @@ NLP/
 │   ├── nlp_dl_06_lab_solution.py # DeBERTa fine-tuning + VRAM tricks
 │   └── nlp_dl_07_lab_solution.py # RMSNorm · SwiGLU · RoPE · GQA · KV Cache
 └── prep/                     # 📌 สื่อเตรียมสอบ (เริ่มที่นี่)
+    ├── theory/                  # 📚 ทฤษฎีเรียงตามหัวข้อย่อยที่ออกสอบ (1.1→7.9) แยก 7 ไฟล์รายสัปดาห์
     ├── SLIDES-DETAILED-NOTES.md  # 📖 สรุปละเอียดทุกสไลด์ (Weeks 1-7) จากสไลด์จริง ทุกสูตร/ตัวเลข
     ├── SLIDES-TEACH.html         # 🖥️ สไลด์สอน 43 หน้า ครบ 7 สัปดาห์ (เปิดในเบราว์เซอร์)
     ├── EXAM-100.html             # 📝 ข้อสอบจำลอง 100 ข้อ (คำนวณ 40 + True/False 48 + MCQ 12) + เฉลย
