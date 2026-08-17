@@ -11,6 +11,7 @@
 |------|---------|-------------|-------------|
 | **NLP with Deep Learning** | [`NLP/`](NLP/) | 80 ข้อ · ปรนัย 65 + เขียน 15 · **เน้นคำนวณ** · ชีต A4 เขียนมือได้ | [NLP/prep/](NLP/prep/) |
 | **Building LLM-Powered Applications** | [`LLM_NAT/`](LLM_NAT/) | MCQ + short answer · **เชิง concept ไม่มีเขียนโค้ด** | [LLM_NAT/prep/](LLM_NAT/prep/) |
+| **Hybrid Computing Technology** | [`HybrideCompute/`](HybrideCompute/) | concept + คำนวณ (CPI/pipeline) + **เปรียบเทียบ HW** · closed book | [HybrideCompute/prep/](HybrideCompute/prep/) |
 
 ---
 
