@@ -66,29 +66,41 @@ Produce these artifacts. Adapt to the subject: a math-heavy course leans on calc
 concept-heavy one leans on theory notes + which-is-wrong traps. Only build the code guide if the
 course actually has code.
 
+### The core three (build these first — highest student value)
+Students rely on these most, so nail their format. **Read `references/core-formats.md` before writing
+them** — it has the exact skeletons (per-week emoji, question-count badges, worked-step layout, trap
+boxes, checklists, answer grid) that make them scannable and exam-shaped.
+
 1. **`THEORY-BY-TOPIC.md`** — theory to read, ordered by the **exam scope's subtopics** (e.g.
-   1.1 → 7.9), each headed with its **question count** so weight is visible. Per subtopic: a plain
-   explanation, the exact formulas, a worked mini-example, and a **"trap" note** for the
-   confusable point. End each section with a short checklist. This is the primary read-to-understand doc.
-2. **`SLIDES-DETAILED-NOTES.md`** (optional companion) — the same content but ordered slide-by-slide,
-   for students who revise in lecture order.
-3. **`CHEAT-SHEET.html`** — dense, print-to-A4 reference (formulas + one worked substitution each,
+   1.1 → 7.9), each subtopic heading ending with its **question count** (`— [2 ข้อ]`, ⭐ on the heavy
+   ones) so weight is visible. Per subtopic: a plain explanation, the exact formulas, a worked
+   mini-example, and a **"trap" (`> กับดัก`) note** for the confusable point. Clickable TOC at top,
+   `### ✅ Checklist` closing each week. The primary "study by what's tested" doc.
+2. **`SLIDES-DETAILED-NOTES.md`** — the exhaustive companion, ordered **slide-by-slide** (one `###`
+   per slide, capturing every formula/model/number), for students who revise in lecture order and want
+   to miss nothing. Ends with a Quick-Reference table of exam-critical values.
+3. **`EXAM-100-SOLUTIONS.md`** — mock-exam answer key where **calculation items get full every-step
+   working** (`**โจทย์** → **วิธีทำ** numbered steps → **ตอบ** bold`), true/false & MCQ get answer +
+   one-line reason, and the file ends with a 4-column **answer grid** for fast self-check. Pairs with
+   the interactive `EXAM-100.html` below.
+
+### The rest of the suite
+4. **`CHEAT-SHEET.html`** — dense, print-to-A4 reference (formulas + one worked substitution each,
    not definitions). Red-flag the heaviest topics. Add a "spot the WRONG statement" box built from
    the confusable pairs. If the room allows only a **handwritten** sheet, say so and frame it as a
    master to copy by hand. Offer a translated version keeping technical terms in the original language
    if the user studies in another language.
-4. **`EXAM-100.html`** (+ `-SOLUTIONS.md`) — a mock exam that **mirrors the real exam's shape**:
-   match the calculation / true-false / MCQ proportions and the per-week weighting. Calculations get
-   **full step-by-step** worked solutions (like the written section that demands shown working);
-   true/false and MCQ get answer + one-line reason. Make true/false items test the confusable pairs —
-   that's where students lose the most points.
-5. **`CALC-DRILLS.html`** — a focused set of the calculation types, each with reveal-able worked steps.
-6. **`CODE-EXAM-GUIDE.md`** — only if the course has code. Predict paper-exam code formats
+5. **`EXAM-100.html`** — the interactive mock exam that **mirrors the real exam's shape** (match the
+   calculation / true-false / MCQ proportions and the per-week weighting), with reveal-able answers.
+   Its full worked answer key is the core-three `EXAM-100-SOLUTIONS.md` above. Make true/false items
+   test the confusable pairs — that's where students lose the most points.
+6. **`CALC-DRILLS.html`** — a focused set of the calculation types, each with reveal-able worked steps.
+7. **`CODE-EXAM-GUIDE.md`** — only if the course has code. Predict paper-exam code formats
    (fill-in-the-blank, predict-the-output/shape, spot-the-bug, read-and-explain, write-a-snippet),
    grounded in the actual labs, plus a table of must-know idioms and the common bugs used as traps.
-7. **`STUDY-PLAN.md`** — a time-boxed plan that front-loads the heaviest/calculation topics, plus a
+8. **`STUDY-PLAN.md`** — a time-boxed plan that front-loads the heaviest/calculation topics, plus a
    table of **confusable pairs** (the raw material for which-is-wrong questions) and exam-day tactics.
-8. **`<subject>-prep.skill.md`** (optional) — an active-recall coach that quizzes the student one
+9. **`<subject>-prep.skill.md`** (optional) — an active-recall coach that quizzes the student one
    question at a time, weighted toward the heavy topics, correcting with the exact trap being tested.
 
 Keep an index (`prep/README.md` or the folder-level README) listing each artifact and how to use it.
