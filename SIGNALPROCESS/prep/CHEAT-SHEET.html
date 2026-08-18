@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Cheat Sheet — Signal Processing</title>
+<style>
+  @page { size: A4; margin: 8mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", "Sarabun", system-ui, sans-serif; font-size: 8.4px; line-height: 1.32; color: #1a1a1a; margin: 0; padding: 6px; background: #fff; }
+  h1 { font-size: 15px; margin: 0 0 2px; text-align: center; color: #0d3b66; }
+  .sub { text-align: center; font-size: 8px; color: #555; margin-bottom: 6px; }
+  .cols { column-count: 3; column-gap: 7px; }
+  .box { break-inside: avoid; border: 1px solid #ccc; border-radius: 4px; padding: 4px 5px; margin-bottom: 5px; background: #fafafa; }
+  .box h2 { font-size: 9px; margin: 0 0 3px; padding: 1px 4px; border-radius: 3px; color: #fff; }
+  .L01 h2 { background:#118ab2; } .L02 h2 { background:#06d6a0; color:#043; } .L03 h2 { background:#ffd166; color:#523; }
+  .L04 h2 { background:#ef476f; } .L05 h2 { background:#7209b7; } .L06 h2 { background:#d00000; }
+  .ref h2 { background:#333; }
+  code, .f { font-family: "Cascadia Code", Consolas, monospace; background:#eef2f7; padding:0 2px; border-radius:2px; font-size:8px; }
+  .f { display:block; padding:2px 4px; margin:2px 0; border-left:2px solid #0d3b66; background:#eef2f7; white-space:nowrap; overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; margin:2px 0; }
+  td, th { border:1px solid #ddd; padding:1px 3px; text-align:left; font-size:7.8px; }
+  th { background:#e8edf3; }
+  ul { margin:2px 0; padding-left:13px; } li { margin-bottom:1px; }
+  .warn { background:#fff3cd; border:1px solid #ffc107; border-radius:3px; padding:2px 4px; margin:2px 0; font-size:7.8px; }
+  .key { background:#d00000; color:#fff; padding:0 3px; border-radius:2px; font-weight:bold; }
+  b { color:#0d3b66; }
+</style>
+</head>
+<body>
+<h1>📡 Signal Processing — Cheat Sheet (L01–L06)</h1>
+<div class="sub">สอบ 19 ส.ค. 2569 · 40pt: MCQ 30 (15) + เขียน/วาด 5 (10) + แสดงวิธี 2 (15, <b>FFT แน่</b>) · ⚠️ = จุดผิดในสไลด์</div>
+
+<div class="cols">
+
+  <div class="box ref">
+    <h2>🗺️ แผนที่ Fourier 4 แบบ (ออก MCQ)</h2>
+    <table>
+      <tr><th></th><th>periodic→เส้น</th><th>aperiodic→ต่อเนื่อง</th></tr>
+      <tr><th>continuous</th><td><b>FS</b> (L02)</td><td><b>FT</b> (L03)</td></tr>
+      <tr><th>discrete</th><td><b>DTFS</b> (L04)</td><td><b>DTFT</b>(L05)→<b>DFT</b>(L06)</td></tr>
+    </table>
+    <ul>
+      <li><span class="key">กฎ</span> เวลา periodic ↔ ความถี่ discrete</li>
+      <li>เวลา <b>discrete</b> ↔ ความถี่ <b>periodic (2π)</b> เสมอ</li>
+      <li>DFT = DTFT ที่ sample N จุด · FFT = อัลกอริทึมของ DFT</li>
+    </ul>
+  </div>
+
+  <div class="box L01">
+    <h2>L01 · สัญญาณ & ประเภท</h2>
+    <ul>
+      <li>signal = ฟังก์ชันของ independent var ที่พาข้อมูล</li>
+      <li>มิติ = #ตัวแปร: เสียง 1D, ภาพ I(x,y) 2D, วิดีโอ 3D</li>
+      <li><b>continuous/discrete</b> = แกนเวลา; <b>analog/digital</b> = แกนขนาด</li>
+      <li>discrete ได้จาก <b>sampling</b> · analog∈ℝ, digital∈เซตจำกัด</li>
+      <li>periodic: x(t)=x(t+T), f=1/T · aperiodic: คาบ=∞</li>
+      <li>causal x(t)=0,t&lt;0 · even x(−t)=x(t) · odd x(−t)=−x(t)</li>
+    </ul>
+    <span class="f">E=∫|x(t)|²dt = Σ|x[n]|²</span>
+    <span class="f">P=lim(1/2T)∫₋T^T|x|²dt</span>
+    <table><tr><th></th><th>Energy</th><th>Power</th></tr>
+      <tr><th>ค่า</th><td>E จำกัด, P=0</td><td>P จำกัด, E=∞</td></tr>
+      <tr><th>มักเป็น</th><td>aperiodic</td><td>periodic</td></tr></table>
+    <li>deterministic=เขียนสมการได้ · random=noise/เสียง</li>
+  </div>
+
+  <div class="box L01">
+    <h2>L01 · การแปลงสัญญาณ (วาดกราฟ)</h2>
+    <ul>
+      <li><b>x(t−T)</b> เลื่อน<b>ขวา</b> (delay) · <b>x(t+T)</b> ซ้าย (advance)</li>
+      <li><b>x(at)</b> a&gt;1 บีบแคบ · <b>x(t/a)</b> ขยายกว้าง</li>
+      <li><b>x(−t)</b> = fold (พับกระจก)</li>
+      <li><span class="key">x(at+b)</span> shift ก่อน → scale · <b>x(T−t)</b> advance ก่อน → fold</li>
+      <li>เช็ค: จุดเดิม arg=u → t ใหม่: at+b=u</li>
+    </ul>
+  </div>
+
+  <div class="box L02">
+    <h2>L02 · Fourier Series ⭐</h2>
+    <span class="f">f(t)=a₀+Σcₙcos(nωt+θₙ)</span>
+    <b>8 ขั้น:</b> ① T→ω=2π/T ② เขียน f ใน 1 คาบ ③④⑤ หา coeff ⑥ เขียน FS ⑦ กระจาย ⑧ วาด
+    <span class="f">a₀=(1/T)∫f dt</span>
+    <span class="f">aₙ=(2/T)∫f·cos(nωt)dt</span>
+    <span class="f">bₙ=(2/T)∫f·sin(nωt)dt</span>
+    <span class="f">cₙ=√(aₙ²+bₙ²) , θₙ=arctan(−bₙ/aₙ)</span>
+    <ul>
+      <li>วาด spectrum ต้องเขียนเป็น <b>A cos(ωt+φ)</b> ก่อน · sin x=cos(x−90°)</li>
+      <li><b>even→cos ล้วน</b> (bₙ=0) · <b>odd→sin ล้วน</b> (aₙ=0)</li>
+      <li>square: (4/π)(sin t+⅓sin3t+⅕sin5t+…) = คี่</li>
+    </ul>
+  </div>
+
+  <div class="box L03">
+    <h2>L03 · Fourier Transform</h2>
+    <span class="f">X(ω)=∫x(t)e^(−jωt)dt</span>
+    <span class="f">x(t)=(1/2π)∫X(ω)e^(+jωt)dω</span>
+    <ul>
+      <li>ใช้กับ continuous + <b>aperiodic</b></li>
+      <li>aperiodic → spectrum <b>ต่อเนื่อง</b>; periodic → เส้น</li>
+      <li><b>rect pulse ↔ sinc</b> (คู่คลาสสิก)</li>
+    </ul>
+  </div>
+
+  <div class="box L04">
+    <h2>L04 · DTFS (discrete+periodic N)</h2>
+    <span class="f">x[n]=Σ⟨N⟩ aₖe^(jkω₀n)</span>
+    <span class="f">aₖ=(1/N)Σ⟨N⟩ x[n]e^(−jkω₀n)</span>
+    <span class="f">ω₀=2π/N , a₀=(1/N)Σx[n]</span>
+    <ul>
+      <li>Euler: cos x=(e^{jx}+e^{−jx})/2 · Dₙ=(cₙ/2)∠θₙ, D₋ₙ=Dₙ*</li>
+      <li>aₖ <b>ซ้ำทุก N</b> → spectrum periodic</li>
+      <li>ตัวอย่าง N=7 square: aₖ=(1/7)(2cos2kω₀+2cos kω₀+1), a₀=5/7</li>
+    </ul>
+  </div>
+
+  <div class="box L05">
+    <h2>L05 · DTFT (discrete+aperiodic)</h2>
+    <span class="f">X(ω)=Σₙ x[n]e^(−jωn)</span>
+    <span class="f">x[n]=(1/2π)∫₂π X(ω)e^(jωn)dω</span>
+    <ul>
+      <li>ผล: <b>ต่อเนื่อง + คาบ 2π</b></li>
+      <li>|z|=√(x²+y²), ∠z=tan⁻¹(y/x)</li>
+      <li>x[n] สมมาตร (even) → X(ω)=cos ล้วน (real)</li>
+      <li>eg {1,2,3,2,1}→ X(ω)=2cos2ω+4cosω+3</li>
+    </ul>
+  </div>
+
+  <div class="box L06">
+    <h2>L06 · DFT ⭐⭐</h2>
+    <span class="f">X[k]=Σₙ₌₀^{N−1} x[n]·Wₙ^{kn}</span>
+    <span class="f">Wₙ=e^(−j2π/N) , X[k]=N·aₖ</span>
+    <table><tr><th>N</th><th>Wₙ</th></tr>
+      <tr><td>2</td><td>−1</td></tr><tr><td>4</td><td>−j</td></tr>
+      <tr><td>8</td><td>0.707−0.707j</td></tr></table>
+    <span class="f">(−j)⁰=1 (−j)¹=−j (−j)²=−1 (−j)³=j</span>
+    <ul><li>เลขชี้กำลัง kn เอา <b>mod 4</b> (N=4)</li>
+      <li>IDFT: +j และ ×1/N</li>
+      <li>zero-pad → เพิ่ม density (ไม่เพิ่มข้อมูล)</li></ul>
+  </div>
+
+  <div class="box L06">
+    <h2>L06 · FFT ⭐⭐⭐ (ตอน 3)</h2>
+    <span class="f">คูณ DFT=N² · FFT=N·log₂N</span>
+    <table><tr><th>N</th><th>stage</th><th>FFT</th><th>DFT</th></tr>
+      <tr><td>4</td><td>2</td><td>8</td><td>16</td></tr>
+      <tr><td>8</td><td>3</td><td>24</td><td>64</td></tr>
+      <tr><td>16</td><td>4</td><td>64</td><td>256</td></tr></table>
+    <ul>
+      <li>= (N/2 butterfly)×(log₂N stage)×(2 คูณ)</li>
+      <li><b>FFT ไม่ใช่ transform — เป็น algorithm ของ DFT</b></li>
+      <li>2-pt butterfly: X0=x0+x1, X1=x0−x1</li>
+      <li>input เรียงแบบ <b>bit-reversal</b> (0,4,2,6,1,5,3,7)</li>
+    </ul>
+  </div>
+
+  <div class="box L06">
+    <h2>⭐ แม่แบบ 4-pt DFT {2,3,4,4}</h2>
+    <span class="f">X[0]=2+3+4+4=13</span>
+    <span class="f">X[1]=2−3j−4+4j=−2+j</span>
+    <span class="f">X[2]=2−3+4−4=−1</span>
+    <span class="f">X[3]=2+3j−4−4j=−2−j</span>
+    <span class="f">|X|={13, √5≈2.24, 1, 2.24}</span>
+    <div class="warn">⚠️ สไลด์เขียน |X|=13,<b>5</b>,1,<b>5</b> — <b>ผิด!</b> |−2+j|=√5≈2.24 (5 คือ |X|²). ถ้าให้หาขนาด ตอบ √5 แสดง √(x²+y²)</div>
+    <span class="f">เช็ค: X[0]=Σ, X[N/2]=Σสลับ±</span>
+  </div>
+
+  <div class="box ref">
+    <h2>🎯 ต้องท่อง</h2>
+    <ul>
+      <li>f=1/T, ω=2πf, ω₀=2π/N</li>
+      <li>even↔cos, odd↔sin</li>
+      <li>discrete↔freq periodic 2π</li>
+      <li>periodic↔freq discrete</li>
+      <li>W₂=−1, W₄=−j</li>
+      <li>DFT=N², FFT=N log₂N</li>
+      <li>|z|=√(x²+y²), ∠=tan⁻¹(y/x)</li>
+      <li>X[k]=N·aₖ (DFT↔DTFS)</li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>

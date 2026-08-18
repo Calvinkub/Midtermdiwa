@@ -12,6 +12,7 @@
 | **NLP with Deep Learning** | [`NLP/`](NLP/) | 80 ข้อ · ปรนัย 65 + เขียน 15 · **เน้นคำนวณ** · ชีต A4 เขียนมือได้ | [NLP/prep/](NLP/prep/) |
 | **Building LLM-Powered Applications** | [`LLM_NAT/`](LLM_NAT/) | MCQ + short answer · **เชิง concept ไม่มีเขียนโค้ด** | [LLM_NAT/prep/](LLM_NAT/prep/) |
 | **Hybrid Computing Technology** | [`HybrideCompute/`](HybrideCompute/) | concept + คำนวณ (CPI/pipeline) + **เปรียบเทียบ HW** · closed book | [HybrideCompute/prep/](HybrideCompute/prep/) |
+| **Signal Processing (DSP)** | [`SIGNALPROCESS/`](SIGNALPROCESS/) | MCQ 30 + เขียน/วาด 5 + **แสดงวิธี 2 (FFT แน่)** · เน้นคำนวณ | [SIGNALPROCESS/prep/](SIGNALPROCESS/prep/) |
 
 ---
 
@@ -47,6 +48,22 @@
 - `STUDY-PLAN.md` — แผนอ่าน + confusable pairs 23 คู่
 
 **หัวใจที่ต้องจำ:** stateless · temperature 0 · JSON mode = syntax≠shape · **422/429/502/504** · router→service→repository · **SSE** (`\n\n` + `[DONE]`) · **cosine +1/0/−1** (`cos([1,0,1],[1,1,0])=0.5`) · pgvector `<=>` = distance (ASC) · retrieve-then-read · **debug RAG: print top-k first**
+
+---
+
+## 📡 Signal Processing (DSP)
+
+วิเคราะห์สัญญาณด้วย Fourier: สัญญาณ & ประเภท → Fourier Series → Fourier Transform → DTFS → DTFT → **DFT/FFT**
+**เน้นคำนวณ** · แผนที่หลัก: Fourier 4 แบบ (continuous/discrete × periodic/aperiodic) · **ตอน 3 ออก FFT แน่**
+
+**ชุดเตรียมสอบ ([SIGNALPROCESS/prep/](SIGNALPROCESS/prep/)):**
+- `CALC-DRILLS.md` — โจทย์ DFT/FFT/FS เฉลยทีละ step (**สำคัญสุด — ตอน 3**)
+- `THEORY-BY-TOPIC.md` — ทฤษฎี L01–L06 อธิบายแบบคนไม่เคยเรียน
+- `CHEAT-SHEET.html` — ชีต A4 แยกสีตามบท + สูตรครบ
+- `EXAM-SOLUTIONS.md` — ข้อสอบจำลอง 30 MCQ + 5 เขียน + 2 แสดงวิธี
+- `STUDY-PLAN.md` — แผนอ่าน + confusable pairs + กลยุทธ์
+
+**ต้องจำ:** `X[k]=Σx[n]Wₙ^{kn}` · W₂=−1, W₄=−j · **DFT=N², FFT=N·log₂N** · periodic↔discrete spectrum · discrete↔periodic 2π · even→cos/odd→sin · `|x+jy|=√(x²+y²)` · ⚠️ `|−2+j|=√5≈2.24` (สไลด์เขียน 5 ผิด)
 
 ---
 
