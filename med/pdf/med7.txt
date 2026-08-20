@@ -1,0 +1,5142 @@
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+
+Chapter 07: Introduction to
+Convolutional Neural Network (CNN)
+•• Second
+Second level
+level
+
+•• Third
+Third level
+level
+
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+บรรยายโดย ผศ.ดร.ธราวิเชษฐ์ ธิติจรูญโรจน์
+14/08/69
+
+คณะเทคโนโลยีสารสนเทศ
+สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
+
+11
+
+การเรี
+ย
+นรู
+เ
+้
+ชิ
+ง
+ลึ
+ก
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+คือ การประมวลผลแบบหลายลําดับชั้น ซึ่งอาจจะเป็นการเรียนรู้แบบมีผู้สอน (Supervised Learning) หรือ
+การเรี
+ย
+นรู้แบบไม่
+มีผู้สtext
+อน styles
+(Unsupervised
+Learning) โดยที่ลําดับชั้นต้น ๆ จะนําเสนอคุณลักษณะจากตํ่า
+•• Click
+Edit
+Master
+to edit
+Master
+text styles
+•• Second
+level
+Second
+levelและค่อยไล่ระดับไปสู่คุณลักษณะสูง (High Level Feature) ในระดับชั้นท้าย ๆ
+(Low Level
+Feature)
+•• Third
+Third level
+level
+
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+22
+
+ความแตกต่
+า
+งระหว่
+า
+งการเรี
+ย
+นรู
+แ
+้
+บบเดิ
+ม
+กั
+บ
+เชิ
+ง
+ลึ
+ก
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+การเรียนรู้แบบดังเดิม
+•• Edit
+Master
+styles
+Click
+to edittext
+Master
+text styles
+(Traditional
+Learning)
+•• Second
+Second level
+level
+
+การเรียนรู้เชิงลึก
+(Deep Learning)
+
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+• ต้องการกระบวนการสกัดคุณลักษณะ
+• ต้องการองค์ความรู้จากผู้เชี่ยวชาญ
+• ใช้เวลาในการปรับและเครื่องมือค่อนข้างสูง
+• ขาดความยืดหยุ่นหรือความคล่องตัว
+
+14/08/69
+
+33
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+โครงข่ายประสาทแบบคอนโวลูชันอยู่บน 3 หลักการ ได้แก่
+•• Edit
+Master
+styles
+Click
+toreceptive
+edittext
+Master
+text
+styles
+• Local
+fields
+(Local
+connectivity)
+•• Second
+Second level
+level
+• Shared
+weights
+•• Third
+Third level
+level
+Fourth
+level
+Fourth
+level
+• Pooling••(or
+down-sampling)
+•• Fifth
+Fifth level
+level
+ซึ่งโครงสร้างดังกล่าวจะสามารถสกัดโครงสร้างเชิงพื้นที่ของข้อมูล
+
+14/08/69
+
+44
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Convolution Layer
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+
+Non-Linearity
+•• Fourth
+Fourth level
+level
+
+•• Fifth
+Fifth level
+level
+
+Pooling Layer
+Multilayer Perceptron
+Softmax Output
+
+14/08/69
+
+55
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Convolution Layer
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+
+Non-Linearity
+•• Fourth
+Fourth level
+level
+
+•• Fifth
+Fifth level
+level
+
+Pooling Layer
+Multilayer Perceptron
+Softmax Output
+
+14/08/69
+
+•
+
+Yamashita, R., Nishio, M., Do, R.K.G. et al. Convolutional neural networks: an overview and application in radiology. Insights Imaging 9, 611–629
+(2018).
+66
+
+แนวคิ
+ด
+การประยุ
+ก
+ต์
+ใ
+ช้
+ง
+านตั
+ว
+ดํ
+า
+เนิ
+น
+การคอนโวลู
+ช
+น
+่
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+••• Edit
+ตั
+ว
+ดํ
+า
+เนิ
+น
+การคอนโวลู
+ช
+น
+่
+ั
+(Convolution
+Operation
+or
+Image
+Convolution)
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•คื
+Second
+•อ
+Second
+level
+ตัวดําlevel
+เนิ
+นการเชิงเส้นสําหรับการประมวลสัญญาณ
+•• Third
+Third level
+level
+
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+$
+
+$
+
+𝑗 𝑟, 𝑐 = & & 𝐼 𝑟 − 𝑢, 𝑐 − 𝑣 𝑇(𝑢, 𝑣)
+!"#$ %"#$
+$
+$
+
+𝑐𝑐𝑐𝑐𝑐𝑐𝑐𝑐 = & & 𝐼 𝑟 + 𝑢, 𝑐 + 𝑣 𝑇(−𝑢, −𝑣)
+!"#$ %"#$
+
+สําหรับการคํานวณ convolution จะหมุนตัวกรอง 180 องศาจากนั้นคํานวณโดยอาศัยตัว
+ดําเนินการ correlation ซึ่งทั้งสองตัวดําเนินการจะให้ผลลัพธ์ที่คล้ายคลึงกันกรณีที่ค่า
+สัมประสิทธิ์ของตัวกรองสมมาตร
+14/08/69
+
+77
+
+Convolution
+Layer
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+สมการการคอนโวลูชันระหว่าง Kernel กับ Input คือ
+𝒚 𝒊, 𝒋
+
+= 𝒙 ∗ 𝒘 𝒊, 𝒋
+𝑵
+
+𝑴
+
+= # # 𝒙 𝒎 − 𝒊, 𝒏 − 𝒋 𝒘[𝒎, 𝒏]
+𝒏"𝟏 𝒎"𝟏
+
+= (7 × 1) + (3 × 0) + (2 × 0)
++ (2 × 0) + (9 × 1) + (4 × 0)
++ (1 × 0) + (2 × 0) + (8 × 1)
+=7+0+0+0+9+0+0+0+8
+= 24
+14/08/69
+
+88
+
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+99
+
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+•
+
+1010 (2018).
+Yamashita, R., Nishio, M., Do, R.K.G. et al. Convolutional neural networks: an overview and application in radiology. Insights Imaging 9, 611–629
+
+Convolution
+Layer
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+Local
+receptive
+fields
+Input image หรือ Input neurons
+14/08/69
+
+Kernel หรือ Filter
+
+=
+
+Hidden neuron
+หรือ Feature map
+1111
+
+Convolution
+Layer
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+1212
+
+Convolution
+Layer
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+
+Kernel
+หรือ Filter
+
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+Kernel
+หรือ Filter
+n
+o
+r
+u
+e
+n
+n
+e
+d
+d
+Hi
+p
+a
+m
+e
+r
+u
+t
+a
+e
+F
+หรือ
+14/08/69
+
+e
+g
+a
+m
+i
+t
+u
+p
+In
+s
+n
+o
+r
+u
+e
+n
+t
+u
+p
+n
+I
+หรือ
+
+Input image
+หรือ Input neurons
+
+Hidden neuron
+หรือ Feature map
+
+1313
+
+Convolution
+Layer
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+
+Sparse Connectivity
+
+•• Second
+Second level
+level
+
+•• Third
+Third level
+level
+
+Dense Connectivity
+
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+Filter
+14/08/69
+
+1414
+
+Convolution
+Layer
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+วิธีการของ Fully connected neural
+net จะส่งผลให้เกิดตัวแปรอิสระมากมาย
+สิ่งนี้ส่งผลให้ต้องใช้ฐานข้อมูลขนาดใหญ่
+มหาศาลสํ า หรั บ การฝึ ก สอนถึ ง จะทํ า ให้
+ได้รับค่าตัวแปรต่าง ๆ ที่เหมาะสมและมี
+ประสิ ท ธิ ภ าพ นอกจากนี ้ ยั ง ส่ ง ผลให้ ใช้
+เวลาในการประมวลผลค่อนข้างมากและ
+อาจจะทําให้เกิดปัญหา Overfitting
+1515
+
+Convolution
+Layer
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+ขณะที่วิธีการของ Locally connected neural
+net จะมีตัวแปรอิสระที่น้อยกว่ามาก ส่งผลให้ลด
+เวลาในการประมวลผลลง และลดโอกาสการเกิด
+ปัญหา Overfitting
+นอกจากนี้ ยังคงสกัด
+ความสัมพันธ์แบบท้องถิ่นเชิงพื้นที่จากภาพโดย
+อาศัย local connectivity pattern ระหว่าง
+neurons ของเลเยอร์ที่ติดกัน
+
+1616
+
+Convolution
+Layer
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Kernel
+หรือ Filter
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+Shared
+weights
+
+Kernel
+หรือ Filter
+n
+o
+r
+u
+e
+n
+n
+e
+d
+d
+Hi
+p
+a
+m
+e
+r
+u
+t
+a
+e
+F
+หรือ
+14/08/69
+
+e
+g
+a
+m
+i
+t
+u
+p
+In
+s
+n
+o
+r
+u
+e
+n
+t
+u
+p
+n
+I
+หรือ
+
+Input image
+หรือ Input neurons
+
+Hidden neuron
+หรือ Feature map
+
+1717
+
+Convolution
+Layer
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+filter#1
+Hidden neuron
+´
+(5
+5)
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+
+*
+•• Third
+Third level
+level
+
+•• Second
+Second level
+level
+
+•• Fourth
+Fourth level
+level
+filter#2
+•• Fifth
+Fifth level
+level
+
+input neurons
+(28 ´ 28)
+
+*
+
+*
+
+(5 ´ 5)
+
+filter#3
+(5 ´ 5)
+
+=
+
+or
+Feature map#1
+(24 ´ 24)
+
+=
+
+Hidden neuron
+or
+Feature map#2
+(24 ´ 24)
+
+=
+
+Hidden neuron
+or
+Feature map#3
+(24 ´ 24)
+
+โดยที่ * คือ ตัวดําเนินการแบบคอนโวลูชัน
+14/08/69
+
+Input Layer
+1 ´ 28 ´ 28
+
+Convolutional Layer
+3 ´ 24 ´ 24
+
+ทุกค่าของสัมประสิทธิใน Feature map ตัวเดียวกันจะ
+คํานวณมาจากตัวกรอง (Filter) ตัวเดียวกัน ซึ่งการทํางาน
+แบบนี้จะถือว่าเป็นการใช้
+weights และค่า bias
+ร่วมกัน (Shared weights)
+(Shared Weights, Bias) → Filter
+1818
+
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+•
+
+1919 (2018).
+Yamashita, R., Nishio, M., Do, R.K.G. et al. Convolutional neural networks: an overview and application in radiology. Insights Imaging 9, 611–629
+
+Convolution
+Layer
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+หลักการ
+Shared
+weights
+โดยอาศั
+ย
+ตั
+ว
+กรอง
+ช่
+ว
+ยทํ
+า
+ให้
+ส
+ามารถตรวจจั
+บ
+คุ
+ณ
+ลั
+ก
+ษณะได้
+โดยไม่
+ต
+อ
+้
+งคํ
+า
+นึ
+ง
+ถึ
+ง
+ตํ
+า
+แหน่
+ง
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+••
+Second
+level
+หรือสามารถกล่
+า
+วได้ว่า
+Neurons ทั้งหมดในเลเยอร์จะสกัดคุณลักษณะเดียวกันในตําแหน่งที่แตกต่างกัน นอกจากนี้
+Second
+level
+•• Third
+Third level
+level
+วิธีการ CNN
+มี
+ค
+วามทนทานต่
+อ
+Translation
+อี
+ก
+ทั
+้
+ง
+ยั
+ง
+สามารถลดจํ
+า
+นวนของพารามิ
+เ
+ตอร์
+อ
+ิ
+ส
+ระลง
+ส่
+ง
+ผลทํ
+า
+ให้
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth
+level
+ประสิทธิภาพการคํานวณดี
+ขึ้น level
+
+14/08/69
+
+2020
+
+Convolution
+Layer
+สํ
+า
+หรั
+บ
+ข้
+อ
+มู
+ล
+แบบ
+Multi-Channel
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+filter#1 มี 3 kernel
+(2 ´ 3 ´ 3)
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+
+filter#2 มี 3 kernel
+(2 ´ 3 ´ 3)
+
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+filter#3 มี 3 kernel
+(2 ´ 3 ´ 3)
+
+filter#4 มี 3 kernel
+(2 ´ 3 ´ 3)
+
+14/08/69
+
+Convolution
+Layer
+
+Pooling
+Layer
+
+Convolution
+Layer
+
+Pooling
+21
+21
+Layer
+
+Convolution
+Layer
+สํ
+า
+หรั
+บ
+ข้
+อ
+มู
+ล
+แบบ
+Multi-Channel
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+ถ้านักศึกษาพิจารณาเพียงบริเวณดังกล่าวจะพบว่า
+จํานวน kernel ของ filter ต้องเท่ากับจํานวน
+channel ของ input
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+
+filter#1 มี 3 kernel
+(2 ´ 3 ´ 3)
+
+filter#2 มี 3 kernel
+(2 ´ 3 ´ 3)
+
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+filter#3 มี 3 kernel
+(2 ´ 3 ´ 3)
+
+filter#4 มี 3 kernel
+(2 ´ 3 ´ 3)
+
+14/08/69
+
+Convolution
+Layer
+
+Pooling
+Layer
+
+Convolution
+Layer
+
+Pooling
+22
+22
+Layer
+
+Convolution
+Layer
+สํ
+า
+หรั
+บ
+ข้
+อ
+มู
+ล
+แบบ
+Multi-Channel
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+1
+
+0.5
+
+0.5
+
+0.75
+
+0
+
+1
+*
+1 text
+0 styles
+0
+1
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+1
+
+•• Second
+Second level
+level
+
+0.5
+
+0.75
+
+1
+
+1
+
+1
+
+•• Fourth
+Fourth level
+level
+0.25 0.25
+0.25
+0.25
+0.5
+0.5
+1
+0
+0.5 0.75
+•• Fifth
+Fifth level
+level
+
+0.5
+
+0.5
+
+1
+
+0.5
+
+0.5
+
+•
+Third
+level
+•
+Third
+level
+0.75
+
+1
+
+0
+
+0.5
+
+0.25 0.25 0.75
+
+1
+
+0
+0.25
+0.75
+0.5
+0.5
+0.5
+1
+1
+1
+1 1
+
+1
+
+0.5
+
+0.5
+
+0.5
+
+1
+
+00
+
+00
+
+0.50
+
+0
+
+1
+
+0
+
+0
+
+0
+
+1
+
+0.5
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0.5
+
+0
+
+0.25 0.75
+
+1
+
+0
+
+0
+
+0
+
+0
+0
+0
+0.25
+0.25
+0.75
+1
+0
+0
+1 1
+
+1
+
+14/08/69
+
+1
+
+0.5
+
+0.5
+0
+
+0
+
+0
+
+*
+
+1
+
+0
+
+0
+
+1
+
+1
+
+0
+
+1
+
+1
+
+1
+
+0
+
+0
+
+0
+
+-1
+
+-1
+
+-1
+
+1
+
+0
+
+-1
+
+1
+
+0
+
+-1
+
+0
+
+-1
+
+* 1
+
+2.00 1.25
+
+= 2.00 2.50
+- 0.5 - 0.75
+
+= 0.25 2.00 +
+
+(2.00)
++ (-0.5)
++ (-1.25)
+
+(1.25)
++ (-0.75)
++ (-1.25)
+
+(2.00)
++ (0.25)
++ (-0.25)
+
+(2.50)
++ (2.00)
++ (-0.25)
+
+0.25 - 0.75
+2.00 4.25
+
+-1.25 -1.25
+
+= -0.25 -0.25
+2323
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Convolution Layer
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+
+Non-Linearity
+•• Fourth
+Fourth level
+level
+
+•• Fifth
+Fifth level
+level
+
+Pooling Layer
+Multilayer Perceptron
+Softmax Output
+
+14/08/69
+
+2424
+
+Activation
+Function
+(Non-linearity)
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+ที่มาและความสําคัญของ Activation Function (Non-linearity)
+•• Edit
+text
+styles
+ClickMaster
+to
+edit
+Master
+text
+styles
+b2
+b1
+X
+
+•• Second
+level
+Second
+level
+w2
+w1
+
+Input
+Layer
+
+•• Third
+Third level
+level
+
+Y
+
+•• Fourth
+Fourth level
+level
+Hidden •• Fifth
+Hidden
+Fifth level
+level
+
+Layer#1
+
+Output
+Layer
+
+Layer#2
+
+จากโครงข่ายประสาทเทียมข้างต้น จะพบว่าผลลัพธ์ท้ายที่สุด
+(Y) ก็คํานวณอยู่บนหลักการสมการเส้นตรง ซึ่งสมการเส้นตรงไม่
+สามารถแก้ไขปัญหาที่มีความซับซ้อน (Complex) ได้ทุกกรณี
+
+(W1 × X) + b1
+Y = (W2 × (W1 × X + b1 )) + b2
+Y = (W2 × W1 × X) + (W2 × b1 ) + b2
+
+สมการเส้14/08/69
+นตรง
+
+W×X
+
++
+
+B
+
+2525
+
+Activation
+Function
+(Non-linearity)
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+ที่มาและความสําคัญของ Activation Function (Non-linearity)
+•• Edit
+text
+styles
+ClickMaster
+to
+edit
+Master
+text
+styles
+b2
+b1
+X
+
+•• Second
+level
+Second
+level
+w2
+w1
+
+Input
+Layer
+
+•• Third
+f1 level
+Third
+level
+
+f2
+
+Y
+
+Layer#2
+
+Output
+Layer
+
+•• Fourth
+Fourth level
+level
+Hidden •• Fifth
+Hidden
+Fifth level
+level
+
+Layer#1
+
+f1(W1 × X + b1 )
+Y = f2( W2 × f1(W1 × X + b1 ) + b2 )
+
+14/08/69
+
+จากโครงข่ายประสาทเทียมข้างต้น จะพบว่าผลลัพธ์ท้ายที่สุด
+(Y) ก็คํานวณอยู่บนหลักการสมการเส้นตรง ซึ่งสมการเส้นตรงไม่
+สามารถแก้ไขปัญหาที่มีความซับซ้อน (Complex) ได้ทุกกรณี
+ดังนั้น Activation function จึงถูกนํามาใช้งานเพื่อแก้ไขปัญหา
+ข้างต้น เพื่อที่จะทําให้ผลลัพธ์ของ neuron มีความเป็น Nonlinearity ซึ่งสามารถกล่าวได้ว่า Activation function เป็นการ
+แปลงข้ อ มู ล แบบไม่ เ ชิ ง เส้ น รู ป แบบหนึ ่ ง (Non-linear
+transformation)
+2626
+
+Activation
+Function
+(Non-linearity)
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+จากตั
+ว
+อย่
+า
+งแบบจํ
+า
+ลองข้
+า
+งต้
+น
+จะพบว่
+า
+มี
+3
+Layer
+ได้
+แ
+ก่
+input,
+hidden
+และ
+output
+layer
+h1
+w5
+w1
+โดยที
+่
+input
+layer
+ต้
+อ
+งการ
+2
+ค่
+า
+และทํ
+า
+นายออกมาเพี
+ย
+ง
+2
+คลาสเท่
+า
+นั
+น
+้
+Master
+text
+styles
+Click
+to
+edit
+Master
+text
+styles
+o1
+i1 •• Edit
+w2
+w6
+•• Second
+Second level
+level
+เมื่อนักศึกษาพิจารณาการทํางานใน Hidden Node (h1) จะพบว่า (h1) จะนําค่าที่ได้จากการคูณ
+•• Third
+level
+Third
+level
+กั
+น
+ระหว่
+า
+ง
+input
+(i1
+และ
+i2)
+กั
+บ
+weight
+(wN)
+ของแต่
+ล
+ะอั
+น
+และนํ
+า
+มารวมกั
+น
+พร้
+อ
+มกั
+บ
+Bias
+w3
+w7
+i2
+
+w4
+
+h2
+
+•• Fourth
+Fourth level
+level
+o2level
+w8•• Fifth
+Fifth
+level
+
+b1
+
+b2
+
+b1
+
+b2
+
+i1 × w1
+i2 × w2
+
+b1
+
+(i1 × w1) + (i2 × w2) + b1
+
+Y1 = (i1 × w1) + (i2 × w2) + b1
+
+Summation
+
+Hidden Node #1
+
+14/08/69
+
+นักศึกษาจะพบว่าผลลัพธ์ที่ได้จาก (i1 × w1) + (i2 × w2) + b1 สามารถเขียนให้อยู่ในรูปของ
+สมการเส้นตรงได้ 𝑦1 = ∑ 𝑥& 𝑤& + 𝑏 ซึ่งหมายความว่าโครงข่ายประสาทเทียมได้ออกแบบอยู่บน
+สมการเชิงเส้นตรง ทําให้ถ้าข้อมูลมีลักษณะไม่เชิงเส้นอาจส่งผลให้โครงข่ายประสาทเทียมทํางานได้
+2727
+ไม่มีประสิทธิภาพเท่าที่ควร
+
+Activation
+Function
+(Non-linearity)
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+w1
+
+h1
+
+w5
+
+เพื่อที่จะแก้ไขปัญหาข้างต้น
+
+Master
+text
+styles
+Click
+to
+edit
+Master
+text
+styles
+o1
+i1 •• Edit
+จะนํ
+า
+ผลลั
+พธ์ (i1 × w1) + (i2 × w2) + b1 ผ่าน Activation Function เพื่อให้โครงข่าย
+w2
+w6
+•• Second
+Second level
+level
+
+i2
+
+w4
+
+•• Third
+level
+Third
+level
+w3
+w7
+h2
+
+•• Fourth
+Fourth level
+level
+o2level
+w8•• Fifth
+Fifth
+level
+
+b1
+
+b2
+
+b1
+
+b2
+
+ประสาทเทียมรองรับการทํางานกับข้อมูลแบบไม่เชิงเส้นได้มีประสิทธิภาพมากขึ้น
+i1 × w1
+i2 × w2
+
+b1
+
+(i1 × w1) + (i2 × w2) + b1
+
+𝑓 +
+
+Summation
+
+Activation
+Function
+
+𝑓((i1 × w1) + (i2 × w2) + b1)
+
+Hidden Node #1
+
+14/08/69
+
+Activation Function จะแปลงผลลัพธ์ (i1 × w1) + (i2 × w2) + b1 ก่อนออกจาก (h1) ให้มี
+ลักษณะไม่เชิงเส้นมากยิ่งขึ้น โดยทั่วไปแล้ว Activation Function มีค่อนข้างมากแต่ที่ได้รับความ
+นิยมในปัจจุบัน ได้แก่ Tanh และ Sigmoid
+2828
+
+ทํ
+า
+ไมต้
+อ
+งใช้
+ง
+าน
+Activation
+Function
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+หลักการของการแปลงข้อมูลที่มีความสัมพันธ์แบบไม่เชิงเส้นให้เป็นความสัมพันธ์แบบเชิงเส้น โดยอาศัยวิธีการไม่เชิงเส้น คือ
+การแปลงข้อมูลจากที่มีความสัมพันธ์แบบไม่เชิงเส้นบนโดเมนดังเดิมให้อยู่ในรูปแบบที่มีความสัมพันธ์เชิงเส้นบนโดนเมนใหม่
+14/08/69
+
+2929
+
+Activation
+Function
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+
+การใช้งาน Activation Function แบบไม่เชิงเส้น (Nonlinear) มักจะพบเจอใน Hidden Layers และ Output
+Edit
+ClickMaster
+edittext
+Master
+styles
+Layer••ของโครงข่
+าto
+ยประสาทเที
+ยม เพืstyles
+่อให้โtext
+ครงข่ายสามารถ
+•• Second
+level
+Second
+level
+เรียนรู้ลักษณะความไม่
+เชิงเส้
+น (Non-linearity) ที่เป็น
+•• Third
+level
+Third
+level
+รูปแบบที่ซับซ้อน (Complex Patterns) ที่พบมากในข้อมูล
+•• Fourth
+Fourth level
+level
+ปัจจุบันนี้ ซึ่งโครงข่ายประสาทเที
+ย
+มที
+ม
+่
+ี
+Hidden
+Layers
+•• Fifth
+level
+Fifth level
+มากแต่ไม่มีการใช้งาน Activation Function แบบไม่เชิงเส้น
+จะกลายเป็นว่าโครงข่ายมีการทํางานเหมือนกับแบบจําลอง
+การถดถอยเชิงเส้นขนาดยักษ์และไม่สามารถเรียนรู้รูปแบบ
+ข้อมูลที่มีความซับซ้อนได้มีประสิทธิภาพ
+ขณะที่ การเลือกใช้ Activation Function ใน Output
+Layer ขึ้นอยู่กับประเภทของปัญหาที่เราต้องการแก้ไข
+การเลือกใช้งาน Activation Function ขึ้นอยู่กับประเภท
+ของปัญหาที่เราต้องการแก้ไข
+14/08/69
+
+•
+•
+
+Johnson, N. & Vulimiri, P. & To, A. & Zhang, X. & Brice, C. & Kappes, Branden & Stebner, Aaron. (2020). Machine Learning for
+Materials Developments in Metals Additive Manufacturing.
+https://towardsdatascience.com/how-to-choose-the-right-activation-function-for-neural-networks-3941ff0e6f9c 30
+30
+
+คํ
+า
+แนะนํ
+า
+การเลื
+อ
+กใช้
+ง
+าน
+Activation
+Function
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+คําแนะนําจํานวน 9 ข้อสําหรับการเลือกใช้งาน Activation Function จาก Rukshan Pramoditha (ในปี ค.ศ. 2022) ได้แก่
+• ใน Input Layer จะไม่มีการใช้งาน Activation Function
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+
+•• Second
+level
+Second
+level
+• ใน Output Layer จะกําหนด Activation Function จากชนิดของปัญหาที่ต้องการจัดการ อาทิเช่น
+•• Third
+Third level
+level
+
+• Identity activation
+function
+เหมาะสมกั
+บ
+งาน
+Regression
+problem
+โดยกํ
+า
+หนดให้
+Output
+layer
+มี
+เ
+พี
+ย
+ง
+1
+โหนด
+•• Fourth
+Fourth level
+level
+• Sigmoid activation •function
+เหมาะสมกั
+บ
+งาน
+Binary
+classifier
+โดยกํ
+า
+หนดให้
+Output
+layer
+มี
+เ
+พี
+ย
+ง
+1
+โหนด
+Fifth
+level
+• Fifth level
+• Softmax activation function เหมาะสมกับงาน Multiclass classifier โดยกําหนดให้ Output layer มีจํานวนโหนดเท่ากับจํานวนคลาส
+• Sigmoid activation function เหมาะสมกับงาน Multilabel classifier โดยกําหนดให้ Output layer มีจํานวนโหนดเท่ากับจํานวนคลาส
+
+• ใน Hidden Layer จะนิยมใช้งาน Activation Function แบบไม่เชิงเส้น อาทิเช่น
+• ReLU หรือ Leaky ReLU เป็นค่าเริ่มต้นในงานทางด้าน MLP และ CNN
+• Sigmoid หรือ Tanh* เป็นค่าเริ่มต้นในงานทางด้าน RNN
+• Identity และ Softmax ไม่นิยมนํามาใช้งานสําหรับ Hidden Layer
+• Tanh, ReLU (รวมถึงที่พัฒนาต่อยอดมาจาก ReLU), Swish และ Hard swish function นิยมนํามาใช้งานใน Hidden Layer เท่านั้น
+•
+
+https://towardsdatascience.com/how-to-choose-the-right-activation-function-for-neural-networks-3941ff0e6f9c
+14/08/69
+
+3131
+
+Activation
+Function
+(Non-linearity)
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+https://www.superdatascience.com/blogs/convolutional-neural-networks-cnn-step-1b-relu-layer
+14/08/69
+
+3232
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Convolution Layer
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+
+Non-Linearity
+•• Fourth
+Fourth level
+level
+
+•• Fifth
+Fifth level
+level
+
+Pooling Layer
+Multilayer Perceptron
+Softmax Output
+
+14/08/69
+
+3333
+
+Pooling
+Layer
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+การ pooling ถือว่าเป็นกระบวนการ Non-linear down-sampling
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+รู
+ป
+แบบหนึ
+ง
+่
+ที
+พ
+่
+ยายามจะแปลงข้
+อ
+มู
+ล
+จาก
+Convolution
+layer
+ให้
+ม
+ี
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+ความชัดเจนมากขึ้น ในทางปฎิบัติการ pooling สามารถทําได้
+•• Fourth
+Fourth level
+level
+หลากหลายวิธี แต่ส่วนใหญ่จะนิยมเป็น Max pooling, การหา
+•• Fifth
+Fifth level
+level
+ค่าเฉลี่ย (L1-norm or Manhattan distance), การหาระยะทาง
+แบบยูคลิด (L2-norm) ซึ่งการทํา pooling สามารถลดเวลาในการ
+ประมวลและขนาดของ Feature map ของเลเยอร์ต้น ๆ ได้ดี อีกทั้ง
+ยังถือว่าเป็นการสรุปข้อมูลในเบื้องต้นอีกด้วย (กรณีถ้ามีการเลื่อน
+มากกว่า 1 ) นอกจากนี้ยังส่งผลทําให้ได้รับ Feature map ที่ทนทาน
+ต่อการเลื่อนตําแหน่งและการปรับเปลี่ยนรูปร่าง
+14/08/69
+
+3434
+
+Pooling
+Layer
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+สรุปประโยชน์ของการทํา pooling
+• ลดเวลาในการประมวล
+• ลดขนาดของตัวกรองในเลเยอร์ถัดไป
+• ลดขนาดของ Feature map โดยเฉพาะของเลเยอร์ต้น ๆ
+• ได้รับ Feature map ที่ทนทานต่อการเลื่อนตําแหน่ง
+• ได้รับ Feature map ที่ทนทานต่อการการปรับเปลี่ยนรูปร่าง
+• ได้รับ Feature map ที่ทนทานต่อการเปลี่ยนแปลงขนาด
+14/08/69
+
+3535
+
+Pooling
+Layer
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+0
+
+2
+
+1
+
+3
+
+5
+6
+•• Second
+Second level
+level
+
+8
+
+7
+
+1 •• Fourth
+2
+3
+level
+Fourth level
+
+1
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Third
+Third level
+level
+
+14/08/69
+
+•• Fifth
+Fifth level
+level
+
+2
+
+3
+
+4
+
+2
+
+0
+
+2
+
+1
+
+3
+
+5
+
+6
+
+8
+
+7
+
+1
+
+2
+
+3
+
+1
+
+2
+
+3
+
+4
+
+2
+
+Max Pooling
+
+6
+
+8
+
+3
+
+4
+
+Max pooling with
+2x2 filters and stride 2
+
+Average
+Pooling
+Average pooling with
+2x2 filters and stride 2
+
+หมายเหตุ วิธีการ Max-pooling ถือ
+ว่าเป็นวิธีก ารเก็บรัก ษาคุณ ลัก ษณะ
+ของภาพให้คงอยู่ไม่ว่าจะอยู่บริเวณใด
+ของภาพก็ตาม หลังจากนั้น จะสูญเสีย
+ข้อมูลเชิงตําแหน่งที่แน่นอนไป
+
+3.3 4.8
+2.0 2.5
+
+3636
+
+Pooling
+Layer
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+3737
+
+Pooling
+Layer
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+•
+
+3838 (2018).
+Yamashita, R., Nishio, M., Do, R.K.G. et al. Convolutional neural networks: an overview and application in radiology. Insights Imaging 9, 611–629
+
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+•
+
+3939 (2018).
+Yamashita, R., Nishio, M., Do, R.K.G. et al. Convolutional neural networks: an overview and application in radiology. Insights Imaging 9, 611–629
+
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+following great video: https://www.youtube.com/watch?v=LxfUGhug-iQ
+4040
+
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+ข้อสังเกตที่น่าสนใจเกี่ยวกับแผนที่คุณลักษณะเมื่อพิจารณาลงไปตามชั้นต่างๆ ใน
+เครือข่ายประสาทเทียมแบบคอนโวลูชัน (CNN) ดังนี้
+• แผนที่คุณลักษณะของชั้นแรก (block1_conv1) ยังคงรักษาข้อมูลส่วนใหญ่ของ
+ภาพเดิมไว้ โดยทําหน้าที่เป็นตัวตรวจจับขอบ
+• เมื่อเข้าสู่เครือข่ายชั้นลึกขึ้น แผนที่คุณลักษณะจะดูไม่เหมือนภาพต้นฉบับและมี
+ลักษณะเป็นนามธรรมมากขึ้น ตัวอย่างเช่น ใน block3_conv1
+ยังสามารถ
+มองเห็นแมวได้
+• แต่เมื่อไปชั้นที่ลึกกว่านั้นจะไม่สามารถจดจําแมวได้
+เนื่องแผนที่คุณลักษณะในชั้นลึกเข้ารหัสแนวคิดระดับสูง เช่น "จมูกแมว" หรือ "หูสุนัข"
+ในขณะที่แผนที่คุณลักษณะในชั้นแรกตรวจจับขอบและรูปร่างง่ายๆ นี่คือเหตุผลที่แผน
+ที่คุณลักษณะในชั้นลึกมีข้อมูลเกี่ยวกับภาพน้อยลงแต่มีข้อมูลเกี่ยวกับประเภทของภาพ
+มากขึ้น แม้ว่าแผนที่คุณลักษณะในชั้นลึกยังคงเข้ารหัสคุณลักษณะที่มีประโยชน์ แต่เรา
+ก็ไม่สามารถตีความได้ด้วยสายตา
+แผนที่คุณลักษณะ (feature maps) จะมีความเบาบางมากขึ้นเมื่อเราเข้าสู่ชั้นลึกขึ้น
+หมายความว่าตัวกรอง (filters) ตรวจจับคุณลักษณะน้อยลง ซึ่งเป็นเรื่องที่เข้าใจได้
+เพราะตัวกรองในชั้นแรกๆ ตรวจจับรูปทรงง่ายๆ ที่มีอยู่ในทุกภาพ แต่เมื่อไปลึกกว่า ตัว
+กรองจะเริ่มมองหาสิ่งที่ซับซ้อนมากขึ้น อาทิเช่น "จมูกแมว" ซึ่งไม่ปรากฏในทุกภาพ
+ดังนั้น ในรูปแรกที่มี 8 ตัวกรองต่อชั้น เราจะเห็นแผนที่คุณลักษณะมีพื้นที่ว่างเปล่ามาก
+ขึ้นเมื่อเข้าสู่ชั้นลึกขึ้น (block4_conv1 และ block5_conv1)
+4141
+https://towardsdatascience.com/applied-deep-learning-part-4-convolutional-neural-networks-584bc134c1e2
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+ข้อสังเกต เมื่อประมวลผลใน Layer ที่ลึก
+ลงไป Feature
+map
+จะแสดง
+รายละเอียดน้อยลง ทําให้เราไม่สามารถ
+ตีความจาก Feature
+map
+ได้
+นอกจากนี้ CNN
+พยายามเรียนรู้การ
+เปลี่ยนแปลงข้อมูลที่มีความสัมพันธ์เชิง
+พื้นที่ ไปสู่รูปแบบข้อมูลที่เป็น Abstract
+หมายความว่า ลดรายละเอียดของภาพ
+ลง แต่ เ พิ ่ ม สารสนเทศระดั บ สู ง ขึ ้ น ที่
+โมเดลสามารถนําไปใช้งานได้ง่าย
+4242
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Convolution Layer
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+
+Non-Linearity
+•• Fourth
+Fourth level
+level
+
+•• Fifth
+Fifth level
+level
+
+Pooling Layer
+
+สรุปประเด่น !!!
+
+Multilayer Perceptron
+Softmax Output
+
+14/08/69
+
+4343
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Input Layer
+Convolutional Layer
+•• Edit
+ClickMaster
+to edittext
+Master
+1 ´ styles
+28 ´ 28text styles 3 ´ 24 ´ 24
+
+•• Second
+Second level
+level
+
+pooling Layer
+3 ´ 12 ´ 12
+
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+Feature
+map#1
+(12 ´ 12)
+
+4444
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+
+ประเด่นที่ 1
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+เมื่อนักศึกษาลองพิจารณาความลึกของแต่ละเลเยอร์จะพบว่า เลเยอร์แรกๆ มักจะมีขนาดที่กว้างและสูงแต่จะไม่ลึก
+ในขณะที่เลเยอร์ถัดมาจะมีขนาดที่เล็กลงเป็นเท่าตัว แต่ก็จะมีความลึกที่เพิ่มขึ้นเป็นเท่าตัวเช่นกัน เนื่องจาก Rule of
+Thumb ที่อ้างอิงมาจากแบบจําลอง VGG16 ที่ต้องการขจัดสิ่งแปลกปลอมหรือ noise จากเลเยอร์ก่อนหน้าลง
+ดังนั้น จึงทําการลดขนาดของ Feature map ลง แต่เพิ่มความลึกขึ้นมาแทน นอกจากนี้ ยังเป็นการเก็บรักษาข้อมูลที่
+สําคัญไว้อีกด้วย เพื่อป้องกันการสูญหายของข้อมูล
+14/08/69
+
+4545
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+
+ประเด่นที่ 2
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+ผลลัพธ์ของ Hidden Layer นี้ได้
+คํานวณมากจากทุก Feature map
+ของเลเยอร์ก่อนหน้า
+
+เมื่อนักศึกษาได้พิจารณเลเยอร์คอนโวลูชันจะพบว่า Feature map ของชั้นปัจจุบันจะคํานวณมาจากชั้นก่อนหน้า
+เสมอ ตัวอย่างเช่น เลเยอร์ก่อนหน้ามี Depth เท่ากับ 3 ดังนั้น kernel มีขนาด N ´ N ´ 3 กําหนดให้มี kernel
+จํานวน 5 อัน ส่งผลให้ Feature map ของเลเยอร์ปัจจุบันมีค่า Depth เท่ากับ 5 ซึ่งสามารถสรุปได้ว่า filter จะมี
+ขนาดเท่ากับ N x N x Depth ซึ่ง Depth จะกําหนดจาก Depth ของเลเยอร์ก่อนหน้า (จํานวน Kernel ต่อ Filter)
+14/08/69
+
+4646
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+
+ประเด่นที่ 2
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+4747
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+
+ประเด่นที่ 2
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+Filter W1 มี 3 Kernel ซึ่งแต่ละ
+Kernel มีขนาด 3 x 3 โดยส่วนใหญ่
+1 Kernel ต่อ 1 channel
+
+4848
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+
+ประเด่นที่ 2
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+4949
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+
+ประเด่นที่ 2
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+5050
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+
+ประเด่นที่ 3: ผลกระทบของการขยับตัวกรอง (Kernel)
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+ผลกระทบดังกล่าวเกิดจากการที่ข้อมูลบางบริเวณถูกนําไปใช้งานหลายครั้ง เพราะการเลื่อนของ kernel ที่เกิดการทับซ้อนขึ้น สิ่งนี้ก่อให้เกิด
+ผลกระทบในลักษณะตาราง ซึ่งส่งผลกระทบโดยตรงกับ Feature map
+อย่างไรก็ตาม การทํา pooling ก็เปรียบ เสมือนการทํา down-sampling ซึ่งจะทําให้คุณลักษณะด้านตําแหน่งสูญหาย แต่จะถูกเก็บรักษาได้
+ด้ว 14/08/69
+ยการเลื่อนตัวกรอง
+5151
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+5252
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Convolution Layer
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+
+Non-Linearity
+•• Fourth
+Fourth level
+level
+
+•• Fifth
+Fifth level
+level
+
+Pooling Layer
+Multilayer Perceptron
+Softmax Output
+
+14/08/69
+
+5353
+
+เลเยอร์
+Flatten
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+เป็นเลเยอร์ท่ีใช้ใน Convolutional Neural Network (CNN)
+เพื่อแปลงข้อมูลจากเลเยอร์คอนโวลูชันสุดท้ายให้อยู่ในรูปแบบ
+เวกเตอร์แบบหนึ่งมิติ (1D) เพื่อให้สามารถเชื่อมต่อกับ Fully
+Connected Layer ได้
+โดยที่ การแปลงข้อมูลจากหลายมิติเป็นมิติเดียวนั้น ข้อมูลที่ได้
+จากเลเยอร์คอนโวลูชันจะมีหลายมิติ (เช่น ความสูง, ความ
+กว้าง, และจํานวนฟีเจอร์) ซึ่งไม่สามารถป้อนเข้าไปใน Fully
+Connected Layer ได้โดยตรง Flatten Layer จะทําการ
+แปลงข้อมูลเหล่านี้ให้อยู่ในรูปแบบของเวกเตอร์แบบหนึ่งมิติ
+
+อ้างอิง https://towardsdatascience.com/reshaping-numpy-arrays-in-python-a-step-by-step-pictorial-tutorial-aed5f471cf0b/
+และ Loukadakis, Manolis & Cano, José & O'Boyle, Michael. (2018). Accelerating Deep Neural Networks on Low Power Heterogeneous Architectures.
+5454
+
+เลเยอร์
+Global
+Average
+Pooling
+(GAP)
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+เป็นเทคนิคที่ใช้ในโครงข่ายประสาทเทียมแบบคอนโวลูชัน โดยเฉพาะใน
+ขั้นตอนสุดท้ายก่อนเข้าสู่ Fully Connected Layer ด้วยการคํานวณค่าเฉลี่ย
+ของแต่ละ Feature Map จากเลเยอร์คอนโวลูชันสุดท้าย ทําให้ผลลัพธ์ที่ได้
+เป็นเวกเตอร์แบบหนึ่งมิติที่มีจํานวนองค์ประกอบเท่ากับจํานวน Feature
+Map
+หน้าที่ของ Global Average Pooling
+• ลดมิติของข้อมูล
+GAP ช่วยลดมิติของข้อมูลโดยการคํานวณค่าเฉลี่ยของฟีเจอร์แมปแต่ละตัว ทํา
+ให้ข้อมูลที่ได้มีขนาดเล็กลงและง่ายต่อการประมวลผลในขั้นตอนถัดไป
+• ป้องกัน Overfitting
+ด้วยการลดจํานวนพารามิเตอร์ใน Fully Connected Layer ทําให้ GAP ช่วย
+ลดโอกาสการเกิด Overfitting ในโมเดล
+• ใช้ทรัพยากรน้อย
+GAP มีการคํานวณที่เรียบง่ายและใช้ทรัพยากรน้อย ซึ่งช่วยเพิ่มประสิทธิภาพ
+ในการฝึกสอนโมเดล
+
+14/08/69
+
+อ้างอิง https://qph.cf2.quoracdn.net/main-qimg-a8c5cb77e38e589b3d7744c60ab5daad-pjlq / และ https://doi.org/10.1007/978-3-030-34113-8_22
+5555
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Convolution Layer
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+
+Non-Linearity
+•• Fourth
+Fourth level
+level
+
+•• Fifth
+Fifth level
+level
+
+Pooling Layer
+Multilayer Perceptron
+Softmax Output
+
+14/08/69
+
+5656
+
+Multilayer
+Perceptron
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+โครงข่ายประสาทแบบคอนโวลูชัน (CNN) สามารถแบ่งออกได้เป็น 2 ส่วน ได้แก่ (1) Feature Extraction โดย
+อาศัย convolution และ (2) Classification
+14/08/69
+
+5757
+
+Multilayer
+Perceptron
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+
+Fully Connected Layer ประกอบด้วย 3 เลเยอร์หลัก ได้แก่ Input layer, Hidden layer และ Output layer
+ซึ่งสามารถเรี
+ย
+กว่
+า
+“Multilayer
+Perceptron”
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•
+Input
+Layer
+ใช้
+ส
+า
+ํ
+หรั
+บ
+รั
+บ
+feature
+ที
+ส
+่
+กั
+ด
+•• Second
+Second level
+level
+จากส่วนของ Convolution ใน CNN
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•
+Hidden
+Layer
+คื
+อ
+ชุ
+ด
+ของ
+neurons
+กั
+บ
+ค่
+า
+•• Fifth
+Fifth level
+level
+ถ่วงนํ้าหนักที่ใช้เพื่อเรียนรู้ในแบบจําลอง
+สําหรับ Multilayer Perceptron อาจจะมี
+Hidden Layer ตั้งแต่ 1 เลเยอร์หรือมากกว่า
+• Output Layer คือ ชุดของ neurons
+ร่วมกับ Activation Function เพื่อใช้คํานวณ
+ค่าความน่าจะเป็นของแต่ละคลาส ซึ่งจะมี
+จํานวน neurons เท่ากับจํานวนคลาส
+Source: Created by the author using ChatGPT (OpenAI), 2026.
+
+14/08/69
+
+5858
+
+Multilayer
+Perceptron
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+
+ซึ่งสามารถเขียนในรูปแบบของสมการได้ดังนี้
+
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+ซึ่งสามารถเขียนในรูปแบบของสมการเมตริกซ์ได้ดังนี้
+
+14/08/69
+
+5959
+
+Dropout
+Technique
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+Source: Created by the author using Gemini NoteBook, 2026.
+
+สถาปัตยกรรมที่ไม่มีการใช้ Dropout มีความเสี่ยงจะเกิด Overfitting เนื่องจาก
+q เลเยอร์ FC มักจะมีพารามิเตอร์มากกว่า 90% ของ CNN ทั้งหมด
+q ความหนาแน่นนี้ทําให้เกิดการจดจํา Noise ได้ง่ายที่สุด (High Overfitting Risk)
+
+14/08/69
+
+อ้างอิง https://medium.com/@vishnuam/dropout-in-convolutional-neural-networks-cnn-422a4a17da41 และ https://arxiv.org/pdf/1512.0242
+
+สถาปัตยกรรมที่มีการใช้งาน Dropout (50%) จะช่วยลดการเกิด Overfitting ได้
+q อัตรา Dropout Rate ที่นิยมใช้นักจะสูงถึง p=0.5 (ปิดนิวรอนทิ้งครึ่งหนึ่ง)
+q เป็นมาตรฐานที่ได้รับการนําเสนอในสถาปัตยกรรมอย่าง AlexNet หรือ VGG
+
+6060
+
+Dropout
+Technique
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+ลักษณะของการเกิด Overfitting
+q ความแม่นยําในการฝึกสอน (Training) สูงมาก
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+q ความแม่นยําในการทดสอบ (Validation/Test) ตํ่า
+•• Second
+Second level
+level
+q เกิดช่องว่างมหาศาลระหว่างประสิทธิภาพทั้งสอง
+•• Third
+Third level
+level
+
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+โดยมีสาเหตุมาจาก
+โมเดลมีความซับซ้อนเกินไป (มีพารามิเตอร์นับล้าน)
+
+Source: Created by the author using Gemini NoteBook, 2026.
+
+ทําให้เกิดการจดจํา Noise หรือรายละเอียดเฉพาะในข้อมูลฝึกสอนที่ไม่มีประโยชน์ต่อการใช้งานจริง
+โมเดลจึงขาดความสามารถในการวางนัยทั่วไป (Generalization)
+
+Source: Created by the author using Gemini NoteBook, 2026.
+14/08/69
+
+อ้างอิง https://medium.com/@vishnuam/dropout-in-convolutional-neural-networks-cnn-422a4a17da41 และ https://arxiv.org/pdf/1512.0242
+
+6161
+
+Dropout
+Technique
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+Source: Created by the author using Gemini NoteBook, 2026.
+
+เพื่อทําให้เครือข่ายมีประสิทธิภาพสูงขึ้น จึงต้องจงใจทําลายมันชั่วคราวระหว่างกระบวนการฝึกสอน
+q สภาพปกติ: นิวรอนทุกตัวทํางานร่วมกัน (มีความเสี่ยงที่จะพึ่งพากันเองมากเกินไป)
+q การสุ่ม (Stochasticity): กําหนดความน่าจะเป็น (p) ในการทํางานของแต่ละนิวรอน
+q การตัดการเชื่อมต่อ (Dropout): สุ่มปิด (Set to zero) นิวรอนบางส่วนในแต่ละรอบการฝึกสอน บังคับให้เครือข่ายต้องเรียนรู้คุณลักษณะ (Features) ที่
+เหมาะสมขึ้นด้วยตัวเอง
+14/08/69
+
+อ้างอิง https://medium.com/@vishnuam/dropout-in-convolutional-neural-networks-cnn-422a4a17da41 และ https://arxiv.org/pdf/1512.0242
+
+6262
+
+Dropout
+Technique
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+
+ประโยชน์ของการใช้งาน Dropout คือ
+q ลดการพึ่งพากันเอง (Breaking Co-adaptation)
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text stylesปรากฏการณ์ Co-adaptation คือ นิวรอนมักจะขี้เกียจและพึ่งพาการทํางานของนิวรอนตัว
+อื่นที่เก่งกว่า ดังนั้น เมื่อมี Dropout ทําให้ไม่มีนิวรอนตัวใดมั่นใจได้ว่าเพื่อนร่วมงานจะอยู่
+•• Second
+Second level
+level
+ช่วยหรือไม่ ทุกตัวจึงต้องเรียนรู้คุณลักษณะ (Robust Features) ที่พึ่งพาตัวเองได้
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+Source: Created by the author using Gemini NoteBook, 2026.
+
+14/08/69
+
+q ผลลัพธ์เสมือนการรวมโมเดล (The Ensemble Effect)
+• การจําลองโมเดลจํานวนมหาศาล กล่าวคือ เครือข่ายที่มี n นิวรอน สามารถสร้าง
+เครือข่ายย่อย (Sub-networks) ได้ถึง 2n รูปแบบจากการสุ่ม Dropout ในแต่ละ
+Step ของการ Training เรากําลังฝึกสอนเครือข่ายย่อยที่แตกต่างกัน 1 รูปแบบ
+โดยทั้งหมดแชร์ค่านํ้าหนัก (Shared Weights) ร่วมกัน เครือข่ายย่อย 2n รูปแบบ
+• ส่งผลทําให้ได้รับ Model Averaging ณ เวลา Inference กล่าวคือ แทนที่จะต้อง
+Train หลาย ๆ โมเดลแยกกันแล้วนํามาโหวต (Ensemble) การทํา Weight
+Scaling ในขั้นตอน Test/Inference เปรียบเสมือนการนําคําทํานายของเครือข่าย
+ย่อยนับล้านโมเดลมาหาค่าเฉลี่ย (Approximate Geometric Mean) ภายในเสี้ยว
+วินาที
+63
+
+อ้างอิง https://medium.com/@vishnuam/dropout-in-convolutional-neural-networks-cnn-422a4a17da41 และ https://arxiv.org/pdf/1512.0242
+
+63
+
+Dropout
+Technique
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Source: Created by the author using Gemini NoteBook, 2026.
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+1. Convolutional Layers
+q การแชร์นํ้าหนัก (Shared Weights) และ
+Local Connectivity ช่วยลดพารามิเตอร์
+q มีโอกาสเกิด Overfitting ตํ่า (Low)
+14/08/69
+
+2. Pooling Layers
+q ทําหน้าที่ลดขนาดข้อมูล (Spatial Downsampling)
+q มีโอกาสเกิด Overfitting ปานกลาง (Medium)
+
+อ้างอิง https://medium.com/@vishnuam/dropout-in-convolutional-neural-networks-cnn-422a4a17da41 และ https://arxiv.org/pdf/1512.0242
+
+3. Fully Connected (Dense) Layers
+q นิวรอนเชื่อมต่อกันทั้งหมด พารามิเตอร์หนาแน่น
+ที่สุดในโมเดล
+q มีโอกาสเกิด Overfitting สูงวิกฤต (Critical)
+6464
+
+Dropout
+Technique
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Convolutional Layers เป็นการทํางานโดยอาศัยหลักการ Shared Weights ทําให้มีกลไกป้องกัน Overfitting ตาม
+ธรรมชาติอยู่แล้วจากการแชร์นํ้าหนัก (Shared-filter architecture) นอกจากนี้ การดรอปนิวรอนแบบสุ่มทีละตัวอาจไม่
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+ค่อยมีผล เพราะฟีเจอร์ที่อยู่ติดกัน (Spatial Correlation) มักจะมีข้อมูลคล้ายคลึงกัน ดังนั้น ส่วนใหญ่จะ Drop เป็น
+•• Second
+Second level
+level
+พื้นที่ (Area)
+•• Third
+Third level
+level
+บทบาทเมื่อนํามาใช้ (Convolutional Dropout)
+•• Fourth
+Fourth level
+level
+q ทําหน้าที่เสมือนการเพิ่ม Noise ให้กับภาพหรือ Feature Map (คล้าย Data Augmentation ในระดับลึก)
+•• Fifth
+Fifth level
+level
+q ควรกําหนดอัตรา Retaining Probability (p) สูงถึงประมาณ p=0.8 ถึง 0.9 หรือ Dropout Rate ตํ่า 10–20%
+เพื่อไม่ให้ทําลายโครงสร้างทางมิติภาพมากเกินไป
+q การใช้ Dropout ก่อน Max-pooling ในช่วง Training ถือว่าเป็นเปลี่ยนการเลือกค่าสูงสุดแบบตายตัวให้กลายเป็น
+การสุ่มเลือก
+q ในช่วง Inference เป็นการประมาณค่า Model Averaging ที่แม่นยํากว่าการสเกลนํ้าหนักแบบปกติ
+
+Source: Created by the author using Gemini NoteBook, 2026.
+
+14/08/69
+
+อ้างอิง https://medium.com/@vishnuam/dropout-in-convolutional-neural-networks-cnn-422a4a17da41 และ https://arxiv.org/pdf/1512.0242
+
+6565
+
+Dropout
+Technique
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+อ้างอิง https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=11622423
+
+6666
+
+Dropout
+Technique
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+1. การเลือกอัตรา Retaining Probability (p)
+q เลเยอร์ FC ควรเริ่มต้นที่ p = 0.5 เพื่อสร้างสมดุลที่สุดในการสร้าง Ensemble Effect
+•
+Edit
+Master
+text
+styles
+•
+Click
+to
+edit
+Master
+text
+styles
+q เลเยอร์ Conv/Input ควรเริ่มต้นที่ p = 0.8 หรือ 0.9 เพื่อรักษาข้อมูลต้นฉบับไว้มากที่สุด
+•• Second
+Second level
+level
+
+•• Third
+Third level
+level
+
+2. การทํางานร่วมกั•บ Regularizer
+อื
+น
+่
+ๆ
+• Fourth
+Fourth level
+level
+q Dropout สามารถทํางานร่
+ว
+มกั
+บ
+L2
+Regularization
+ได้
+อ
+ย่
+า
+งยอดเยี
+ย
+่
+ม
+•• Fifth
+level
+Fifth level
+q เมื่อใช้ร่วมกับ Batch Normalization (BN) อาจเกิดความขัดแย้ง (Variance Shift) แนะนําให้วาง Dropout หลัง BN หรือใช้เพียง BN ก็
+เพียงพอในบางโมเดล
+3. การปรับจูน Hyperparameters ทั่วไป
+• การใช้ Dropout ทําให้โมเดลเรียนรู้ช้าลง (ต้องการ Epochs มากขึ้น 2–3 เท่า)
+• อาจจําเป็นต้องเพิ่ม Learning Rate หรือ Momentum เล็กน้อย เพื่อชดเชยสัญญาณที่หายไป
+
+14/08/69
+
+อ้างอิง https://medium.com/@vishnuam/dropout-in-convolutional-neural-networks-cnn-422a4a17da41 และ https://arxiv.org/pdf/1512.0242
+
+6767
+
+Dropout
+Technique
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+คุณลักษณะ (Feature)
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text
+styles
+สถานะของเครื
+อข่าย
+•• Second
+Second level
+level
+
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+หลักการคํานวณ
+
+ช่วงการใช้งานจริง (Test/Inference Phase)
+
+เปลี่ยนแปลงตลอดเวลา(Dynamic & Stochastic) คงที่ (Static & Deterministic)
+
+การทํางานของนิวรอน ทํางานเพียงบางส่วนสุ่มปิดด้วยเมทริกซ์ (M)
+
+เป้าหมายทางแนวคิด
+Source: Created by the author using Gemini NoteBook, 2026.
+
+ช่วงการฝึกสอน (Training Phase)
+
+สุ่มกําหนดให้นิวรอนบางตัวมีค่าเป็น 0 หรือหยุด
+ทํางานชั่วคราว แล้วคํานวณผลลัพธ์จากนิวรอนที่
+เหลือ
+สร้างข้อจํากัดเพื่อบังคับให้โมเดลเรียนรู้ฟีเจอร์ที่
+เป็นอิสระและแข็งแกร่ง
+
+นิวรอนทุกตัวทํางาน 100%
+ยกเลิกการสุ่มปิดและใช้นิวรอน ทุกตัว เพื่อคํานวณ
+ผลลัพธ์
+นําความรู้จากเครือข่ายย่อยทั้งหมดมาประมาณ
+ค่าเฉลี่ยร่วมกัน
+
+การปรับสมดุล (Weight Scaling) ช่วง Test/Inference
+q สมมติให้ Weight Scaling (p) โดยอาศัย Wtest = p × Wtrain ซึ่ง p เท่ากับ 0.5
+q เครือข่ายที่ตื่นเต็มตา (Full Network Active) ในช่วงการทดสอบ (Inference/Test) เราต้องการประสิทธิภาพสูงสุดจากโมเดล นิวรอนทั้งหมดจะถูกเปิดใช้งาน ไม่มีการสุ่มปิดอีกต่อไป
+q ปัญหาเกิดขึ้นเมื่อนิวรอนทํางาน 100% สัญญาณ Output รวมจะแรงกว่าช่วง Training ซึ่งทํางานเพียง p% ทําให้สมการเสียสมดุล
+q การแก้ปัญหาด้วย Weight Scaling กล่าวคือ คูณค่านํ้าหนัก (W) ของทุกนิวรอนด้วยความน่าจะเป็น p ส่งผลทําให้ค่าความคาดหวัง (Expected Value) ของ Output จะคงที่สมํ่าเสมอ
+ระหว่างการฝึกสอนและการทดสอบ
+14/08/69
+
+อ้างอิง https://medium.com/@vishnuam/dropout-in-convolutional-neural-networks-cnn-422a4a17da41 และ https://arxiv.org/pdf/1512.0242
+
+6868
+
+ข้
+อ
+มู
+ล
+ที
+ม
+่
+อ
+ี
+ยู
+ม
+่
+ก
+ั
+ถู
+ก
+แบ่
+ง
+ออกเป็
+น
+3
+ชุ
+ด
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+•
+
+กระบวนการแบ่งข้อมูลทั้งหมด (Whole data) สําหรับการสร้าง
+และประเมินโมเดลปัญญาประดิษฐ์สามารถแบ่งข้อมูลได้ทั้งหมด
+ออกเป็น 3 ชุด ได้แก่ ชุดข้อมูลสําหรับการฝึก (Training data)
+ชุดข้อมูลสําหรับการตรวจสอบ (Validation data) และชุดข้อมูล
+สําหรับการทดสอบ (Test data)
+• Training data: ใช้สําหรับการฝึกโมเดล เป็นส่วนหนึ่งของ
+กระบวนการฝึกอบรม (Training process)
+• Validation data: ใช้สําหรับการตรวจสอบและติดตามผล
+การทํางานของโมเดล (Monitoring model performance),
+การปรับค่าพารามิเตอร์ (Hyperparameter tuning), และ
+การคัดเลือกโมเดลที่ดีที่สุด (Model selection)
+• Test data: ใช้สําหรับการประเมินประสิทธิภาพขั้นสุดท้าย
+ของโมเดล (Evaluation of final model performance)
+
+6969 (2018).
+Yamashita, R., Nishio, M., Do, R.K.G. et al. Convolutional neural networks: an overview and application in radiology. Insights Imaging 9, 611–629
+
+Underfitting
+และ
+Overfitting
+คื
+อ
+อะไร
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+• Underfitting (การฝึกไม่เพียงพอ)
+เกิดขึ้นเมื่อโมเดลไม่สามารถจับรูปแบบในข้อมูลได้อย่างเหมาะสม ทําให้
+โมเดลทํานายได้ไม่ดีทั้งในชุดข้อมูลฝึกและชุดข้อมูลใหม่สาเหตุส่วนใหญ่มัก
+เกิดจากโมเดลซับซ้อนไม่พอ หรือจํานวนรอบการฝึกไม่เพียงพอ
+• Overfitting (การฝึกมากเกินไป)
+เกิดขึ้นเมื่อโมเดลจับรูปแบบในข้อมูลฝึกได้ดีเกินไป รวมถึงจับรายละเอียด
+และความผิดปกติ ทําให้โมเดลทํานายได้ดีในชุดข้อมูลฝึก แต่ไม่สามารถ
+ทํานายได้ดีในข้อมูลใหม่ สาเหตุส่วนใหญ่มักเกิดจากโมเดลซับซ้อนเกินไป
+หรือจํานวนรอบการฝึกมากเกินไป
+
+จากกราฟความสัมพันธ์ระหว่างจํานวนรอบการฝึก (Number of iterations) กับค่าฟังก์ชันการสูญเสีย (Loss function) โดยแบ่งเป็น 2 ช่วง
+• ช่วง Underfitting (บริเวณสีส้ม) ค่าฟังก์ชันการสูญเสียสําหรับทั้งการฝึก (Training error) และการตรวจสอบ (Validation error) สูงมาก ซึ่งหมายถึง โมเดลยังไม่ซับซ้อนพอที่จะจับรูปแบบ
+ในข้อมูลได้ ส่งผลให้การทํานายไม่ดีทั้งในชุดข้อมูลฝึกและชุดข้อมูลตรวจสอบ
+• ช่วง Overfitting (บริเวณสีเขียว) ค่าฟังก์ชันการสูญเสียสําหรับการฝึก (Training error) ตํ่ามาก แต่ค่าฟังก์ชันการสูญเสียสําหรับการตรวจสอบ (Validation error) สูงขึ้น ซึ่งหมายถึงโมเดล
+ซับซ้อนเกินไปจนสามารถจับรายละเอียดและความผิดปกติในข้อมูลฝึกได้ดี แต่ไม่สามารถทํานายได้ดีในข้อมูลใหม่
+14/08/69
+
+•
+
+7070 (2018).
+Yamashita, R., Nishio, M., Do, R.K.G. et al. Convolutional neural networks: an overview and application in radiology. Insights Imaging 9, 611–629
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Convolution Layer
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+
+Pooling•• Layer
+Fourth
+Fourth level
+level
+
+•• Fifth
+Fifth level
+level
+
+Activation Function
+Multilayer Perceptron
+Softmax Output
+
+14/08/69
+
+7171
+
+Softmax
+Output
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Softmax คือ ฟังก์ชันที่ใช้เพื่อคํานวณหาคะแนนความน่าจะเป็น
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+ในแต่
+ล
+ะคลาสของภาพทดสอบดั
+ง
+กล่
+า
+ว
+ซึ
+่
+ง
+นิ
+ย
+มนํ
+า
+มาใช้
+ง
+าน
+•• Second
+Second level
+level
+เป็นเลเยอร์สุดท้ายของโครงข่ายประสาทแบบคอนโวลูชัน โดย
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+อาศั
+ย
+สมการดั
+ง
+ต่
+อ
+ไปนี
+้
+•• Fifth
+Fifth level
+level
+
+อ้างอิง http://rinterested.github.io/statistics/softmax.html
+
+14/08/69
+
+เนื่องจาก Softmax ค่อนข้างง่ายและสะดวกในมุมมองของ
+มนุ ษ ย์ ส ํ า หรั บ การตี ค วามและนํ า ไปบ่ ง บอกว่ า เป็ น คลาสใด
+นอกจากนี้ ยังสามารถนําความน่าจะเป็นดังกล่าวมาจัดลําดับได้
+(Ranking) เพราะบางภาพอาจจะตีความได้มากกว่า 1 คลาส
+(คล้าย ๆ soft clustering)
+7272
+
+Softmax
+Output
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Softmax ถือว่าเป็นฟังก์ชันไม่เชิงเส้นในกลุ่มเดียวกับ Sigmoid Function แต่ได้รับการออกแบบมาเพื่อ
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+ปัญหาการแบ่
+ง
+แยกข้
+อ
+มู
+ล
+แบบหลายกลุ
+่
+ม
+(จํ
+า
+นวนคลาสมากกว่
+า
+2:
+Multi-classification)
+ซึ
+่
+ง
+ผลลั
+พ
+ธ์
+อ
+ยู
+่
+•• Second
+Second level
+level
+ในช่วง 0 ถึ••ง Third
+1
+ในรูlevel
+ป
+แบบความน่าจะเป็น อย่างไรก็ตาม ถ้าเป็นปัญหาการแบ่งแยกข้อมูลแบบสองกลุ่ม
+Third
+level
+•• Fourth
+Fourth level
+level
+(Binary Classification)
+แล้
+ว
+Sigmoid
+Function
+จะมี
+ค
+วามเหมาะสมและเป็
+น
+ธรรมชาติ
+ก
+บ
+ั
+ข้
+อ
+มู
+ล
+มากกว่
+า
+•• Fifth
+Fifth level
+level
+นอกจากนี้ เวลาในการประมวลผลของ Softmax จะแปรผันตรงตามจํานวนของคลาส
+
+14/08/69
+
+7373
+
+Softmax
+Output
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Scoring Function
+
+Unnormalized Probabilities
+
+Normalized Probabilities
+
+Ranking
+
+1.16
+-0.81
+3.91
+
+exp(-3.44) = 0.0321
+exp(1.16) = 3.1899
+exp(-0.81) = 0.4449
+exp(3.91) = 49.8990
+
+0.0321 ÷ 53.5659 = 0.0006
+3.1899 ÷ 53.5659 = 0.0596
+0.4449 ÷ 53.5659 = 0.0083
+49.8990 ÷ 53.5659 = 0.9315
+
+4
+2
+3
+1
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text
+styles
+Dog
+-3.44
+•• Second
+Second level
+level
+
+Cat
+•• Third
+Third level
+level
+Boat
+•• Fourth
+Fourth level
+level
+Airplane
+ภาพทดสอบ • Fifth level
+• Fifth level
+
+อินพุทของ Softmax
+sum
+
+14/08/69
+
+นําค่าอินพุทของ Softmax นําค่าที่ผ่านฟังก์ชัน exp ไป
+ไปผ่านฟังก์ชัน exp
+Normalization
+53.5659
+
+ผลการ
+จัดลําดับ
+
+1.000
+
+อ้างอิง https://www.pyimagesearch.com/2016/09/12/softmax-classifiers-explained/
+7474
+
+โครงข่
+า
+ยประสาทแบบคอนโวลู
+ช
+น
+ั
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+Convolution Layer
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+
+Pooling•• Layer
+Fourth
+Fourth level
+level
+
+•• Fifth
+Fifth level
+level
+
+Activation Function
+Multilayer Perceptron
+Softmax Output
+
+14/08/69
+
+7575
+
+เลเยอร์
+Batch
+Normalization
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+เมื่อข้อมูลมีความต่างสเกล (Unnormalized Data) จะทําให้ Gradient Descent แกว่งตัว
+(Oscillation)
+ทํ
+า
+ให้
+ล
+เ
+่
+ู
+ข้
+า
+หาคํ
+า
+ตอบได้
+ช
+า
+้
+กล่
+า
+วคื
+อ
+หาก
+Features
+มี
+ส
+เกลที
+แ
+่
+ตกต่
+า
+งกั
+น
+มาก
+เช่
+น
+•• Edit
+Master
+text
+styles
+Click to edit Master text styles
+Feature
+หนึ
+ง
+่
+มี
+ค
+า
+่
+1–5
+แต่
+อ
+ก
+ี
+Feature
+มี
+ค
+า
+่
+1,000–99,999
+ส่
+ง
+ผลทํ
+า
+ให้
+พ
+น
+้
+ื
+ผิ
+ว
+Loss
+จะมี
+ล
+ก
+ั
+ษณะ
+•• Second
+Second level
+level
+เป็น “หุบเขาแคบชัน” (Narrow Ravine) บน Loss Landscape ซึ่งส่งผลกระทบต่อการอัปเดต
+•• Third
+Third level
+level
+Weight ต้องใช้เวลามากขึ้น เนื่องจากเกิดการแกว่งตัวไปมา (Bounce) ไม่สามารถพุ่งตรงไปยังจุด
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+ตํ่าสุดได้
+แก้ปัญหาด้วยการ Normalize ข้อมูลขาเข้า (Inputs) กล่าวคือ ปรับข้อมูล Input ทั้งหมดให้มี Zero
+Mean (ค่าเฉลี่ยเป็น 0) และ Unit Variance (ความแปรปรวนเป็น 1) การเปลี่ยนแปลงของ
+Landscape ทําให้โครงสร้าง “หุบเขาแคบ” ให้กลายเป็น “ชามทรงกลมสมมาตร” (Symmetrical
+Bowl) ซึ่งส่งผลให้ Gradient Descent เคลื่อนที่ได้อย่างราบรื่น พุ่งตรงสู่จุด Minimum ช่วยให้
+โมเดล Converge ได้อย่างรวดเร็ว
+Source: Created by the author using Gemini NoteBook, 2026.
+14/08/69
+
+อ้างอิง https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739
+7676
+
+เลเยอร์
+Batch
+Normalization
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+Input Layer
+เราสามารถ Normalize
+ข้อมูลภาพ (X) ได้ตั้งแต่ต้น
+
+14/08/69
+Source: Created by the author using Gemini NoteBook, 2026.
+
+Layer 1 Output → Layer
+2 Input
+แต่ผลลัพธ์ (Activations) ที่
+ออกจากเลเยอร์ 1 จะกลายเป็น
+Input ของเลเยอร์ที่ 2
+
+Internal Covariate Shift
+ระหว่างการเทรน Weights ของ Layer 1
+จะเปลี่ยนไปตลอดเวลา ทําให้การกระจาย
+ตัวของข้อมูล (Distribution) ที่ส่งไปยัง
+Layer 2 เปลี่ยนแปลงตามไปด้วย
+(แกว่งตัวและไร้ความเสถียร)
+
+Conclusion
+Layer 2 ต้องคอยปรับตัวตาม
+Input ที่เปลี่ยนสเกล
+ตลอดเวลา ทําให้เทรนได้ยาก
+และช้า
+
+77
+77
+อ้างอิง https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739
+
+เลเยอร์
+Batch
+Normalization
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+Batch Norm คืออะไร?
+เลเยอร์พิเศษที่แทรกอยู่ระหว่าง
+Hidden
+Layers ทําหน้าที่ Normalize ข้อมูล
+(Activations) ที่วิ่งอยู่ภายในโครงข่าย
+เป้าหมายหลัก
+
+14/08/69
+Source: Created by the author using Gemini NoteBook, 2026.
+
+เป้าหมายหลัก
+ทําให้ Input ของทุก ๆ เลเยอร์ย่อยมีการ
+กระจายตัวที่เสถียร (Zero Mean, Unit
+Variance) ไม่ว่าจะเกิดอะไรขึ้นกับเลเยอร์ก่อน
+หน้า
+
+ผลลัพธ์เชิงโครงสร้าง
+ตัดปัญหา Internal Covariate Shift ทําให้แต่
+ละเลเยอร์สามารถเรียนรู้ได้อย่างเป็นอิสระต่อ
+กันมากขึ้น
+
+อ้างอิง https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739
+7878
+
+เลเยอร์
+Batch
+Normalization
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+Source: Created by the author using Gemini NoteBook, 2026.
+14/08/69
+
+อ้างอิง https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739
+7979
+
+เลเยอร์
+Batch
+Normalization
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+ในการฝึกสอนโมเดลการเรียนรู้เชิงลึก ข้อมูลอินพุตมักจะ
+ประกอบด้วยหลายคุณลักษณะ (features) เช่น F1, F2, ...,
+Fn แต่ ล ะคุ ณ ลั ก ษณะอาจมี ช ่ ว งค่ า ที ่ แ ตกต่ า งกั น
+ตัวอย่างเช่น ค่าของคุณลักษณะ F1 อาจอยู่ในช่วง 0 ถึง 1
+ในขณะที่ค่าของคุณลักษณะ F2 อาจอยู่ในช่วง 0 ถึง 255
+ซึ่งส่งผลให้คุณลักษณะที่มีค่าสูงและช่วงกว้างกว่ามีนํ้าหนัก
+มากกว่าและบดบังคุณลักษณะอื่น ๆ
+เพื่อแก้ปัญหานี้ Batch Norm ได้ถูกพัฒนาขึ้น โดยเป็นเล
+เยอร์หนึ่งในแบบจําลองที่ถูกแทรกอยู่ระหว่างเลเยอร์ซ่อน
+(Hidden Layer) หรือเลเยอร์คอนโวลูชัน (Convolution
+Layer) แรกและเลเยอร์ถัดไป โดยมีหน้าที่สําหรับการรับ
+ผลลัพธ์จากเลเยอร์แรกและทําการปรับช่วงของข้อมูลให้อยู่
+ในรูปแบบมาตรฐาน ก่อนที่จะส่งต่อไปยังเลเยอร์ถัดไปเป็น
+อินพุต
+
+14/08/69
+
+อ้างอิง https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739
+8080
+
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+การคํานวณ Batch Normalization จะพิจารณาทีละ
+Mini-batch และข้อมูล Feature Map ที่เข้ามาจะผ่าน
+Activation Function มาก่อนแล้ว ทําให้ส่วนใหญ่จะนิยม
+เร ี ย ก ว ่ า Activation Feature Map ภ า ย ใ น Batch
+Normalization ประกอบไปด้วย 4 ขั้นตอน ดังนี้
+ขั้นที่ 1 คํานวณค่าเฉลี่ยและความแปรปรวน
+ขั้นที่ 2 การ Normalize
+ขั้นที่ 3 การปรับสเกลและการเลื่อน (Scale and Shift)
+ขั้นที่ 4 การคํานวณหาค่าเฉลี่ยและความแปรปรวนกลาง
+
+14/08/69
+
+อ้างอิง https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739
+8181
+
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+ขั้นที่ 1 คํานวณค่าเฉลี่ยและความแปรปรวน
+นํา Activation Feature Map จากเลเยอร์ก่อนหน้านี้มา
+คํานวณค่าเฉลี่ย (mean) และความแปรปรวน (variance)
+ของค่าทั้งหมดใน mini-batch โดยอาศัยสมการ
+
+อ้างอิง https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739
+8282
+
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+ขั้นที่ 2 การ Normalize
+คํานวณค่าที่ Normalize สําหรับเวกเตอร์การกระตุ้นแต่
+ละตัวโดยอาศัยค่าเฉลี่ยและความแปรปรวนที่สอดคล้องกัน
+ซึ ่ ง จะทํ า ให้ ผ ลลั พ ธ์ ท ี ่ ไ ด้ ม ี ค ่ า เฉลี ่ ย เป็ น 0 และความ
+แปรปรวนเป็น 1 (zero mean & unit variance)
+
+อ้างอิง https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739
+8383
+
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+ขั้นที่ 3 การปรับระดับและการเลื่อน
+(Scale and Shift)
+ขั้นตอนนี้เป็นส่วนที่สําคัญที่ทําให้ Batch Norm มี
+ประสิทธิภาพสูง และมีจุดแตกต่างจากการ Normalize
+ณ Input
+Layer ที่ต้องการให้ค่าที่ Normalize มี
+ค่าเฉลี่ยเป็น 0 และความแปรปรวนเป็น 1 แต่ Batch
+Norm อนุญาตให้ค่าเหล่านี้ถูกเลื่อนและปรับสเกลได้
+โดยการคู ณ ค่ า ที ่ Normalize ด้ ว ยตั ว แปร gamma
+และบวกกั บ ตั ว แปร beta ซึ ่ ง เป็ น การคู ณ แบบ
+องค์ประกอบ (element-wise) ไม่ใช่การคูณเมทริกซ์
+โดยที ่ ค่ า ตั ว แปร gamma และ beta ได้ จ ากการ
+ฝึกสอนแบบจําลอง
+
+อ้างอิง https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739
+8484
+
+ทํ
+า
+ไมต้
+อ
+งดึ
+ง
+ข้
+อ
+มู
+ล
+กลั
+บ
+ด้
+ว
+ย
+Gamma
+และ
+Beta
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+Source: Created by the author using Gemini NoteBook, 2026.
+
+q หากบังคับให้ทุก Activation มี Mean = 0 และ Variance = 1 เสมอ อาจเป็นการทําลายความสามารถในการนําเสนอข้อมูล (Representational Power) ของ
+โครงข่าย เช่น การบีบข้อมูลจนสูญเสียความสามารถในการแยกแยะฟีเจอร์สําคัญ
+q ดังนั้น ใช้พารามิเตอร์ที่เรียนรู้ได้ 2 ค่า ได้แก่ γ (Gamma) เพื่อปรับสเกลข้อมูล และ β (Beta)เพื่อเลื่อนตําแหน่งข้อมูล
+q โดยที่ γ และ β อนุญาตให้เครือข่ายสามารถ “ย้อนกลับ” (Undo) การทํา Normalization ได้ หากเครือข่ายเรียนรู้ว่าการย้อนกลับนั้นจําเป็น
+q หากการกระจายข้อมูลที่เหมาะสมที่สุดไม่ใช่ Mean = 0 และ Variance = 1 เสมอไป ค่า γ และ β จะเรียนรู้เพื่อปรับสเกลและเลื่อนข้อมูลให้อยู่ในตําแหน่งที่
+เหมาะสมที่สุด ก่อนส่งผ่านไปยัง Activation Function เช่น ReLU ในขั้นตอนถัดไป
+14/08/69
+
+อ้างอิง https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739
+8585
+
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+ขั้นที่ 4 การคํานวณหาค่าเฉลี่ยและความ
+แปรปรวนกลาง (Moving Average)
+นอกจากนี้ Batch Norm ยังเก็บค่า Exponential
+Moving Average (EMA) ของค่าเฉลี่ยและความ
+แปรปรวนไว้ด้วย ในระหว่างการฝึกสอนจะคํานวณค่า
+EMA แต่ยังไม่ใช้งาน จนกระทั่งสิ้นสุดการฝึกสอนจะ
+บันทึกค่านี้เป็นส่วนหนึ่งของสถานะของเลเยอร์เพื่อใช้ใน
+ขั้นตอนทดสอบหรือการเรียกใช้งาน
+การคํานวณค่า Moving
+Average
+ใช้ค่าคงที่
+'momentum’ ในตั ว แปร alpha ค่ า นี ้ เ ป็ น ไฮเปอร์
+พารามิ เ ตอร์ ท ี ่ ใ ช้ เ ฉพาะกั บ การคํ า นวณ Moving
+Average ใน Batch Norm และไม่ใช้ค่า momentum
+ที่ใช้ใน Optimizer
+
+14/08/69
+
+อ้างอิง https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739
+8686
+
+ปั
+ญ
+หาเมื
+อ
+่
+นํ
+า
+โมเดลไปใช้
+ง
+านจริ
+ง
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+ช่วง Training เรามีข้อมูลเป็น “Batch” เช่น 32 หรือ 64 รูปพร้อมกัน ทําให้เรา
+สามารถคํานวณหาค่าเฉลี่ยและความแปรปรวนของกลุ่มข้อมูลนั้นได้
+
+ช่วง Inference ในแอปพลิเคชันจริง เราอาจต้องทํานายภาพเพียง 1 ภาพ (Single
+Sample)
+
+คําถามสําคัญ: เราไม่สามารถหาค่าเฉลี่ยจากข้อมูลเพียง 1 ตัวได้ แล้ว Batch Norm จะนําค่า μ และ σ จากที่ใดมาทํา Normalization?
+
+14/08/69
+Source: Created by the author using Gemini NoteBook, 2026.
+
+อ้างอิง https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739
+8787
+
+เลเยอร์
+Batch
+Normalization
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+การใช้ Batch Normalization มีประโยชน์หลายประการ
+ในการฝึกสอนโมเดลการเรียนรู้เชิงลึก
+• ช่วยให้ Gradient ไหลได้ดีขึ้น
+• ช่วยให้สามารถใช้ Learning Rate ที่สูงกว่าเดิม
+• ทําหน้าที่เป็นวิธีการ Regularization
+• ใช้ BatchNorm ร่วมกับ Dropout ยังสามารถแทนที่
+การใช้ L2 Regularization ได้
+ซึ ่ ง ทํ า ให้ โ มเดลมี ค วามสามารถในการป้ อ งกั น การเกิ ด
+Overfitting และช่วยเพิ่มประสิทธิภาพของการฝึกสอน
+โมเดลได้อย่างมีประสิทธิผล
+
+14/08/69
+
+อ้างอิง https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739
+8888
+
+ข้อควรระวัง
+
+ข้อควรระวั
+งedit
+: input Master
+image
+ขนาด 227title
+× 227 × style
+3style
+แสดงว่า ข้อมูลต้องมี 3 แพลน อาทิเช่น ภาพสี แต่ถ้าข้อมูลเป็นภาพขาวดําหรือระดับสีเทาต้องทํา
+Click
+Click
+to
+to edit
+Master
+title
+อย่างไร
+
+•• Edit
+styles
+ClickMaster
+to edittext
+Master
+text styles
+•• Second
+Second level
+level
+•• Third
+Third level
+level
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+14/08/69
+
+8989
+
+Dataset, Batch, และ Epoch
+
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+
+ในการเรียนรู้เชิงลึก (Deep Learning) โดยเฉพาะในการทํางานกับ Convolutional Neural Networks (CNN) คําว่า Dataset, Batch, และ
+Epoch เป็นส่วนสําคัญที่ช่วยจัดการข้อมูลในการฝึกฝนโมเดล เราจะมาดูความหมายและความแตกต่างระหว่างคําเหล่านี้โดยละเอียดพร้อมตัวอย่าง
+•• Edit
+Click
+Master
+• Dataset
+คือMaster
+ชุto
+ดข้อedit
+มูลทั้งtext
+หมดที
+่ใช้styles
+สําหรัtext
+บการฝึกstyles
+ฝนและทดสอบโมเดล CNN โดยข้อมูลเหล่านี้อาจเป็นรูปภาพ, ข้อความ หรือข้อมูลเชิงตัวเลข
+Second
+level
+Second
+level
+ขึ้นอยู่กับ••งานที
+่ทํา ตัวอย่
+างเช่น หากคุณฝึกโมเดล CNN สําหรับการจําแนกรูปภาพแมวและสุนัข Dataset จะประกอบด้วยรูปภาพทั้งหมดของ
+•• Third
+level
+Third
+level
+แมวและสุนัขที่คุณใช้สําหรับการฝึกและทดสอบโมเดล อาทิเช่น ชุดข้อมูล CIFAR-10 มีจํานวนภาพ 60,000 ภาพ แบ่งเป็น 50,000 ภาพ
+•• Fourth
+Fourth level
+level
+สําหรับฝึก (training set)••และ
+10,000
+ภาพสํ
+า
+หรั
+บ
+ทดสอบ
+(test
+set)
+Fifth
+level
+Fifth level
+• Batch คือ ส่วนย่อยของ Dataset ที่ถูกนําไปใช้ในแต่ละครั้งที่โมเดลทําการคํานวณ Gradient Descent การใช้ Batch ช่วยลดภาระการ
+คํานวณที่ต้องใช้ข้อมูลทั้งหมดใน Dataset ในครั้งเดียว โดยโมเดลจะอัปเดตนํ้าหนัก (weights) ของตัวเองหลังจากการเรียนรู้จาก Batch หนึ่ง
+เสร็จสิ้น กระบวนการนี้ช่วยให้โมเดลเรียนรู้ได้เร็วขึ้น อาทิเช่น Dataset มีจํานวนข้อมูลทั้งหมด 1,000 รูป และกําหนดค่า Batch size ไว้ที่
+100 รูป โมเดลจะอัปเดตนํ้าหนักทุกๆ 100 รูป (Batch) แทนที่จะรอให้เรียนรู้ครบทั้ง 1,000 รูป
+• Epoch หมายถึง การฝึกฝนโมเดลด้วย Dataset ทั้งหมดหนึ่งรอบเต็ม ในการฝึกฝนโมเดล คุณจะต้องทําหลาย Epoch เพื่อให้โมเดลสามารถ
+เรียนรู้จากข้อมูลและทําการอัปเดตนํ้าหนักได้อย่างต่อเนื่อง ในแต่ละ Epoch ข้อมูลใน Dataset ทั้งหมดจะถูกแบ่งออกเป็นหลายๆ Batch
+จนกระทั่งข้อมูลทั้งหมดผ่านการเรียนรู้ครบหนึ่งรอบ อาทิเช่น หากคุณมีชุดข้อมูล 1,000 รูป และ Batch size เท่ากับ 100 แต่ละ Epoch จะ
+มี 10 Batch และถ้าคุณตั้งค่าให้โมเดลทํางาน 10 Epoch โมเดลจะได้เรียนรู้ข้อมูล 10 รอบ โดยรวมจะผ่านข้อมูลทั้งหมด 10,000 ครั้ง
+(1,000
+14/08/69 รูป × 10 Epoch)
+9090
+
+Dataset, Batch, และ Epoch
+
+Click
+Click to
+to edit
+edit Master
+Master title
+title style
+style
+
+ความสัมพันธ์ระหว่าง Dataset, Batch และ Epoch
+
+• Dataset คือ ข้อมูลทั้งหมด
+•
+Edit
+Master
+text
+styles
+•
+Click
+to
+edit
+Master
+• Batch คือ การแบ่ง Dataset ออกเป็นส่text
+วนย่อยๆstyles
+เพื่อให้โมเดลทําการเรียนรู้ทีละส่วน
+•
+Second
+level
+•
+Second
+level
+• Epoch คือ การเรียนรู้ข้อมูลทั้งชุดของ Dataset ครบหนึ่งรอบ
+•• Third
+Third level
+level
+
+ตัวอย่าง
+
+•• Fourth
+Fourth level
+level
+•• Fifth
+Fifth level
+level
+
+หากคุณมี Dataset ที่ประกอบด้วย 50,000 รูปภาพ และคุณตั้งค่า Batch size เท่ากับ 500 และต้องการฝึกโมเดลใน 10 Epoch ดังนั้น
+• ในแต่ละ Epoch โมเดลจะต้องผ่าน 50,000 ÷ 500 = 100 Batch
+• ถ้าคุณฝึก 10 Epoch โมเดลจะได้เรียนรู้ทั้งหมด 100 × 10 = 1,000 Batch
+การใช้ Batch และ Epoch เหล่านี้จะช่วยให้โมเดลสามารถเรียนรู้ข้อมูลได้อย่างมีประสิทธิภาพมากขึ้น
+Regularization คือ วิธีการที่ใช้แก้หรือบรรเทาปัญหา overfitting หรือ underfitting ของแบบจําลอง ซึ่งมี 3 วิธีการที่กําลังได้รับความนิยมอยู่
+ในปัจจุบัน ได้แก่ (1) Data Augmentation, (2) Batch Normalization และ (3) Dropout
+14/08/69
+
+9191
+
+

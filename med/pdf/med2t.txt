@@ -1,0 +1,967 @@
+Chapter 03 : Introduction to Python
+for Image and Video Understanding
+บรรยายโดย ผศ.ดร.ธราวิเชษฐ์ ธิติจรูญโรจน์
+คณะเทคโนโลยีสารสนเทศ
+สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
+
+หัวข้อ
+• แนะนำชุดคำสั่ง OpenCV
+• แนะนำ อำร์เรย์ (Array) ในชุดคำสั่ง numpy
+• วิธีกำรสร้ำง
+• วิธีกำรอ้ำงอิงตำแหน่ง
+• ตัวดำเนินกำรทำงคณิตศำสตร์
+• กำรเชื่อมต่ออำร์เรย์
+• กำรปรับขนำดและคัดลอก
+
+• แนะนำชุดคำสั่ง matplotlib
+
+แนะนาชุดคาสั่ง OpenCV
+การเรียกใช้ OpenCV ในโปรแกรม Python
+รูปแบบที่ 1
+
+import cv2
+รูปแบบที่ 2
+
+import cv2 as cv
+
+แนะนาชุดคาสั่ง OpenCV
+วิธีการนาเข้ารูปภาพ
+คาสั่ง
+ตัวแปร = cv2.imread(‘ที่อยู่ของรูปภาพ/ชื่อรูปภาพ.นามสกุล’)
+
+ตัวอย่างเช่น
+
+เพื่อระบุว่ำเป็นภำพระดับสีเทำ
+(grayscale image)
+
+import cv2
+img_color = cv2.imread('/content/drive/My Drive/img/lenna_color.png',1)
+img_grayscale = cv2.imread('/content/drive/My Drive/img/lenna_color.png',0)
+
+หมายเหตุ ค่ำเริ่มต้นของคำสั่ง imread คือ cv2.IMREAD_COLOR หรือใส่เลข 1 ทำให้อ่ำนภำพมำได้ 3 มิติ หรือเป็นภำพสี แต่ถ้ำต้องกำรอ่ำนภำพขำวดำหรือภำพ
+ระดับสีเทำให้กำหนดเป็น cv2.IMREAD_GRAYSCALE หรือใส่เลข 0
+
+แนะนาชุดคาสั่ง OpenCV
+วิธีการแสดงรูปภาพ
+นักศึกษำสำมำรถแสดงรูปภำพแบบโดยใช้คำสั่ง imshow() จำกไลบรำรี่ Matplotlib ได้
+
+ตัวอย่างเช่น
+import cv2
+import matplotlib.pyplot as plt
+from google.colab import drive
+drive.mount('/content/drive’)
+# สร้ำงท่อเชื่อมต่อระหว่ำง Google Drive กับ Colab
+img = cv2.imread('/content/drive/My Drive/img/lenna_color.png',1)
+plt.axis("off")
+plt.imshow(img)
+
+# ไม่อนุญำตให้แสดงเส้นแกน
+# คำสั่ง plt.imshow(...) ใช้สำหรับแสดงรูปภำพที่เก็บไว้ในตัวแปร im
+
+แนะนาชุดคาสั่ง OpenCV
+
+แนะนาชุดคาสั่ง OpenCV
+วิธีการแสดงรูปภาพ
+
+คำสั่ง plt.imshow(...) แสดงสีของรูปภำพเพี้ยน เนื่องจำกข้อมูลรูปภำพที่อ่ำนเข้ำมำผ่ำนคำสั่ง cv2.imread(...) มีรูปแบบกำรจัดเก็บข้อมูลแบบ BGR
+ขณะที่ คำสั่ง plt.imshow(...) มีกำรแสดงผลแบบ RGB ทำให้ผลลัพธ์ที่แสดงมีรูปแบบสีที่ผิดเพี้ยนไปจำกที่ควรจะเป็น ดังนั้น จึงจำเป็นต้องทำกำร
+จัดเรียงองค์ประกอบของระนำบสีใหม่
+
+คาสั่ง
+
+output = cv2.cvtColor(input,cv2.COLOR_BGR2RGB)
+
+แนะนาชุดคาสั่ง OpenCV
+วิธีการแสดงรูปภาพ
+ตัวอย่างเช่น
+import cv2
+import matplotlib.pyplot as plt
+from google.colab import drive
+drive.mount('/content/drive’)
+img_bgr = cv2.imread('/content/drive/My Drive/img/lenna_color.png’,1)
+img_rgb = cv2.cvtColor(img_bgr , cv2.COLOR_BGR2RGB)
+plt.axis("off")
+plt.imshow(img_rgb)
+
+แนะนาชุดคาสั่ง OpenCV
+วิธีการแปลงปริภูมิสี (RGB -> YCbCr)
+ตัวอย่างเช่น
+import cv2
+import matplotlib.pyplot as plt
+from google.colab import drive
+drive.mount('/content/drive’)
+img_bgr = cv2.imread('/content/drive/My Drive/img/lenna_color.png’,1)
+img_YCbCr = cv2.cvtColor(img_bgr , cv2.COLOR_BGR2YCrCb)
+plt.axis("off")
+plt.imshow(img_YCbCr)
+
+แนะนาชุดคาสั่ง OpenCV
+วิธีการแปลงปริภูมิสี (RGB -> HSV)
+ตัวอย่างเช่น
+import cv2
+import matplotlib.pyplot as plt
+from google.colab import drive
+drive.mount('/content/drive’)
+img_bgr = cv2.imread('/content/drive/My Drive/img/lenna_color.png’,1)
+img_hsv = cv2.cvtColor(img_bgr , cv2.COLOR_BGR2HSV)
+plt.axis("off")
+plt.imshow(img_hsv)
+
+แนะนาชุดคาสั่ง OpenCV
+วิธีการแปลงปริภูมิสี (RGB -> Grayscale)
+ตัวอย่างเช่น
+import cv2
+import matplotlib.pyplot as plt
+from google.colab import drive
+drive.mount('/content/drive’)
+img_bgr = cv2.imread('/content/drive/My Drive/img/lenna_color.png’,1)
+img_gray = cv2.cvtColor(img_bgr , cv2.COLOR_BGR2GRAY)
+plt.axis("off")
+plt.imshow(img_gray, cmap = 'gray', vmin = 0, vmax = 255,interpolation = 'none')
+
+แนะนาชุดคาสั่ง OpenCV
+วิธีการแปลงปริภูมิสี (RGB -> Binary)
+ตัวอย่างเช่น
+img_bgr = cv2.imread('/content/drive/My Drive/img/lenna_color.png’,1)
+out = cv2.cvtColor(img_bgr , cv2.COLOR_BGR2GRAY)
+T = 127
+# fix thresholding
+temp0, bw0 = cv2.threshold(out,T,255,cv2.THRESH_BINARY)
+# adaptive global
+temp1, bw1 = cv2.threshold(out,T,255,cv2.ADAPTIVE_THRESH_MEAN_C)
+# Otsu’s
+temp2, bw2 = cv2.threshold(out,T,255,cv2.THRESH_OTSU)
+
+แนะนาชุดคาสั่ง OpenCV
+วิธีการแปลงปริภูมิสี (RGB -> Binary)
+ตัวอย่างเช่น
+plt.figure(), plt.subplot(2,2,1),
+plt.imshow(out, cmap='gray', vmin = 0, vmax = 255,interpolation='none')
+plt.subplot(2,2,2),
+plt.imshow(bw0, cmap='gray', vmin = 0, vmax = 255,interpolation='none')
+plt.subplot(2,2,3),
+plt.imshow(bw1, cmap='gray', vmin = 0, vmax = 255,interpolation='none')
+
+plt.subplot(2,2,4),
+plt.imshow(bw2, cmap='gray', vmin = 0, vmax = 255,interpolation='none')
+
+แนะนาชุดคาสั่ง OpenCV
+ความสูง ความกว้าง และระนาบสีของรูปภาพ
+นักศึกษำสำมำรถเรียกดูค่ำควำมสูง ควำมกว้ำง และระนำบสีของรูปภำพได้ โดยอำศัยคีย์ “.shape” ดังตัวอย่ำงต่อไปนี้
+
+คาสั่ง
+import cv2
+from google.colab import drive
+drive.mount('/content/drive’)
+im = cv2.imread('/content/.../img/lenna_color.png’,1)
+
+dims = im.shape
+
+แนะนาชุดคาสั่ง OpenCV
+ความสูง ความกว้าง และระนาบสีของรูปภาพ
+คาสั่ง
+import cv2
+from google.colab import drive
+drive.mount('/content/drive’)
+
+เพื่อระบุว่าเป็นภาพระดับสีเทา
+(grayscale image)
+
+im = cv2.imread('/content/.../img/lenna_color.png’,0)
+height
+= im.shape[0]
+width
+= im.shape[1]
+# ถ้าใส่จะ Error เพราะข้อมูล Gray Scale มีแค่ 1 ระนาบ
+channels = im.shape[2]
+
+แนะนาชุดคาสั่ง OpenCV
+ความสูง ความกว้าง และระนาบสีของรูปภาพ
+cv2.imread('lenna_gray.jpg’)
+
+cv2.imread('lenna_gray.jpg’,0)
+
+[2]
+[1]
+[0]
+ข้อมูลทั้ง 3 ระนำบมีค่ำเหมือนกันทั้งหมด แต่กลับมองว่ำเป็นข้อมูล 3 มิติ (h, w, d)
+
+ข้อมูลมี 1 ระนำบเท่ำนั้น ทำให้สำมำรถมองว่ำเป็นข้อมูล 2 มิติ (h, w)
+
+คาสั่งแสดงขนาดของรูปภาพ
+ตัวแปร = ตัวแปรที่เก็บรูปภาพ.size
+Img_size = im.size
+dimensions = (256, 256, 3)
+
+Height x Width x Color channel
+
+196,608 = 256 x 256 x 3
+
+การเปลี่ยนแปลงขนาดของรูปภาพ
+cv2.resize(image, dsize , interpolation)
+Argument
+image
+dsize
+interpolation
+
+Description
+รูปภำพ
+ขนำดของรูปภำพ (width, height)
+วิธีกำรสำหรับย่อ/ขยำย ขนำด
+INTER_LINEAR (Default)
+INTER_NEAREST
+INTER_AREA
+INTER_CUBIC
+INTER_LANCZOS4
+
+การเปลี่ยนแปลงขนาดของรูปภาพ
+ให้นักศึกษำพิจำรณำตัวอย่ำงต่อไปนี้
+import cv2
+im = cv2.imread('lenna.jpg',0)
+h = 128
+w = 128
+
+reImg = cv2.resize(im, (h, w), interpolation = cv2.INTER_CUBIC)
+print(im.shape)
+print(reImg.shape)
+
+ประเภทของค่าสีของรูปภาพ
+โดยทั่วไปแล้วค่ำควำมเข้มแสงของแต่ละพิกเซลจะมี 2 ประเภท (ไม่ว่ำจะเป็น
+ภำพสีหรือภำพระดับสีเทำ) ได้แก่
+• 0 – 1 ใน OpenCV จะเรียกว่ำประเภท double
+• 0 – 255 ใน OpenCV จะเรียกว่ำประเภท uint8
+ซึ่งนักศึกษำสำมำรถตรวจสอบได้จำกคีย์ “. dtype” ดังตัวอย่ำงต่อไปนี้
+import cv2
+img = cv2.imread('lenna.jpg',0)
+print('Type : ', img.dtype)
+
+การเลือกค่าความเข้มแสงของพิกเซลในภาพ (เดี่ยว)
+กำรอ้ำงอิงค่ำควำมเข้มแสงของแต่พิกเซลจะอำศัยวงเล็บก้ำมปู [ ... ] โดยระบุตำแหน่งเป็นระนำบ
+[ row, col ] สำหรับข้อมูล 2 และ 3 มิติ ตัวอย่ำงเช่น
+
+ตัวแปร = ตัวแปรที่เก็บรูปภาพ [row, col]
+ขณะที่ [ row, col, dim ] สำหรับข้อมูล 3 มิติเท่ำนั้น ตัวอย่ำงเช่น
+
+ตัวแปร = ตัวแปรที่เก็บรูปภาพ [row, col, dim]
+เลขตำแหน่งอ้ำงอิงเริ่มจำก 0
+
+การเลือกค่าความเข้มแสงของพิกเซลในภาพ (เดี่ยว)
+สาหรับภาพระดับสีเทาจะแสดงเพียงค่าเดียว เช่น
+i = img[100,100]
+print( i )
+
+# i = 100
+
+สาหรับภาพสีจะแสดงค่า [B, G, R] เช่น [100, 20, 30] (ถ้ำไม่มีกำรเรียงใหม่)
+i = img[100,100]
+print( i )
+
+# i = [100, 20, 30]
+
+การเลือกค่าความเข้มแสงของพิกเซลในภาพ (เดี่ยว)
+สาหรับภาพสีจะแสดงค่า [B, G, R] เช่น [100, 20, 30] (ถ้ำไม่มีกำรเรียงใหม่)
+i = img[100, 100, 2]
+print( i )
+
+# i = 30
+
+ให้นักศึกษำพิจำรณำโปรแกรมต่อไปนี้
+import cv2
+img = cv2.imread('lenna.png’, 0) # ภาพสีเทา
+
+print(img.dtype)
+print(img[1,1])
+print(img[1,1,0])
+
+การเลือกค่าความเข้มแสงของพิกเซลในภาพ (เดี่ยว)
+ตัวอย่าง
+import cv2
+img = cv2.imread('lenna.png’, 1)
+
+# ภาพสี
+
+print(img[100,100])
+
+# [100, 20, 30]
+
+print(img[100,100,0])
+print(img[100,100,1])
+print(img[100,100,2])
+
+# 100
+# 20
+# 30
+
+การเลือกค่าความเข้มแสงของพิกเซลในภาพ (เดี่ยว)
+กำรเลือกค่ำควำมเข้มแสงของพิกเซล คือ “กำรอ้ำงอิงตำแหน่ง” ซึ่งนักศึกษำสำมำรถมองว่ำ
+ตำแหน่งที่อ้ำงอิง (img[r,c]) เป็นตัวแปรธรรมดำและสำมำรถนำไปใช้งำนต่ำง ๆ ได้ เช่น
+import cv2
+img = cv2.imread('lenna.png’, 1)
+
+# ภาพสี
+
+print(img[100,100])
+
+# [100, 20, 30]
+
+img[100,100,0] = 2;
+print(img[100,100,0])
+
+# 2
+
+img[100,100,0] = img[100,100,0] + 11;
+print(img[100,100,0])
+# 33
+
+การเลือกค่าความเข้มแสงของพิกเซลในภาพ (เดี่ยว)
+สาหรับภาพระดับสีเทา
+ตัวแปรที่เก็บรูปภาพ[row, col] = ค่าระดับสีเทา
+img[100,100] = 255
+
+สาหรับภาพสีจะแสดงค่า [B, G, R] (ถ้ำไม่มีกำรเรียงใหม่)
+ตัวแปรที่เก็บรูปภาพ[row, col] = [B, G, R]
+img[100,100] = [255,10,20]
+
+ตัวแปรที่เก็บรูปภาพ[row, col, color channel] = ค่าสี
+img[100,100,0] = 255
+
+การเลือกค่าความเข้มแสงของพิกเซลในภาพ (เดี่ยว)
+ถ้ำนักศึกษำต้องกำรเลือกข้อมูลเป็นช่วงสำมำรถอำศัย
+ตัวดำเนินกำร colon ( : ) ร่วมกับวงเล็บปีกกำได้ เช่น
+สาหรับภาพระดับสีเทา : [row, column]
+ตัวแปร[start:stop-1:step, start:stop-1:step]
+
+สาหรับภาพสีจะแสดงค่า [B, G, R] (ถ้ำไม่มีกำรเรียงใหม่) : [row, column, dim]
+ตัวแปร[start:stop-1:step, start:stop-1:step, start:stop-1:step]
+
+การเลือกค่าความเข้มแสงของพิกเซลในภาพ (เดี่ยว)
+กาหนดให้
+
+[
+[168 167 167 170 167]
+[168 167 167 170 167]
+[169 167 167 167 167]
+
+ให้นักศึกษาพิจารณาโปรแกรมต่อไปนี้
+
+]
+
+import cv2
+img = cv2.imread('lenna.png', 0)
+print('Ex 1 : \n ', img[0, 0:5])
+print('Ex 2 : \n ', img[0:3, 0:5])
+print('Ex 3 : \n ', img[0:3:2, 0:5:2])
+
+ผลลัพธ์
+
+การเลือกค่าความเข้มแสงของพิกเซลในภาพ (เดี่ยว)
+ให้นักศึกษาพิจารณาโปรแกรมต่อไปนี้
+import cv2
+img = cv2.imread('lenna.png', 0)
+print('Ex 1 : \n ', img[0:3,0:3])
+img[0:3,0:3] = 99;
+print('Ex 2 : \n ', img[0:3,0:3])
+img[0:3,0:3] = [[11, 12, 13],
+[14, 15, 16], [17, 18, 19]]
+print('Ex 3 : \n ', img[0:3,0:3])
+print(‘Ex 4 : \n ', img[:,:]) >> ??
+
+ผลลัพธ์
+
+การบันทึกข้อมูลภาพลงบนเครื่องคอมพิวเตอร์
+นักศึกษำสำมำรถบันทึกตัวแปรที่เก็บรูปภำพลงบนเครื่องคอมพิวเตอร์ได้โดยอำศัยคำสั่ง
+ตัวแปร = cv2.imwrite(ที่อยู่ของรูปภาพ/ชื่อรูปภาพ.นามสกุล’,ตัวแปรที่เก็บรูปภาพ)
+โดยที่ ตัวแปร เป็น True เมื่อสำมำรถบันทึกข้อมูลได้สำเร็จ และมีค่ำเป็น False เมื่อไม่
+สำมำรถบันทึกข้อมูลได้
+ตัวอย่างเช่น
+import cv2
+img = cv2.imread(‘lena.png’, 0)
+status = cv2.imwrite(‘lena2.png’, img)
+
+หัวข้อ
+• แนะนำชุดคำสั่ง OpenCV
+• แนะนำ อำร์เรย์ (Array) ในชุดคำสั่ง numpy
+• วิธีกำรสร้ำง
+• วิธีกำรอ้ำงอิงตำแหน่ง
+• ตัวดำเนินกำรทำงคณิตศำสตร์
+• กำรเชื่อมต่ออำร์เรย์
+• กำรปรับขนำดและคัดลอก
+
+• แนะนำชุดคำสั่ง matplotlib
+
+แนะนาไลบรารี่ numpy
+numpy เป็นชุดคำสั่งสำหรับกำรคำนวณทำงตัวเลข ที่สร้ำงขึ้นจำกภำษำไพธอน เมื่อติดตั้ง
+Anaconda แล้วจะมี numpy มำด้วย โดยมีฟังก์ชันที่สำคัญ ได้แก่ อำร์เรย์ที่เก็บ ชุดตัวเลข หรือ
+เมตริก ที่นำไปแทนพิเซล (pixel) ของรูปภำพ กำรนำเข้ำ numpy ดังนี้
+import numpy as np
+
+อาร์เรย์ (Array)
+อำร์เรย์ของ numpy นำมำใช้เพื่อกำรคำนวณจะมีประสิทธิภำพมำกกว่ำ List ของไพธอน
+โดยเฉพำะข้อมูลที่มีขนำดใหญ่ ข้อมูลที่มีหลำยมิติ จะแปลงเป็นอำร์เรย์ของ NumPy เช่นกำรเก็บ
+ข้อมูลภำพ กำรสร้ำงอำเรย์มีหลำยวิธี แต่วิธีพื้นฐำนสุด คือ สร้ำงขึ้นมำจำกลิสต์, ทูเพิล หรือเรนจ์
+โดยใช้คำสั่ง
+numpy.array(ข้อมูล, ประเภทข้อมูล)
+
+อาร์เรย์ (Array)
+• ตัวอย่าง กำรสร้ำงอำร์เรย์ 1 มิติ
+import numpy as np
+ari = np.array([1,2,3,4])
+ari = np.array([1,2,3,4],’int’)
+ari = np.array([1,2,3,4], dtype=’int64’)
+ari = np.array((1,2,3,4))
+
+• ตัวอย่าง กำรสร้ำงอำร์เรย์ 2 มิติ
+import numpy as np
+arr = np.array([[1,2],[3,4],[5,6],[7,8]])
+print(arr)
+
+[[1 2]
+[3 4]
+[5 6]
+[7 8]]
+
+อาร์เรย์ (Array)
+• ฟังก์ชันสำหรับสร้ำงอำร์เรย์ 1 มิติ
+คาสั่ง
+
+คาอธิบาย
+
+arange(start, stop-1, step)
+
+สร้ำงสมำชิกตัวเลขในรูปแบบอำร์เรย์ที่อยู่ในช่วง start ถึง stop
+
+linspace(start, stop, size)
+
+สร้ำงสมำชิกตัวเลขจำนวน Size ตัวที่อยู่ในช่วง start ถึง stop ในรูปแบบอำร์เรย์
+
+• ฟังก์ชันสำหรับสร้ำงอำร์เรย์ 2 มิติ
+คาสั่ง
+array([[seq]])
+
+คาอธิบาย
+สร้ำงอำร์เรย์โดยระบุค่ำสมำชิกที่มีอยู่ใน 2D List หรือ Turple
+
+zeros([rows, cols])
+
+สร้ำงอำร์เรย์ที่สมำชิกทุกตัวมีค่ำเป็น 0 โดยระบุจำนวนแถวและหลัก
+
+ones([rows, cols])
+
+สร้ำงอำร์เรย์ที่สมำชิกทุกตัวมีค่ำเป็น 1 โดยระบุจำนวนแถวและหลัก
+
+อาร์เรย์ (Array)
+• ตัวอย่างที่ 1
+import numpy as np
+arr1 = np.arange(1,10,2)
+arr2 = np.linspace(0,10, 4)
+print(arr1)
+print(arr2)
+
+ผลลัพธ์
+
+• ตัวอย่างที่ 2
+import numpy as np
+arr1 = np.array([[0,1],[2, 9]])
+arr2 = np.zeros([2,3])
+arr3 = np.ones([3,2])
+print(arr1)
+print(arr2)
+print(arr3)
+
+ผลลัพธ์
+
+อาร์เรย์ (Array)
+กำรอ้ำงอิงตำแหน่งสมำชิกในอำร์เรย์มีด้วยกัน 2 ระบบ ได้แก่ แบบต่อเนื่อง (Index Slicing) และ
+แบบตำมใจ (Fancy Indexing)
+• แบบต่อเนื่อง กำรอ้ำงอิงแบบนี้อำศัยเครื่องหมำยปีกกำ [ ] โดยภำยในวงเล็บให้ระบุเป็น
+ตำแหน่ง start : stop-1: step
+• แบบตามใจ กำรอ้ำงอิงแบบนี้อำศัยเครื่องหมำยปีกกำ [ ] เช่นเดียวกัน แต่ภำยในวงเล็บให้
+ระบุเป็นตาแหน่งเป็นตัวเลขได้เลย
+
+อาร์เรย์ - อ้างอิงแบบต่อเนื่อง (Index Slicing)
+• ตัวอย่าง กำรอ้ำงอิงตำแหน่งสมำชิกในอำร์เรย์ 1 มิติ
+import numpy as np
+ari = np.array([1,2,3,4])
+print(ari)
+print(ari[1])
+print(ari[1:3])
+
+# [1 2 3 4]
+# 2
+# [2 3]
+
+• ตัวอย่าง กำรอ้ำงอิงตำแหน่งสมำชิกในอำร์เรย์ 2 มิติ
+import numpy as np
+arr = np.array([[1,2],[3,4],[5,6],[7,8]])
+print(arr[1,1])
+# 4
+print(arr[:,1])
+# [2, 4, 6, 8]
+print(arr[[0, 3],:])
+# [[1, 2], [7, 8]]
+
+อาร์เรย์ – อ้างอิงแบบตามใจ (Fancy Indexing)
+• ตัวอย่าง กำรอ้ำงอิงตำแหน่งสมำชิกในอำร์เรย์ 1 มิติ
+import numpy as np
+ari = np.array([21 , 12, 43, 4])
+print(ari)
+print(ari[[2, 3, 0]])
+print(ari[[2, 1]])
+
+ผลลัพธ์
+
+• ตัวอย่าง กำรอ้ำงอิงตำแหน่งสมำชิกในอำร์เรย์ 2 มิติ
+import numpy as np
+arr = np.array([[21, 11, 2],[13, 0, 24],[51, 4, 36],[0, 17,38]])
+
+print(arr[[2, 3, 1],1])
+print(arr[:,[2, 0]])
+print(arr[[0, 3],:])
+
+ผลลัพธ์
+
+อาร์เรย์ (Array)
+ให้นักศึกษาพิจารณาโปรแกรมต่อไปนี้
+import numpy as np
+print('Hello’)
+arr = np.array([[1,2],[3,4],[5,6],[7,8]])
+print(arr)
+arr[[0, 3],:] = 9;
+print(arr)
+i = arr[[1,2], :]
+print(i)
+
+ผลลัพธ์
+
+อาร์เรย์ (Array) - แบบฝึกหัด
+จงตอบคำถำมต่อไปนี้ โดยกำหนดให้
+x = [[0, 7, 5, 9], [2, 1, 9, 8], [8, 2, 3, 4], [1, 2, 0, 3], [4, 6, 7, 9]]
+• x[1:2, 0:4]
+• x[1:3:2, 0:3:2]
+• x[3, 0:3:2]
+
+• x[1:3 , :]
+
+• x[0: , 0:1]
+
+• x[0::2,0::2]
+
+• x[[0, 2, 4] , :]
+
+• x[[2, 1, 3], [0, 1, 3]]
+
+อาร์เรย์ (Array) - แบบฝึกหัด
+0
+2
+1. 8
+1
+4
+
+7
+1
+2
+2
+6
+
+5
+9
+3
+0
+7
+
+9
+8
+4 >>>
+3
+9
+
+0
+2
+2. 8
+1
+4
+
+7
+1
+2
+2
+6
+
+5
+9
+3
+0
+7
+
+9
+8
+4 >>>
+3
+9
+
+0
+2
+3. 8
+1
+4
+
+7
+1
+2
+2
+6
+
+5
+9
+3
+0
+7
+
+9
+8
+4 >>>
+3
+9
+
+x=
+
+x[_____,______]
+
+0
+2
+4. 8
+1
+4
+
+7
+1
+2
+2
+6
+
+5
+9
+3
+0
+7
+
+9
+8
+4 >>>
+3
+9
+
+x[_____,______]
+
+x[_____,______]
+
+0
+2
+5. 8
+1
+4
+
+7
+1
+2
+2
+6
+
+5
+9
+3
+0
+7
+
+9
+8
+4 >>>
+3
+9
+
+x[_____,______]
+
+x[_____,______]
+
+0
+2
+6. 8
+1
+4
+
+7
+1
+2
+2
+6
+
+5
+9
+3
+0
+7
+
+9
+8
+4 >>>
+3
+9
+
+x[_____,______]
+
+0
+2
+8
+1
+4
+
+7
+1
+2
+2
+6
+
+5
+9
+3
+0
+7
+
+9
+8
+4
+3
+9
+
+ตัวดาเนินการทางคณิตศาสตร์
+ตัวดาเนินการ
++ (บวก)
+- (ลบ)
+* (คูณ)
+np.dot(x, y)
+(Dot product)
+/ (หำร)
+** (ยกกำลัง)
+np.transpose(y)
+(Transpose)
+
+ความหมาย
+รองรับทั้งสเกล่ำร์และเมตริกซ์ แต่ถ้ำเมตริกซ์ต้องมีขนำดเท่ำกัน
+รองรับทั้งสเกล่ำร์และเมตริกซ์ แต่ถ้ำเมตริกซ์ต้องมีขนำดเท่ำกัน
+รองรับทั้งสเกล่ำร์และเมตริกซ์ แต่ถ้ำเมตริกซ์ต้องมีขนำดเท่ำกัน
+รองรับแต่เมตริกซ์
+รองรับทั้งสเกล่ำร์และเมตริกซ์ แต่ถ้ำเมตริกซ์ต้องมีขนำดเท่ำกัน
+รองรับแต่สเกล่ำร์
+รองรับแต่เมตริกซ์
+
+อาร์เรย์ – ตัวดาเนินการทางคณิตศาสตร์แบบจุด
+ให้นักศึกษาพิจารณาโปรแกรมต่อไปนี้
+import numpy as np
+x = np.array([[1, 2, 3], [ 4, 5, 6]])
+y = np.array([[-1, 1, 5], [ 2, 3, 1]])
+
+print(x + y)
+print(x - y)
+print(x * y)
+print(x / y)
+print(x ** 2)
+
+ผลลัพธ์
+
+อาร์เรย์ – ตัวดาเนินการทางคณิตศาสตร์แบบเมตริกซ์
+ให้นักศึกษาพิจารณาโปรแกรมต่อไปนี้
+import numpy as np
+x = np.array([3, 4, 2])
+y = np.array([[13, 9, 7, 15],
+[8, 7, 4, 6],
+[6, 4, 0, 3]])
+print(' ans1 : ', np.dot(x, y))
+
+ผลลัพธ์
+
+อาร์เรย์ – ตัวดาเนินการทางคณิตศาสตร์แบบเมตริกซ์
+ให้นักศึกษาพิจารณาโปรแกรมต่อไปนี้
+import numpy as np
+x = np.array([[1, 2, 3], [ 4, 5, 6]])
+y = np.array([[-1, 1, 5], [ 2, 3, 1]])
+print(' ans1 : ', np.dot(x, np.transpose(y)))
+
+ผลลัพธ์
+
+อาร์เรย์ – การเชื่อมต่อเมตริกซ์
+ให้นักศึกษาพิจารณาโปรแกรมต่อไปนี้
+import numpy as np
+
+x = np.array([-3, 0, 2, 4, 6])
+y = np.array([5, 15, 15, 20, 10])
+z1 = np.concatenate([x, y])
+z2 = np.concatenate([[x], [y]])
+print('out 1 : ', z1)
+print('out 2 : ', z2)
+
+ผลลัพธ์
+
+อาร์เรย์ – การคัดลอกเมตริกซ์
+ให้นักศึกษาพิจารณา 2 โปรแกรมต่อไปนี้
+import numpy as np
+
+import numpy as np
+
+x = np.array([-3, 0, 2, 4, 6])
+y = x
+
+x = np.array([-3, 0, 2, 4, 6])
+y = x.copy()
+
+print('x : ', x)
+print(' ======== ‘)
+
+print('x : ', x)
+print(' ======== ‘)
+
+y[0] = 10
+
+y[0] = 10
+
+print('x : ', x)
+print('y : ', y)
+
+ผลลัพธ์
+
+print('x : ', x)
+print('y : ', y)
+
+ผลลัพธ์
+
+อาร์เรย์ – การคัดลอกเมตริกซ์
+ให้นักศึกษาพิจารณา 2 โปรแกรมต่อไปนี้
+import numpy as np
+x = np.array([-3, 0, 2, 4, 6])
+y = x
+print('x : ', x)
+print(' ======== ‘)
+
+y[0] = 10
+print('x : ', x)
+print('y : ', y)
+
+ผลลัพธ์
+
+อาร์เรย์ – การปรับขนาด
+ให้นักศึกษาพิจารณาโปรแกรมต่อไปนี้
+import numpy as np
+x = np.array([-3, 0, 2, 4, 6, 7])
+y1 = np.resize(x, [2, 3])
+y2 = np.resize(x, [3, 2])
+y3 = np.resize(x, [6, 1])
+print('x : ', x)
+print('y1 : ', y1)
+print('y2 : ', y2)
+print('y3 : ', y3)
+
+ผลลัพธ์
+
+หัวข้อ
+• แนะนำชุดคำสั่ง OpenCV
+• แนะนำ อำร์เรย์ (Array) ในชุดคำสั่ง numpy
+• วิธีกำรสร้ำง
+• วิธีกำรอ้ำงอิงตำแหน่ง
+• ตัวดำเนินกำรทำงคณิตศำสตร์
+• กำรเชื่อมต่ออำร์เรย์
+• กำรปรับขนำดและคัดลอก
+
+• แนะนำชุดคำสั่ง matplotlib
+
+การวาดกราฟเส้น
+กรำฟเส้น (Linear Plot) เป็นกำรลำกเส้นเชื่อมระหว่ำงจุดที่แสดง
+ควำมสัมพันธ์ของข้อมูล โดยอำศัยคำสั่ง plot จำกไลบำรี่
+matplotlib
+
+• รูปแบบที่ 1 เป็นเวกเตอร์ 1 ตัว
+import matplotlib.pyplot as plt
+x = [5, 15, 15, 20, 10]
+plt.plot(x)
+plt.show()
+
+การวาดกราฟเส้น
+• รูปแบบที่ 2 เป็นเวกเตอร์ 2 ตัว
+import matplotlib.pyplot as plt
+x = [-3, 0, 2, 4, 6]
+y = [5, 15, 15, 20, 10]
+plt.plot(x, y)
+plt.show()
+
+การวาดกราฟเส้น (2 เส้นทับกัน)
+import matplotlib.pyplot as plt
+
+x = [-3, 0, 2, 4, 6]
+y = [5, 15, 15, 20, 10]
+plt.plot(x)
+plt.plot(y)
+plt.show()
+
+การวาดกราฟแท่ง
+กรำฟแท่ง (Bar Plot) เป็นกำรวำดเป็นรูปแท่งสีเหลี่ยมนิยมใช้เพื่อเปรียบเทียบควำมแตกต่ำง
+ระหว่ำงข้อมูล โดยอำศัยคำสั่ง bar จำกไลบำรี่ matplotlib
+import matplotlib.pyplot as plt
+x = [-3, 0, 2, 4, 6]
+y = [5, 15, 15, 20, 10]
+plt.bar(x,y)
+plt.show()
+
+การวาดกราฟแบบกระจายกลุ่มข้อมูล
+กรำฟกระจำย (Scatter) เป็นกำรวำดกำรกระจำยตัวข้อมูลใน 2 ตัวแปร นิยมใช้เปรียบ เทียบ
+ตำแหน่ง ปริมำณ และกำรกระจำยตัวจองข้อมูล โดยอำศัยคำสั่ง scatter
+import matplotlib.pyplot as plt
+x = [-3, 0, 2, 4, 6]
+y = [5, 15, 15, 20, 10]
+plt.scatter(x,y)
+plt.show()
+
+การวาดพื้นผิว 3 มิติ
+import matplotlib.pyplot as plt
+import numpy as np
+ax = plt.gca(projection='3d’)
+X = np.array([[0, 1, 1], [2, 2, 3], [3, 4, 5]])
+Y = np.array([[-1, 0, 0], [0, 1, 1], [2, 2, 4]])
+Z = np.array([[5, 6, 5], [6, 9, 6], [5, 6, 5]])
+ax.plot_surface(X, Y, Z)
+plt.show()
+
+การวาดพื้นผิว 3 มิติ
+import matplotlib.pyplot as plt
+import numpy as np
+
+ax = plt.gca(projection='3d’)
+X, Y = np.meshgrid(np.arange(1, 4, 1)
+, np.arange(1, 4, 1))
+Z = np.array([[5, 6, 5], [6, 9, 6], [5, 6, 5]])
+ax.plot_surface(X,Y,Z)
+plt.show()
+
+การสร้าง Figure
+import matplotlib.pyplot as plt
+import cv2
+
+img1 = cv2.imread('lenna.jpg',0)
+plt.figure()
+plt.imshow(img1)
+
+plt.figure()
+plt.imshow(img1)
+plt.show()
+
+# ใส่อ ันสุดท้ายพอ ถ้าใส่มากกว่า 1 จุดมันจะค่อย ๆ แสดง
+
+การสร้าง Subplot
+import matplotlib.pyplot as plt
+import cv2
+img1 = cv2.imread('lenna.jpg',0)
+plt.figure()
+plt.subplot(2,1,1)
+plt.imshow(img1)
+plt.subplot(2,1,2)
+plt.imshow(img1)
+plt.show()
+
+

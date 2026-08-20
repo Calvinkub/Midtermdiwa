@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!-- saved from url=(0070)https://jlearn.it.kmitl.ac.th/api/bucket/file/6a62b23b6b5bafb530c5d7a9 -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Padding Methods</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #555;
+        }
+        p {
+            margin-bottom: 10px;
+        }
+        .matrix {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Padding Methods</h1>
+
+    <h2>ข้อมูลอินพุต</h2>
+    <div class="matrix">
+        1 1 4 4<br>
+        1 1 1 4<br>
+        2 1 11 4<br>
+        2 2 5 5<br>
+        3 2 5 5<br>
+    </div>
+
+    <h1>เนื่องจากตัวกรองมีขนาด 3x3 ดังนั้น การ Padding จะเติมข้อมูลจำนวน 1 ชั้น</h1>
+
+    <h2>Zero-Padding</h2>
+    <p>เติมด้วยค่า 0 รอบ ๆ ข้อมูลเดิม (หนึ่งชั้น):</p>
+    <div class="matrix">
+        0 0 0 0 0 0<br>
+        0 1 1 4 4 0<br>
+        0 1 1 1 4 0<br>
+        0 2 1 11 4 0<br>
+        0 2 2 5 5 0<br>
+        0 3 2 5 5 0<br>
+        0 0 0 0 0 0<br>
+    </div>
+
+    <h2>Replicate-Padding</h2>
+    <p>เติมด้วยค่าของขอบเดิมซ้ำรอบ ๆ ข้อมูลเดิม (หนึ่งชั้น):</p>
+    <div class="matrix">
+        1 1 1 4 4 4<br>
+        1 1 1 4 4 4<br>
+        1 1 1 1 4 4<br>
+        2 2 1 11 4 4<br>
+        2 2 2 5 5 5<br>
+        3 3 2 5 5 5<br>
+        3 3 2 5 5 5<br>
+    </div>
+
+    <h2>Circular-Padding</h2>
+    <p>เติมด้วยค่าที่หมุนเวียนจากขอบตรงข้ามของข้อมูลเดิม (หนึ่งชั้น):</p>
+    <div class="matrix">
+        5 5 3 2 5 5<br>
+        4 4 1 1 4 4<br>
+        4 4 1 1 1 4<br>
+        4 4 2 1 11 4<br>
+        5 5 2 2 5 5<br>
+        5 5 3 2 5 5<br>
+        4 4 1 1 4 4<br>
+    </div>
+
+
+</body></html>

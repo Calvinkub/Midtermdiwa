@@ -1,0 +1,407 @@
+<meta charset="utf-8">
+<title>ข้อสอบจำลอง (Mock Exam) — Deep Learning for Image &amp; Video Understanding</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --ink:#1a1c20; --muted:#5b6270; --line:#e2e5ea;
+    --blue:#1f4fd0; --blue-soft:#eaf0ff; --red:#c0121a; --green:#1a8a45; --green-soft:#e7f6ec;
+    --amber:#8a6100; --amber-soft:#fff6d5; --chip:#eef1f6; --shadow:0 1px 3px rgba(20,25,40,.08);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f1115; --card:#181b21; --ink:#e7e9ee; --muted:#9aa2b1; --line:#2a2e37;
+      --blue:#6c9bff; --blue-soft:#1a2540; --red:#ff7a82; --green:#4bd07f; --green-soft:#122a1c;
+      --amber:#e8c65a; --amber-soft:#2c2712; --chip:#232732; --shadow:0 1px 3px rgba(0,0,0,.4);
+    }
+  }
+  *{ box-sizing:border-box; }
+  body,.wrap{ margin:0; }
+  .wrap{
+    background:var(--bg); color:var(--ink);
+    font-family:"Sarabun","Tahoma","Segoe UI",sans-serif;
+    line-height:1.55; padding:16px; max-width:920px; margin:0 auto;
+    -webkit-text-size-adjust:100%;
+  }
+  code,.f,.fb{ font-family:"Consolas","SFMono-Regular","Menlo",monospace; }
+  code,.f{ background:var(--chip); padding:0 4px; border-radius:3px; font-size:.92em; }
+  .fb{ display:block; background:var(--chip); padding:8px 10px; border-radius:6px; margin:6px 0;
+    white-space:pre; overflow-x:auto; font-size:13px; line-height:1.5; }
+  header.top{
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:16px 18px; box-shadow:var(--shadow); margin-bottom:14px;
+  }
+  header.top h1{ font-size:20px; margin:0 0 4px; color:var(--blue); }
+  header.top p{ margin:2px 0; font-size:13px; color:var(--muted); }
+  .format{ font-size:13px; margin-top:8px; padding:8px 10px; background:var(--amber-soft);
+    border-radius:8px; color:var(--ink); }
+  .toolbar{
+    position:sticky; top:0; z-index:5; display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:10px 12px; box-shadow:var(--shadow); margin-bottom:16px;
+  }
+  button{
+    font-family:inherit; font-size:13px; cursor:pointer; border-radius:8px;
+    border:1px solid var(--line); background:var(--chip); color:var(--ink);
+    padding:7px 12px; transition:background .15s,border-color .15s;
+  }
+  button:hover{ border-color:var(--blue); }
+  button.primary{ background:var(--blue); color:#fff; border-color:var(--blue); }
+  .score{ margin-left:auto; font-size:14px; font-weight:700; }
+  .score .n{ color:var(--blue); }
+  .weekhead{
+    margin:22px 0 10px; font-size:16px; color:var(--ink); font-weight:700;
+    border-left:4px solid var(--blue); padding:4px 10px; background:var(--blue-soft); border-radius:0 8px 8px 0;
+  }
+  .q{
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:14px 16px; margin-bottom:12px; box-shadow:var(--shadow);
+  }
+  .q .stem{ font-size:15px; margin:0 0 10px; }
+  .q .stem .num{ display:inline-block; min-width:1.8em; font-weight:700; color:var(--blue); }
+  .choices{ list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+  .choice{
+    display:flex; gap:8px; align-items:flex-start; padding:8px 10px; border-radius:8px;
+    border:1px solid var(--line); cursor:pointer; font-size:14px; background:transparent;
+    transition:background .12s,border-color .12s;
+  }
+  .choice:hover{ background:var(--chip); }
+  .choice .lbl{ font-weight:700; color:var(--muted); min-width:1.4em; }
+  .choice.sel{ border-color:var(--blue); background:var(--blue-soft); }
+  .choice.correct{ border-color:var(--green); background:var(--green-soft); }
+  .choice.wrong{ border-color:var(--red); background:rgba(192,18,26,.08); }
+  .q .actions{ margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .answer{
+    display:none; margin-top:10px; padding:10px 12px; border-radius:8px;
+    background:var(--green-soft); border:1px solid var(--green); font-size:14px;
+  }
+  .answer.show{ display:block; }
+  .answer b{ color:var(--green); }
+  .written .q{ border-left:4px solid var(--amber); }
+  .written .answer{ background:var(--amber-soft); border-color:var(--amber); }
+  .written .answer b{ color:var(--amber); }
+  .sub{ margin:10px 0; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--chip); }
+  .sub h4{ margin:0 0 6px; font-size:14px; color:var(--blue); }
+  .note{ font-size:12px; color:var(--muted); margin-top:6px; }
+  footer{ font-size:12px; color:var(--muted); text-align:center; margin:24px 0 8px; }
+  hr{ border:none; border-top:1px solid var(--line); margin:26px 0; }
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <h1>📝 ข้อสอบจำลอง (Mock Exam)</h1>
+  <p><b>Deep Learning for Image &amp; Video Understanding</b> · KMITL · 06016389 / 06026163</p>
+  <p>ผศ.ดร.ธราวิเชษฐ์ ธิติจรูญโรจน์ · ผศ.ดร.พรสุรีย์ แจ่มศรี</p>
+  <div class="format">
+    <b>รูปแบบ:</b> ตอนที่ 1 ปรนัย (กา) 40 ข้อ = 20 คะแนน · ตอนที่ 2 อัตนัย (เขียน) 3 ข้อ = 10 คะแนน
+    (2 คำนวณ + 1 อธิบาย) · จด cheat sheet ได้ 1 หน้า A4 · <b>Backprop ไม่ออกสอบ</b><br>
+    <span class="note">วิธีใช้: เลือกคำตอบแต่ละข้อ แล้วกด "ตรวจคะแนน" หรือกด "เฉลย" ทีละข้อ · แนะนำให้ลองทำจับเวลาก่อนดูเฉลย</span>
+  </div>
+</header>
+
+<div class="toolbar">
+  <button class="primary" onclick="revealAll()">👁️ เฉลยทั้งหมด</button>
+  <button onclick="hideAll()">🙈 ซ่อนเฉลยทั้งหมด</button>
+  <button onclick="gradeAll()">✅ ตรวจคะแนน</button>
+  <button onclick="resetAll()">♻️ ล้างคำตอบ</button>
+  <span class="score">คะแนน: <span class="n" id="scoreVal">–</span> / 40</span>
+</div>
+
+<h2 style="font-size:18px;color:var(--blue);margin:6px 0 4px;">ตอนที่ 1 — ปรนัย (กา) 40 ข้อ</h2>
+<div id="mcq"></div>
+
+<hr>
+
+<h2 style="font-size:18px;color:var(--amber);margin:6px 0 4px;">ตอนที่ 2 — อัตนัย (เขียน) 3 ข้อ</h2>
+<p class="note">แสดงวิธีทำทุกขั้นตอน (ให้คะแนนบางส่วนตามขั้นตอน) · กด "เฉลยวิธีทำ" เพื่อดูแนวคำตอบเต็ม</p>
+<div id="written" class="written"></div>
+
+<footer>
+  ⚠️ ข้อสอบจำลองสร้างจากเนื้อหาสไลด์จริงเพื่อฝึกซ้อม — <b>ไม่ใช่ข้อสอบจริง</b> · โจทย์จริงอาจถามคนละมุมแต่หลักการเดียวกัน<br>
+  ตัวเลขทุกข้อคำนวณตรวจซ้ำแล้ว · Backprop chain rule ไม่ออกสอบ
+</footer>
+
+</div>
+
+<script>
+// ===== ตอนที่ 1: MCQ 40 ข้อ (choices เรียง ก ข ค ง = index 0-3; correct = index ของคำตอบถูก) =====
+const LETTERS = ["ก","ข","ค","ง"];
+const WEEKS = [
+  {name:"📘 W1 · Image Processing (ข้อ 1–6)", range:[1,6]},
+  {name:"📗 W2 · Python / OpenCV / numpy (ข้อ 7–13)", range:[7,13]},
+  {name:"📙 W3 · Padding &amp; Convolution (ข้อ 14–18)", range:[14,18]},
+  {name:"📕 W4 · Distance / Normalization / ANN / Activation (ข้อ 19–27)", range:[19,27]},
+  {name:"📓 W5 · Forward Prop / Loss / Optimization (ข้อ 28–34)", range:[28,34]},
+  {name:"📔 W6 · Convolutional Neural Network (ข้อ 35–40)", range:[35,40]},
+];
+
+const Q = [
+{n:1, correct:2, stem:"ข้อใดคือสูตรแปลงภาพสีเป็นภาพระดับสีเทา (Grayscale) ที่ถูกต้องตามมาตรฐาน ITU-R BT.601-7?",
+ c:["(R + G + B) / 3","0.114R + 0.587G + 0.299B","0.299R + 0.587G + 0.114B","0.587R + 0.299G + 0.114B"],
+ r:"Grayscale ใช้ค่าถ่วงน้ำหนัก 0.299R+0.587G+0.114B (G มากสุดเพราะตาไวต่อเขียว) ไม่ใช่ค่าเฉลี่ยธรรมดา"},
+{n:2, correct:1, stem:"วีดิโอสี 1 คลิป (หลายเฟรม) จัดเป็น Tensor อันดับ (Rank) เท่าใด?",
+ c:["Rank 2 (height, width)","Rank 4 (frame, height, width, channel)","Rank 3 (height, width, channel)","Rank 1 (vector)"],
+ r:"วีดิโอสีมี 4 มิติ (frame, h, w, channel) = Rank 4 · Rank 3 คือภาพสี หรือวีดิโอเทา"},
+{n:3, correct:3, stem:"ข้อใดถูกต้องเกี่ยวกับปริภูมิสี RGB?",
+ c:["RGB แยกความเข้มแสงออกจากสีได้ชัดเจนเหมือน YCbCr","RGB มี Hue ตัวเดียวที่ควบคุมสีแท้","RGB เหมาะกับงานแยกวัตถุด้วยสีมากกว่า HSV","RGB ไม่แยกแสงกับสี ทั้ง 3 channel ปนกัน ต่างจาก YCbCr / HSV ที่แยกชัดเจน"],
+ r:"RGB ปนแสงกับสีในทั้ง 3 channel ไม่แยกจากกัน — เป็นจุดต่างหลักจาก YCbCr/HSV"},
+{n:4, correct:0, stem:"ข้อใดจับคู่ประเภทของ Thresholding ได้ถูกต้อง?",
+ c:["Otsu = Global (1 ภาพ 1 ค่า T); Niblack / Sauvola = Local","Otsu = Local; Niblack = Global","Otsu และ Sauvola เป็น Global ทั้งคู่","ทุกวิธีให้ค่า T เพียง 1 ค่าต่อภาพ"],
+ r:"Otsu = Global Thresholding (1 ภาพได้ 1 ค่า T) · Niblack/Sauvola/Bernsen = Local (หลายค่า T)"},
+{n:5, correct:1, stem:"ข้อใดถูกต้องเกี่ยวกับพื้นที่จัดเก็บของภาพ Binary กับ Grayscale?",
+ c:["Binary ใช้ 8 บิต, Grayscale ใช้ 1 บิต","Binary ใช้ 1 บิต, Grayscale ใช้ 8 บิต","Binary และ Grayscale ใช้ 8 บิตเท่ากัน","Binary ใช้ 2 บิต, Grayscale ใช้ 16 บิต"],
+ r:"ภาพขาวดำ (Binary) 2 ระดับใช้ 1 บิต · ภาพเทา (Grayscale) ใช้ 8 บิต"},
+{n:6, correct:2, stem:"ในปริภูมิสี HSV ค่า Hue = 120° หมายถึงสีใด?",
+ c:["สีแดง","สีน้ำเงิน","สีเขียว","สีเหลือง"],
+ r:"วงล้อสี HSV: 0° = แดง, 120° = เขียว, 240° = น้ำเงิน"},
+
+{n:7, correct:2, stem:"หลังใช้ cv2.imread อ่านภาพสี แล้วนำไปแสดงด้วย plt.imshow ทันที ทำไมสีจึงเพี้ยน และต้องแก้อย่างไร?",
+ c:["imread อ่านเป็น RGB อยู่แล้ว ไม่ต้องแก้","ต้องหารด้วย 255 ก่อนแสดง","imread อ่านเป็น BGR ต้อง cvtColor(..., COLOR_BGR2RGB) ก่อน","ต้องใช้ .copy() ก่อนแสดง"],
+ r:"cv2.imread โหมดสีเก็บเป็น BGR แต่ plt.imshow แสดงแบบ RGB → ต้อง cvtColor(...,COLOR_BGR2RGB) ก่อน"},
+{n:8, correct:1, stem:"img เป็นภาพระดับสีเทา เมื่อเรียก img.shape[2] จะเกิดอะไรขึ้น?",
+ c:["คืนค่า 1","เกิด Error เพราะภาพเทามีแค่ (h, w) ไม่มี index 2","คืนค่า 3","คืนค่าจำนวนพิกเซลทั้งหมด"],
+ r:"ภาพเทา .shape = (h, w) มีแค่ 2 มิติ → เรียก .shape[2] เกิด IndexError"},
+{n:9, correct:3, stem:"ใน numpy กำหนด y = x (x เป็น array) แล้วแก้ y[0] = 10 ผลเป็นอย่างไร?",
+ c:["x ไม่เปลี่ยน เพราะ y เป็นสำเนา","เกิด Error ทันที","y เปลี่ยนแต่ x คงเดิม เพราะ numpy คัดลอกอัตโนมัติ","x[0] เปลี่ยนตามด้วย เพราะ y = x คืออ้างอิง object เดียวกัน ต้องใช้ x.copy()"],
+ r:"y = x ใน numpy คือการอ้างอิง object เดียวกัน แก้ y กระทบ x · ต้อง y = x.copy() ถึงแยกกันจริง"},
+{n:10, correct:0, stem:"ภาพสีที่อ่านด้วย cv2.imread ค่า img[100, 100, 2] คือค่าของ channel ใด?",
+ c:["ค่าสีแดง (R) เพราะเก็บเป็น BGR index 2 = R","ค่าสีน้ำเงิน (B)","ค่าสีเขียว (G)","ค่าความสว่าง (Gray)"],
+ r:"OpenCV เก็บ BGR → index 0=B, 1=G, 2=R ดังนั้น img[100,100,2] = ค่า R"},
+{n:11, correct:2, stem:"กำหนด x = [[0,7,5,9],[2,1,9,8],[8,2,3,4],[1,2,0,3],[4,6,7,9]] แล้ว x[1:2, 0:4] ให้ผลลัพธ์ใด?",
+ c:["[2, 1, 9, 8] (1 มิติ)","[[0, 7, 5, 9]]","[[2, 1, 9, 8]]","[[2, 9]]"],
+ r:"1:2 = แถว index 1 แถวเดียว (ไม่รวม index 2), 0:4 = ทุกคอลัมน์ → [[2,1,9,8]] (ยังเป็น 2 มิติ)"},
+{n:12, correct:1, stem:"ภาพสีขนาด 256 × 256 × 3 มีค่า .size (จำนวนสมาชิกทั้งหมด) เท่าใด?",
+ c:["65,536","196,608","65,533","768"],
+ r:".size = h × w × channel = 256 × 256 × 3 = 196,608"},
+{n:13, correct:3, stem:"ข้อใดถูกต้องเกี่ยวกับตัวดำเนินการใน numpy?",
+ c:["** ใช้กับเมทริกซ์เท่านั้น","np.dot ใช้กับสเกลาร์เท่านั้น","np.transpose ใช้กับสเกลาร์","np.dot ใช้กับเมทริกซ์, ** ใช้กับสเกลาร์เท่านั้น"],
+ r:"np.dot (dot / matrix multiply) ใช้กับเมทริกซ์ · ** (ยกกำลัง) ใช้กับสเกลาร์"},
+
+{n:14, correct:2, stem:"Circular-Padding เติมขอบภาพด้วยวิธีใด?",
+ c:["เติมด้วยค่า 0 รอบขอบ","คัดลอกค่าขอบสุดท้ายซ้ำออกไป","วนค่าจากฝั่งตรงข้ามมาต่อ (wrap-around)","เติมด้วยค่าเฉลี่ยของทั้งภาพ"],
+ r:"Circular = เอาค่าฝั่งตรงข้ามมาเติม (wrap-around) · การคัดลอกค่าขอบคือ Replicate (สับสนกันบ่อย)"},
+{n:15, correct:1, stem:"ข้อใดถูกต้องเกี่ยวกับความต่างของ Convolution กับ Correlation?",
+ c:["Correlation ต้องพลิก kernel 180° ก่อน","Convolution ต้องพลิก kernel 180° ก่อน; Correlation ไม่พลิก","ทั้งสองแบบต้องพลิก kernel","ทั้งสองแบบไม่ต้องพลิก kernel"],
+ r:"Convolution ต้องพลิก (หมุน) kernel 180° ก่อน แล้วคำนวณเหมือน correlation · Correlation ไม่พลิก"},
+{n:16, correct:3, stem:"Convolution ให้ผลลัพธ์เท่ากับ Correlation เมื่อใด?",
+ c:["เมื่อ input เป็นภาพเทา","เมื่อใช้ zero-padding","เมื่อ kernel เป็น edge filter","เมื่อ kernel สมมาตร (เช่น average / Gaussian filter)"],
+ r:"ถ้า kernel สมมาตร การพลิก 180° ไม่ทำให้ค่าเปลี่ยน → Conv = Corr · ถ้า kernel ไม่สมมาตร (edge) จะได้เครื่องหมายกลับ"},
+{n:17, correct:0, stem:"ผลข้างเคียงของ Zero-Padding ที่มีต่อขอบภาพคือข้อใด?",
+ c:["ขอบภาพมืดลง (ลดความสว่าง) เพราะเติมด้วยค่า 0","ขอบภาพสว่างขึ้น","ขอบภาพคมชัดขึ้นเสมอ","ไม่มีผลต่อความสว่างของขอบภาพ"],
+ r:"Zero-padding เติม 0 รอบขอบ → ค่าเฉลี่ยบริเวณขอบต่ำลง ภาพขอบจึงมืดลง"},
+{n:18, correct:2, stem:"ตัวกรอง (filter) ขนาด 5 × 5 ต้องเติม padding กี่ชั้นต่อด้าน เพื่อให้ผลลัพธ์มีขนาดเท่าเดิม?",
+ c:["1 ชั้น","5 ชั้น","2 ชั้น","4 ชั้น"],
+ r:"pad = (k − 1) / 2 = (5 − 1) / 2 = 2 ชั้นต่อด้าน"},
+
+{n:19, correct:1, stem:"ข้อใดถูกต้องเกี่ยวกับ Cosine similarity?",
+ c:["ค่าน้อย = คล้ายกัน เหมือน Euclidean distance","ค่ามาก = คล้ายกัน (ตรงข้ามกับ distance)","ค่าอยู่ในช่วง 0 ถึง ∞","ไม่ทนต่อการเปลี่ยน scale ของข้อมูล"],
+ r:"Cosine ตีความกลับด้านกับ distance: ค่ามาก = คล้ายกัน · และทนต่อ scale เพราะเทียบทิศทางไม่ใช่ขนาด"},
+{n:20, correct:3, stem:"ข้อใดระบุช่วงค่าของการวัดความคล้ายได้ถูกต้อง?",
+ c:["Cosine 0 ถึง ∞, Euclidean −1 ถึง 1","ทุกวิธีอยู่ในช่วง 0 ถึง 1","Manhattan อยู่ในช่วง −1 ถึง 1","Cosine −1 ถึง 1; Euclidean / Manhattan 0 ถึง ∞"],
+ r:"Cosine similarity อยู่ในช่วง −1 ถึง 1 · Euclidean และ Manhattan distance อยู่ในช่วง 0 ถึง ∞"},
+{n:21, correct:0, stem:"ระยะทาง Minkowski ที่ q = 1 และ q = 2 ตรงกับระยะทางใด?",
+ c:["q = 1 → Manhattan, q = 2 → Euclidean","q = 1 → Euclidean, q = 2 → Manhattan","q = 1 → Cosine, q = 2 → Euclidean","q = 1 → Euclidean, q = 2 → Cosine"],
+ r:"Minkowski (Σ|xᵢ−yᵢ|^q)^(1/q): q=1 คือ Manhattan (1-norm), q=2 คือ Euclidean (2-norm)"},
+{n:22, correct:2, stem:"เหตุใดจึงต้อง Normalize ก่อนคำนวณระยะทาง เมื่อ feature มีหน่วย/ช่วงต่างกันมาก?",
+ c:["เพื่อให้คำนวณเร็วขึ้น","เพื่อเปลี่ยน distance ให้กลายเป็น similarity","เพราะ feature ที่ช่วงกว้าง (เช่น เงินเดือน) จะครอบงำค่า distance เสมอ","เพื่อทำให้ทุกค่ากลายเป็นค่าติดลบ"],
+ r:"feature ช่วงกว้าง (เงินเดือน 300–30000) จะครอบงำ distance ทำให้ feature อื่นแทบไม่มีผล → ต้อง normalize ก่อน"},
+{n:23, correct:1, stem:"L1 Normalization (สูตร xᵢ / Σxᵢ) มีคุณสมบัติใด?",
+ c:["ทำให้ mean = 0 และ std = 1","ผลรวมของ feature ทั้งหมดเท่ากับ 1","ให้ผลลัพธ์อยู่ในช่วง −1 ถึง 1","ต้องรู้ค่า min และ max ก่อนคำนวณ"],
+ r:"L1 Normalization หารด้วยผลรวม → ผลรวมของ feature ทั้งหมด = 1 (เทียบ 'สัดส่วน' แทน 'จำนวนดิบ')"},
+{n:24, correct:3, stem:"Z-Normalization (Standardization) ให้ผลลัพธ์มีคุณสมบัติใด?",
+ c:["ผลรวมของ feature = 1","ผลอยู่ในช่วง [0, 1] พอดี","ต้องใช้ค่า min / max ในการคำนวณ","mean = 0 และ std = 1"],
+ r:"Z-Normalization: (xᵢ − x̄)/σ ทำให้ข้อมูลมี mean = 0, std = 1"},
+{n:25, correct:0, stem:"ถ้าโครงข่ายประสาทเทียมไม่มี Activation Function เลย จะเกิดอะไรขึ้น?",
+ c:["ซ้อน hidden layer กี่ชั้นก็ยุบรวมเหลือสมการเชิงเส้นเดียว y = Wx + b","โมเดลจะเรียนรู้ non-linear ได้ดีขึ้น","gradient จะไม่มีทาง vanish","output จะอยู่ในช่วง 0 ถึง 1 เสมอ"],
+ r:"ไม่มี activation → W2(W1x+b1)+b2 ยังเป็นเชิงเส้น ยุบเหลือ y=Wx+b เดียว สร้าง boundary ซับซ้อนไม่ได้"},
+{n:26, correct:2, stem:"ข้อใดอธิบาย ReLU ได้ถูกต้องที่สุด?",
+ c:["เป็นฟังก์ชันเชิงเส้นอย่างสมบูรณ์","เป็นฟังก์ชันไม่เชิงเส้นเพราะกราฟโค้ง","เป็น piecewise linear แต่ non-linear โดยรวม (ReLU(−1+1)=0 ≠ ReLU(−1)+ReLU(1)=1)","รักษาสมบัติ f(x1+x2) = f(x1) + f(x2) เสมอ"],
+ r:"ReLU = max(0,x) เป็นเส้นตรง 2 ท่อน (piecewise linear) แต่ไม่ผ่านสมบัติ additivity จึง non-linear โดยรวม"},
+{n:27, correct:1, stem:"ข้อใดเลือก Activation Function ตามตำแหน่ง layer ได้ถูกต้อง?",
+ c:["Hidden layer ของ MLP ควรใช้ Softmax","Hidden ใช้ ReLU; Output multiclass ใช้ Softmax; ห้ามใช้ Identity / Softmax ใน hidden","Output multiclass ควรใช้ Sigmoid เสมอ","Input layer ต้องมี Activation เป็น ReLU"],
+ r:"Hidden layer MLP/CNN นิยม ReLU · Output multiclass ใช้ Softmax · Identity/Softmax ห้ามใช้ใน hidden"},
+
+{n:28, correct:2, stem:"ในการทำ Forward Propagation ข้อใดถูกต้อง?",
+ c:["นำ net_h (ก่อนผ่าน activation) ไปคำนวณ output layer ได้เลย","Output layer ไม่จำเป็นต้องมี activation","ต้องผ่าน activation ที่ hidden (ใช้ out_h) ก่อนคำนวณ output layer","Hidden layer ไม่ต้องบวก bias"],
+ r:"ต้องผ่าน activation ที่ hidden ก่อน แล้วใช้ out_h (ไม่ใช่ net_h) ไปคำนวณ output — เป็นจุดพลาดบ่อยที่สุด"},
+{n:29, correct:1, stem:"เมื่อได้ค่า output ของแต่ละคลาสจากโมเดลแล้ว จะทำนายคลาสอย่างไร?",
+ c:["เลือกคลาสที่ค่า output น้อยที่สุด","เลือกคลาสที่ค่า output มากกว่า (มากที่สุด)","เลือกคลาสแรกเสมอ","เฉลี่ยค่า output ของทุกคลาส"],
+ r:"ทำนาย = คลาสที่มีค่า output มากกว่า (เช่น o2 > o1 → ทำนายคลาส 2)"},
+{n:30, correct:3, stem:"ข้อใดถูกต้องเกี่ยวกับ Cross-Entropy?",
+ c:["ยิ่งมีค่ามากยิ่งดี","ใช้สูตร −Σ pᵢ log₂(pᵢ) เหมือน Entropy","q คือค่าทำนาย, p คือค่าจริง","สูตร −Σ qᵢ log₂(pᵢ) โดย q = actual, p = predict — ยิ่งน้อยยิ่งดี"],
+ r:"Cross-Entropy = −Σ qᵢ log₂(pᵢ) (q=ค่าจริง, p=ค่าทำนาย) ยิ่งน้อยยิ่งดี (ทำนายถูกมั่นใจ → ใกล้ 0)"},
+{n:31, correct:0, stem:"ข้อใดแยกความต่างระหว่าง Entropy กับ Cross-Entropy ได้ถูกต้อง?",
+ c:["Entropy ใช้ pᵢ(predict)·log(pᵢ); Cross-Entropy ใช้ qᵢ(actual)·log(pᵢ)","Entropy ใช้ qᵢ; Cross-Entropy ใช้ pᵢ","ทั้งสองใช้สูตรเดียวกันทุกประการ","Cross-Entropy ไม่มีเทอม log"],
+ r:"Entropy = −Σ pᵢ log₂ pᵢ (ใช้ predict คูณตัวเอง) · Cross-Entropy = −Σ qᵢ log₂ pᵢ (ใช้ actual คูณ log ของ predict)"},
+{n:32, correct:2, stem:"Stochastic Gradient Descent (SGD) อัปเดต weight เมื่อใด?",
+ c:["หลังจากประมวลผลข้อมูลทั้ง training set","ทุก N ภาพ (mini-batch)","ทุก 1 ภาพ (แกว่ง แต่เหมาะกับข้อมูลใหญ่)","เพียง 1 ครั้งต่อการฝึกทั้งหมด"],
+ r:"SGD อัปเดต weight ทุก 1 ภาพ (loss แกว่ง ไม่การันตีลดทุกครั้ง แต่เร็วกับข้อมูลใหญ่) · Batch = ทั้ง set"},
+{n:33, correct:1, stem:"ถ้าตั้งค่า Learning Rate สูงเกินไป จะเกิดผลอย่างไร?",
+ c:["ใช้เวลานานมากกว่าจะถึงจุดต่ำสุด","ข้าม (overshoot) จุดต่ำสุดไป อาจไม่ converge","gradient จะเป็น 0 เสมอ","โมเดลจะ converge เร็วและแม่นยำเสมอ"],
+ r:"α มากเกินไป → ก้าวยาวเกิน ข้าม (overshoot) จุดต่ำสุด · α น้อยเกินไป → ช้า"},
+{n:34, correct:3, stem:"ReLU ช่วยแก้ปัญหา gradient แบบใด และเพราะเหตุใด?",
+ c:["Exploding gradient เพราะจำกัดค่าบน","ทั้ง vanishing และ exploding เท่ากัน","ไม่ช่วยแก้ปัญหา gradient ใด ๆ","Vanishing gradient เพราะอนุพันธ์ฝั่งบวก = 1 คงที่ ไม่หายไป"],
+ r:"ReLU แก้ Vanishing gradient เพราะอนุพันธ์ฝั่งบวกคงที่ = 1 (ต่างจาก sigmoid/tanh ที่อนุพันธ์เล็กลงเรื่อย ๆ)"},
+
+{n:35, correct:1, stem:"หลักการสำคัญ 3 ข้อของ CNN คือข้อใด?",
+ c:["Dropout, Batch Normalization, Data Augmentation","Local Receptive Fields, Shared Weights, Pooling","Sigmoid, Softmax, ReLU","Flatten, GAP, Fully Connected"],
+ r:"3 หลักการ CNN: Local Receptive Fields, Shared Weights, Pooling → พารามิเตอร์น้อย ทน translation ลด overfitting"},
+{n:36, correct:2, stem:"ข้อใดถูกต้องเกี่ยวกับ Convolution Layer แบบหลาย channel?",
+ c:["จำนวน kernel ต่อ 1 filter ไม่เกี่ยวกับ channel ของ input","ความลึกของ feature map ถัดไปเท่ากับจำนวน channel ของ input","จำนวน kernel ต่อ filter = จำนวน channel ของ input; depth ของ feature map ถัดไป = จำนวน filter","จำนวน filter = จำนวน channel ของ output แต่ไม่กระทบ depth"],
+ r:"1 filter ต้องมี kernel เท่ากับ channel ของ input · depth ของ feature map ชั้นถัดไป = จำนวน filter (ไม่ใช่จำนวน kernel)"},
+{n:37, correct:0, stem:"ข้อใดถูกต้องเกี่ยวกับ Max Pooling?",
+ c:["เก็บคุณลักษณะเด่นไว้ แต่สูญเสียตำแหน่งที่แน่นอน","เก็บค่าเฉลี่ยของหน้าต่าง (window)","รักษาตำแหน่งที่แน่นอนของ feature ได้ครบถ้วน","เพิ่มขนาด feature map ให้ใหญ่ขึ้น"],
+ r:"Max Pooling เลือกค่าสูงสุด → เก็บ feature เด่นไม่ว่าอยู่ตำแหน่งใด แต่สูญเสียตำแหน่งที่แน่นอน · ค่าเฉลี่ยคือ Average Pooling"},
+{n:38, correct:3, stem:"ข้อใดถูกต้องเกี่ยวกับ Dropout rate ที่แนะนำในแต่ละ layer?",
+ c:["FC layer ใช้ p = 0.8–0.9, Conv layer ใช้ p = 0.5","ทุก layer ใช้ p = 0.5 เท่ากัน","Conv layer ควร drop มากกว่า FC layer","FC layer p = 0.5, Conv / Input layer p = 0.8–0.9 (drop น้อยกว่า)"],
+ r:"FC มีพารามิเตอร์ >90% เสี่ยง overfit สุด → drop เยอะ (p=0.5) · Conv มี shared weights กันอยู่แล้ว → drop น้อย (p=0.8–0.9)"},
+{n:39, correct:2, stem:"ข้อใดถูกต้องเกี่ยวกับ Batch Normalization?",
+ c:["แก้เฉพาะปัญหา exploding gradient โดยตรงเท่านั้น","γ, β เป็นค่าคงที่ที่ตั้งไว้ล่วงหน้า ปรับไม่ได้","แก้ Internal Covariate Shift; γ, β เรียนรู้ได้เพื่อ undo normalize; ตอน inference ใช้ EMA","ตอน inference คำนวณ mean / variance ใหม่จากภาพเดียว"],
+ r:"BatchNorm แก้ Internal Covariate Shift · γ,β เรียนรู้ได้เพื่อ undo normalize รักษา representational power · inference ใช้ EMA ที่บันทึกไว้"},
+{n:40, correct:1, stem:"อาการของ Overfitting และวิธีแก้ที่ถูกต้องคือข้อใด?",
+ c:["train acc ต่ำ / val acc สูง; แก้ด้วยการเพิ่มความซับซ้อนของโมเดล","train acc สูง / val (test) acc ต่ำ (ช่องว่างกว้าง); แก้ด้วย Dropout / BatchNorm / Data Augmentation","train และ val acc ต่ำทั้งคู่; แก้ด้วย Dropout","train acc สูง / val acc สูง; ไม่ต้องแก้ไข"],
+ r:"Overfitting: train acc สูงมาก แต่ val/test acc ต่ำ (ช่องว่างกว้าง) · แก้ด้วย Dropout, BatchNorm, Data Augmentation"},
+];
+
+// ===== ตอนที่ 2: เขียน 3 ข้อ =====
+const WR = [
+{title:"✍️ ข้อ 1 (คำนวณ) — Padding &amp; Convolution [W3]",
+ body:`<p>จากข้อมูล (Input) ขนาด 4×4 และ filter ตรวจจับขอบ 3×3 จงหาผลลัพธ์ของ <b>convolution</b> โดยใช้ <b>Replicate-Padding</b> (เติม 1 ชั้น) แสดงวิธีทำ</p>
+ <div class="fb">Input =  1  1  4  4        Filter = 1  0 -1
+         1  1  1  4                 1  0 -1
+         2  1 11  4                 1  0 -1
+         2  2  5  5</div>`,
+ ans:`<p><b>ขั้น 1 — Replicate-Padding</b> (คัดลอกค่าขอบออกไป 1 ชั้น → padded 6×6):</p>
+ <div class="fb">1  1  1  4  4  4
+1  1  1  4  4  4
+1  1  1  4  4  4
+2  2  1 11  4  4
+2  2  2  5  5  5
+2  2  2  5  5  5</div>
+ <p><b>ขั้น 2 — พลิก kernel 180°</b> (เพราะโจทย์ถาม convolution): <span class="f">[[1,0,-1],[1,0,-1],[1,0,-1]]</span> → <span class="f">[[-1,0,1],[-1,0,1],[-1,0,1]]</span></p>
+ <p><b>ขั้น 3 — เลื่อน kernel ที่พลิกแล้วบน padded (valid) คูณ element-wise แล้วบวกรวมทีละตำแหน่ง</b></p>
+ <p><b>ตอบ — ผลลัพธ์ 4×4:</b></p>
+ <div class="fb"> 0   6   9   3
+-1   2   9   9
+-1   2   9  12
+-1   5   9   9</div>
+ <p class="note">💡 จุดรับคะแนน: ต้องเขียนขั้น "พลิก kernel 180°" ให้ชัด — ถ้าลืมพลิก (คำนวณ correlation เฉย ๆ) จะได้เครื่องหมายตรงข้ามทั้งกระดาน เสียคะแนนทั้งข้อ</p>`},
+
+{title:"✍️ ข้อ 2 (คำนวณ) — Forward Propagation [W5]",
+ body:`<p>โครงข่าย 2-2-2 (i1, i2 → h1, h2 → o1, o2) มีค่าถ่วงน้ำหนักดังนี้ จงหา output และทำนายคลาส (แสดงวิธีทำ)</p>
+ <div class="fb">w1=0.15 w2=0.20 w3=0.25 w4=0.30 b1=0.35
+w5=0.40 w6=0.45 w7=0.50 w8=0.55 b2=0.60
+input = (i1, i2) = (0.05, 0.10)
+Activation:  Hidden = ReLU,  Output = Sigmoid</div>`,
+ ans:`<p><b>ขั้น 1 — Net input ของ Hidden Layer:</b></p>
+ <div class="fb">net_h1 = (0.05)(0.15)+(0.10)(0.20)+0.35 = 0.3775
+net_h2 = (0.05)(0.25)+(0.10)(0.30)+0.35 = 0.3925</div>
+ <p><b>ขั้น 2 — ReLU ที่ Hidden</b> <span class="f">max(0, x)</span>:</p>
+ <div class="fb">out_h1 = max(0, 0.3775) = 0.3775
+out_h2 = max(0, 0.3925) = 0.3925</div>
+ <p><b>ขั้น 3 — Net input ของ Output Layer</b> (ใช้ out_h):</p>
+ <div class="fb">net_o1 = (0.3775)(0.40)+(0.3925)(0.45)+0.60 = 0.9276
+net_o2 = (0.3775)(0.50)+(0.3925)(0.55)+0.60 = 1.0046</div>
+ <p><b>ขั้น 4 — Sigmoid ที่ Output</b> <span class="f">σ(x)=1/(1+e⁻ˣ)</span>:</p>
+ <div class="fb">out_o1 = 1/(1+e⁻⁰·⁹²⁷⁶) = 0.7166
+out_o2 = 1/(1+e⁻¹·⁰⁰⁴⁶) = 0.7320</div>
+ <p><b>ตอบ:</b> output = (0.7166, 0.7320) → <b>ทำนายเป็นคลาสที่ 2</b> (เพราะ o2 &gt; o1)</p>
+ <p class="note">💡 จุดรับคะแนน: (1) ผ่าน ReLU ที่ hidden ก่อน (2) ใช้ out_h ไม่ใช่ net_h ต่อ output (3) ผ่าน Sigmoid ที่ output (4) เลือกคลาสที่ค่ามากกว่า</p>`},
+
+{title:"✍️ ข้อ 3 (อธิบายเหตุผล) — เลือกทำ 1 ใน 3 หัวข้อ",
+ body:`<p>จงเลือกอธิบาย <b>1 หัวข้อ</b> จาก 3 หัวข้อต่อไปนี้ (มีโอกาสออกสูง):</p>
+ <div class="sub"><h4>3A. ทำไม ReLU เป็นฟังก์ชันไม่เชิงเส้น ทั้งที่กราฟดูเป็นเส้นตรง 2 ท่อน?</h4></div>
+ <div class="sub"><h4>3B. ทำไม CNN ใช้พารามิเตอร์น้อยกว่า Fully Connected network และช่วยลด Overfitting?</h4></div>
+ <div class="sub"><h4>3C. Dropout ช่วยลด Overfitting อย่างไร และทำไม dropout rate ของ FC layer ต่างจาก Conv layer?</h4></div>`,
+ ans:`<div class="sub"><h4>3A — ReLU non-linear</h4>
+ <p>ReLU = <span class="f">max(0, x)</span> ดูเหมือนเส้นตรง 2 ท่อน แต่<b>ไม่ผ่านสมบัติ additivity</b> ของฟังก์ชันเชิงเส้น <span class="f">f(x1+x2)=f(x1)+f(x2)</span>: ทดสอบ x1=−1, x2=1 → ReLU(−1+1)=ReLU(0)=0 แต่ ReLU(−1)+ReLU(1)=0+1=1 → <b>0 ≠ 1</b> จึงเป็น "piecewise linear แต่ non-linear โดยรวม" · ความไม่เชิงเส้นนี้จำเป็น เพราะถ้าใช้แต่ฟังก์ชันเชิงเส้น ซ้อนกี่ชั้นก็ยุบเหลือ y=Wx+b เดียว สร้าง decision boundary ซับซ้อนไม่ได้ · กลไก: neuron ON เมื่อ Wx+b&gt;0 และ OFF เมื่อ ≤0 → เครือข่ายใช้สมการเชิงเส้นคนละชุดกับข้อมูลแต่ละบริเวณโดยอัตโนมัติ</p></div>
+ <div class="sub"><h4>3B — CNN พารามิเตอร์น้อยกว่า FC</h4>
+ <p>CNN อยู่บนหลักการ <b>Local Receptive Fields</b> (neuron เชื่อมเฉพาะบริเวณเล็ก ไม่ใช่ทุกพิกเซล) และ <b>Shared Weights</b> (ทุกตำแหน่งใน feature map ใช้ filter ตัวเดียวกัน) ต่างจาก Fully Connected ที่ทุก neuron เชื่อมกับ input ทุกตัว → ตัวแปรอิสระมหาศาล · ผล: CNN มีพารามิเตอร์น้อยกว่ามาก → (1) ต้องการข้อมูลฝึกน้อยกว่า (2) เร็วกว่า (3) <b>ลด Overfitting</b> เพราะโมเดลไม่ซับซ้อนจนจดจำ noise · Shared Weights ยังทำให้ทน Translation และ Pooling ช่วย down-sample เพิ่มความทนทาน</p></div>
+ <div class="sub"><h4>3C — Dropout</h4>
+ <p>Dropout สุ่มปิด (set to 0) neuron บางส่วนด้วยความน่าจะเป็น p ในแต่ละรอบฝึก → บังคับให้เครือข่ายไม่พึ่งพา neuron ตัวใดตัวหนึ่งมากเกินไป (<b>ลด Co-adaptation</b>) และเกิด <b>Ensemble Effect</b> (n neuron สร้าง sub-network ได้ถึง 2ⁿ รูปแบบ) เสมือน Model Averaging ตอน inference · <b>FC ใช้ p=0.5</b> (drop เยอะ) เพราะมีพารามิเตอร์ &gt;90% เสี่ยง overfit สูงสุด · <b>Conv/Input ใช้ p=0.8–0.9</b> (drop น้อย 10–20%) เพราะ Conv มี Shared Weights ป้องกัน overfit ในตัวอยู่แล้ว และ feature ที่ติดกัน correlate กัน การ drop มากเกินไปจะทำลายโครงสร้างเชิงมิติของภาพ</p></div>`},
+];
+
+// ===== render =====
+function h(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild; }
+
+const mcqRoot = document.getElementById('mcq');
+let qi = 0;
+WEEKS.forEach(w=>{
+  mcqRoot.appendChild(h(`<div class="weekhead">${w.name}</div>`));
+  for(let n=w.range[0]; n<=w.range[1]; n++){
+    const q = Q[n-1];
+    const card = document.createElement('div');
+    card.className='q'; card.id='q'+q.n;
+    const choicesHtml = q.c.map((txt,i)=>
+      `<li class="choice" data-i="${i}" onclick="pick(${q.n},${i})"><span class="lbl">${LETTERS[i]}.</span><span>${txt}</span></li>`).join('');
+    card.innerHTML =
+      `<p class="stem"><span class="num">${q.n}.</span> ${q.stem}</p>
+       <ul class="choices">${choicesHtml}</ul>
+       <div class="actions"><button onclick="reveal(${q.n})">💡 เฉลย</button></div>
+       <div class="answer" id="a${q.n}"><b>เฉลย: ${LETTERS[q.correct]}</b> — ${q.r}</div>`;
+    mcqRoot.appendChild(card);
+  }
+});
+
+const wrRoot = document.getElementById('written');
+WR.forEach((w,idx)=>{
+  const card=document.createElement('div');
+  card.className='q';
+  card.innerHTML =
+    `<p class="stem" style="font-weight:700;color:var(--amber);">${w.title}</p>
+     ${w.body}
+     <div class="actions"><button onclick="toggleW(${idx})">💡 เฉลยวิธีทำ</button></div>
+     <div class="answer" id="w${idx}">${w.ans}</div>`;
+  wrRoot.appendChild(card);
+});
+
+// ===== interaction =====
+const picked = {}; // qn -> index
+function pick(n,i){
+  picked[n]=i;
+  const card=document.getElementById('q'+n);
+  card.querySelectorAll('.choice').forEach(el=>{
+    el.classList.toggle('sel', +el.dataset.i===i);
+  });
+}
+function reveal(n){
+  const q=Q[n-1];
+  document.getElementById('a'+n).classList.add('show');
+  const card=document.getElementById('q'+n);
+  card.querySelectorAll('.choice').forEach(el=>{
+    const i=+el.dataset.i;
+    el.classList.remove('sel');
+    if(i===q.correct) el.classList.add('correct');
+    else if(picked[n]===i) el.classList.add('wrong');
+  });
+}
+function revealAll(){
+  for(let n=1;n<=40;n++) reveal(n);
+  WR.forEach((_,i)=>document.getElementById('w'+i).classList.add('show'));
+}
+function hideAll(){
+  for(let n=1;n<=40;n++){
+    document.getElementById('a'+n).classList.remove('show');
+    const card=document.getElementById('q'+n);
+    card.querySelectorAll('.choice').forEach(el=>{
+      el.classList.remove('correct','wrong');
+      if(picked[n]===+el.dataset.i) el.classList.add('sel');
+    });
+  }
+  WR.forEach((_,i)=>document.getElementById('w'+i).classList.remove('show'));
+}
+function toggleW(i){ document.getElementById('w'+i).classList.toggle('show'); }
+function gradeAll(){
+  let score=0, answered=0;
+  for(let n=1;n<=40;n++){
+    reveal(n);
+    if(picked[n]!==undefined){ answered++; if(picked[n]===Q[n-1].correct) score++; }
+  }
+  document.getElementById('scoreVal').textContent = score + (answered<40 ? ` (ตอบ ${answered} ข้อ)` : '');
+}
+function resetAll(){
+  for(const k in picked) delete picked[k];
+  document.getElementById('scoreVal').textContent='–';
+  hideAll();
+  document.querySelectorAll('.choice').forEach(el=>el.classList.remove('sel','correct','wrong'));
+}
+</script>

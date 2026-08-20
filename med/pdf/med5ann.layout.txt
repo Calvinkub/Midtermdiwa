@@ -1,0 +1,1284 @@
+Click to edit Master title style
+
+• Edit Master text styles
+
+Chapter 05 Artificial Neural Networks
+           • Second level
+              • Third level
+                  • Fourth level
+                      • Fifth level
+
+
+           (ANN) – Part 1
+                         บรรยายโดย ผศ.ดร.ธราวิเชษฐ์ ธิติจรูญโรจน์
+                                    คณะเทคโนโลยีสารสนเทศ
+                        สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
+07/08/69                                                                 1
+    พื น
+       ้ ฐานการรู      จ
+                       ้  า
+                          ํ ภาพ
+Click to edit Master title style
+
+• Edit Master text styles
+           • Second level
+              • Third level        การสกัดคุณลักษณะ    การจัดแบ่งประเภท
+                  • Fourth level  Feature Extraction    Classification
+                      • Fifth level
+
+
+
+
+07/08/69                                                                  2
+    พื น
+       ้ ฐานการรู      จ
+                       ้  า
+                          ํ ภาพ
+Click to edit Master title style
+
+• Edit Master text styles
+           • Second level
+              • Third level        การสกัดคุณลักษณะ    การจัดแบ่งประเภท
+                  • Fourth level  Feature Extraction    Classification
+                      • Fifth level
+
+
+
+
+07/08/69                                                                  3
+    พื น
+       ้ ฐานการรู      จ
+                       ้  า
+                          ํ ภาพ
+Click to edit Master title style
+
+• Edit Master text styles
+                     การสกัดคุณลักษณะ                     การจัดแบ่งประเภท
+           • Second level
+              • Third level
+                                Feature Extraction         Classification
+                  • Fourth level
+                      • Fifth level
+                                                      4
+
+
+                                            Height        10       7
+                                  Width
+
+                                             Height       6       9
+07/08/69                          Width                                      4
+    พื น
+       ้ ฐานการรู      จ
+                       ้  า
+                          ํ ภาพ
+Click to edit Master title style
+
+• Edit Master text styles
+                     การสกัดคุณลักษณะ                          การจัดแบ่งประเภท
+           • Second level
+              • Third level
+                                Feature Extraction              Classification
+                  • Fourth level
+                      • Fifth level
+                                                     ความสูง
+                                                               ฟ
+                                                                             ณ
+
+
+07/08/69
+                                                                                  ความกว้าง   5
+    พื น
+       ้ ฐานการรู      จ
+                       ้  า
+                          ํ ภาพ
+Click to edit Master title style
+
+• Edit Master text styles
+                     การสกัดคุณลักษณะ                          การจัดแบ่งประเภท
+           • Second level
+              • Third level
+                                Feature Extraction              Classification
+                  • Fourth level
+                      • Fifth level
+                                                     ความสูง
+                                                               ฟ
+                                                                             ณ
+
+
+07/08/69
+                                                                                  ความกว้าง   6
+    พื น
+       ้ ฐานการรู      จ
+                       ้  า
+                          ํ
+Click to edit Master title style
+
+• Edit Master text styles
+           • Second level
+              • Third level
+                   • Fourth level
+                       • Fifth level
+
+
+
+
+07/08/69         Source: Created by the author using ChatGPT (OpenAI), 2026.   7
+            วิ ธก
+                ี ารแบ่     ง กลุ
+ Click to edit Master title style ม
+                                  ่ ข้ อ มู ล พื น
+                                                 ้ ฐาน
+• • Edit
+    การวัด ความคล้
+         Master text าstyles
+                       ยโดยอาศัยระยะทาง (Distance)
+            • Second level
+    •         Manhattan
+               • Third level distance  (also called 1-norm)
+    •              • Fourth level
+              Euclidean    distance
+                        • Fifth level
+                                      (also called 2-norm)
+• การวัดความคล้ายโดยอาศัยองศา (Degree)
+• โครงข่ายประสาทเทียม (Artificial neural networks: ANN)
+
+
+
+ 07/08/69                                                     88
+            วิ ธก
+                ี ารแบ่     ง กลุ
+ Click to edit Master title style ม
+                                  ่ ข้ อ มู ล พื น
+                                                 ้ ฐาน
+• • Edit
+    การวัด ความคล้
+         Master text าstyles
+                       ยโดยอาศัยระยะทาง (Distance)
+            • Second level
+    •         Manhattan
+               • Third level distance  (also called 1-norm)
+    •              • Fourth level
+              Euclidean    distance
+                        • Fifth level
+                                      (also called 2-norm)
+• การวัดความคล้ายโดยอาศัยองศา (Degree)
+• โครงข่ายประสาทเทียม (Artificial neural networks: ANN)
+
+
+
+ 07/08/69                                                     99
+      การวั  ด ความคล้   า ยโดยอาศั
+    Click to edit Master title style
+                                     ยระยะทาง (Distance)
+ระยะทาง    (Distance)     คื
+    • Edit Master text styles
+                              อ  ตั ว ชี ว
+                                         ้  ด
+                                            ั ความคล้     า ยหรื อเหมื อน (similarity) ระหว่ า งสองวั ตถุ ใ ด ๆ ซึ ง
+                                                                                                                   ่ จะใช้
+เพื่อกําหนดรู ปร่างและสมาชิ
+        • Second  level          กของแต่ละกลุ่ม                   โดยที่การวัดความคล้ายจากระยะทางมีหลายวิธีการ
+            • Third level
+ด้วยกัน แต่เนื้อหาในบทนี    ้
+                • Fourth level
+                              จ ะกล่  า    วถึ ง 2 วี ธ ก
+                                                        ี ารพื น
+                                                               ้ ฐาน
+• Euclidean distance (also called 2-norm distance)
+                     • Fifth level
+
+
+                                                              $
+
+                                               𝑑 𝑋, 𝑌 =      & 𝑥! − 𝑦!     %
+
+                                                             !"#
+
+
+
+
+•        Manhattan distance (also called City Block, Taxicab norm or 1-norm)
+                                                            $
+                                                𝑑 𝑋, 𝑌   = ∑!"# 𝑥! − 𝑦!
+    07/08/69                                                                                                        1010
+       การวัดความคล้ายโดยอาศัยระยะทาง (Distance)
+Click to edit Master title style
+
+• Edit Master text styles
+           • Second level
+              • Third level
+                  • Fourth level
+                      • Fifth level
+
+
+
+
+07/08/69                                           1111
+  การวั  ด ความคล้   า ยโดยอาศั
+Click to edit Master title style
+                                 ยระยะทาง (Distance)
+ตัวอย่าง จงคํานวณวัดความคล้ายจาก Manhattan distance และ Euclidean distance
+• Edit Master text styles
+           • Second level
+              • Third level                             ฝึกสอน ทดสอบ     Euclidean distance
+                  • Fourth level
+ข้อมูล        แอททริบิวตั•วที่ 1    แอททริบิวตัวที่ 2
+                           Fifth level
+                                                         #1     #2     𝟏 − 𝟒 𝟐 + 𝟑 − 𝟒 𝟐 = 𝟑. 𝟏𝟔
+
+  #1                 1                      3
+  #2                 4                      4
+                                                        ฝึกสอน ทดสอบ     Manhattan distance
+                                                         #1     #2     𝟏 − 𝟒 + 𝟑 − 𝟒 = 𝟒. 𝟎𝟎
+
+
+
+
+07/08/69                                                                                           1212
+    การวั  ด ความคล้   า ยโดยอาศั
+  Click to edit Master title style
+                                   ยระยะทาง (Distance)
+ Minkowski distance คือการคํานวณระยะทางระหว่าง 2 ชุดข้อมูลใด ๆ ในรูปแบบเวกเตอร์ ซึ่ง
+ถือ•ว่าEdit
+       เป็นรูMaster
+             ปแบบทั่วtext
+                       ไป (Generalization)
+                            styles         ของ Manhattan distance และ Euclidean distance
+           Second
+ดังสมการต่•อไปนี
+        •         ้ level
+              Third level
+              • Fourth level
+                                 𝒒
+                  • 𝒇Fifth
+                      𝑿, 𝒀,level
+                             𝒒 = ( 𝒙𝟏 − 𝒚𝟏 )𝒒 +( 𝒙𝟐 − 𝒚𝟐 )𝒒 + ⋯ + ( 𝒙𝒏 − 𝒚𝒏 )𝒒
+
+
+ซึ่งถ้ากําหนดให้ q = 1 ก็คือ Manhattan distance ดังสมการต่อไปนี้
+                        𝒇 𝑿, 𝒀, 𝟏 = 𝒙𝟏 − 𝒚𝟏 + 𝒙𝟐 − 𝒚𝟐 + ⋯ + 𝒙𝒏 − 𝒚𝒏
+
+
+ขณะที่ q = 2 ก็คือ Euclidean distance ดังสมการต่อไปนี้
+                                 𝟐
+                   𝒇 𝑿, 𝒀, 𝟐 =       ( 𝒙𝟏 − 𝒚𝟏 )𝟐 +( 𝒙𝟐 − 𝒚𝟐 )𝟐 + ⋯ + ( 𝒙𝒏 − 𝒚𝒏 )𝟐
+  07/08/69                                                                           1313
+      ตั วอย่ างโปรแกรมการหา     Manhattan
+  Click to edit Master title style
+                                           distance
+# calculating Manhattan distance between vectors
+  • Edit
+from     Master text styles import cityblock
+     scipy.spatial.distance
+             • Second level
+# define data
+         • Third level
+row1 = [10, 20,    15,level
+             • Fourth   10, 5]
+row2 = [12, 24, •18,      8, 7]
+                    Fifth level
+
+# calculate distance
+dist = cityblock(row1, row2)
+
+print('Distance : ',dist)
+
+
+
+
+  07/08/69                                            14
+      ตั วอย่ างโปรแกรมการหา     Euclidean
+  Click to edit Master title style
+                                           distance
+# calculating Euclidean distance between vectors
+  • Edit
+from     Master text styles import euclidean
+     scipy.spatial.distance
+             • Second level
+# define data
+         • Third level
+row1 = [10, 20,    15,level
+             • Fourth   10, 5]
+row2 = [12, 24, •18,      8, 7]
+                    Fifth level
+
+# calculate distance
+dist = euclidean(row1, row2)
+
+print('Distance : ',dist)
+
+
+
+
+  07/08/69                                            15
+      ตั วอย่ างโปรแกรมการหา     Minkowski
+  Click to edit Master title style
+                                           distance
+# calculating Minkowski distance between vectors
+  • Edit
+from     Master textimport
+     scipy.spatial   stylesminkowski_distance
+             • Second level
+# define data
+         • Third level
+row1 = [10, 20,    15,level
+             • Fourth   10, 5]
+row2 = [12, 24, •18,      8, 7]
+                    Fifth level
+
+# calculate distance (p=1)
+dist = minkowski_distance(row1, row2, 1)
+print('Distance : ',dist)
+
+# calculate distance (p=2)
+dist = minkowski_distance(row1, row2, 2)
+print('Distance : ',dist)
+
+
+
+  07/08/69                                            16
+                    การปรั   บ ช่ ว งให้
+      Click to edit Master title style
+                                         อยู ใ
+                                             ่ นมาตรฐาน
+กรณีศึกษาที่ 1: จากข้อมูลนาย ก ถึง ค ประกอบไปด้วย 3 แอททริบิว ได้แก่ อายุ, เงินเดือน และ ระดับ ให้นักศึกษา
+ดูว่า •นายEdit
+           ค มีความคล้
+               Masterายกั บนาย ก
+                       text      หรือ ข มากกว่ากัน
+                             styles
+                 • Second level                  อายุ (10 - 100)   เงินเดือน (300 – 30,000)   ระดับ (1 - 10)
+                    • Third level        นาย ก          20                   12000                  1
+                        • Fourth level นาย ข            30                   14500                  5
+                            • Fifth level
+                                         นาย ค          22                   13500                  2
+
+𝒅 นาย ก, นาย ค =      𝟐𝟎 − 𝟐𝟐   𝟐+   𝟏𝟐𝟎𝟎𝟎 − 𝟏𝟑𝟓𝟎𝟎   𝟐+   𝟏 −𝟐      𝟐   =    𝟐 𝟐 + 𝟏𝟓𝟎𝟎 𝟐 + 𝟏 𝟐 = 𝟒 + 𝟐𝟐𝟓𝟎𝟎𝟎𝟎 + 𝟏 ≈ 𝟏, 𝟓𝟎𝟎
+
+𝒅 นาย ข, นาย ค =      𝟑𝟎 − 𝟐𝟐   𝟐+   𝟏𝟒𝟓𝟎𝟎 − 𝟏𝟑𝟓𝟎𝟎   𝟐+   𝟓 −𝟐      𝟐   =    𝟖 𝟐 + 𝟏𝟎𝟎𝟎 𝟐 + 𝟑 𝟐 = 𝟔𝟒 + 𝟏𝟎𝟎𝟎𝟎𝟎𝟎 + 𝟗 ≈ 𝟏, 𝟎𝟎𝟎
+
+
+นักศึกษาจะพบว่าคุณลักษณะอายุและระดับมีช่วงของค่าที่แคบกว่าเงินเดือน ทําให้อายุกับระดับจะมีค่าใกล้กันเพียงใด
+แต่ถ้าเงินเดือนแตกต่างกันมาก ค่าความคล้ายก็จะแตกต่างกันอยู่ดี กล่าวคือเงินเดือนจะมีอิทธิพลมากกว่าเสมอใน
+กรณีนี้ ดังนั้น เพื่อที่จะหลีกเลี่ยงปัญหาดังกล่าว นักศึกษาควร Normalization ข้อมูลก่อนการประมวลผลสําหรับ
+ข้อมูลที่แต่ละคุณลักษณะมีช่วงที่ค่อนข้างแตกต่างกันมาก
+      07/08/69                                                                                                       17
+                    การปรั   บ ช่ ว งให้
+      Click to edit Master title style
+                                         อยู ใ
+                                             ่ นมาตรฐาน
+โดยทั่วไปแล้วการทํา Max-Min Normalization สามารถทําได้หลากหลายวิธี แต่หนึ่งในวิธีที่ได้รับความนิยมคือการ
+พิจ •
+   ารณาจากช่
+        Edit ว งของข้อมูล
+             Master   textโดยอาศั
+                            stylesยสมการ
+              • Second level                            "     𝒙𝒊 %𝒙𝒎𝒊𝒏
+                   • Third level                       𝒙𝒊 =
+                                                            𝒙     %𝒙
+                                                                   𝒎𝒂𝒙          𝒎𝒊𝒏
+                        • Fourth level
+               "            • Fifth level
+กําหนดให้ ค่า 𝒙𝒊 จะอยู่ในช่วง 0 ถึง 1 เสมอ จากนั้นลองประยุกต์สมการดังกล่าวลงในชุดข้อมูล
+                     อายุ (10 - 100)   เงินเดือน (300 – 30,000)    ระดับ (1 - 10)                อายุ              เงินเดือน            ระดับ
+      นาย ก                 20                   12000                   1                  𝟐𝟎 − 𝟏𝟎
+                                                                                           𝟏𝟎𝟎 − 𝟏𝟎
+                                                                                                    = 𝟎. 𝟏𝟏
+                                                                                                              𝟏𝟐𝟎𝟎𝟎 − 𝟑𝟎𝟎
+                                                                                                              𝟑𝟎𝟎𝟎𝟎 − 𝟑𝟎𝟎
+                                                                                                                          = 𝟎. 𝟑𝟗
+                                                                                                                                     𝟏−𝟏
+                                                                                                                                    𝟏𝟎 − 𝟏
+                                                                                                                                           = 𝟎. 𝟎𝟎
+
+      นาย ข                 30                   14500                   5                  𝟑𝟎 − 𝟏𝟎
+                                                                                                    = 𝟎. 𝟐𝟐
+                                                                                                              𝟏𝟒𝟓𝟎𝟎 − 𝟑𝟎𝟎
+                                                                                                                          = 𝟎. 𝟒𝟖
+                                                                                                                                     𝟓−𝟏
+                                                                                                                                           = 𝟎. 𝟒𝟒
+                                                                                           𝟏𝟎𝟎 − 𝟏𝟎           𝟑𝟎𝟎𝟎𝟎 − 𝟑𝟎𝟎           𝟏𝟎 − 𝟏
+      นาย ค                 22                   13500                   2                  𝟐𝟐 − 𝟏𝟎
+                                                                                                    = 𝟎. 𝟏𝟑
+                                                                                                              𝟏𝟑𝟓𝟎𝟎 − 𝟑𝟎𝟎
+                                                                                                                          = 𝟎. 𝟒𝟒
+                                                                                                                                     𝟐−𝟏
+                                                                                                                                           = 𝟎. 𝟏𝟏
+                                                                                           𝟏𝟎𝟎 − 𝟏𝟎           𝟑𝟎𝟎𝟎𝟎 − 𝟑𝟎𝟎           𝟏𝟎 − 𝟏
+
+
+𝒅 นาย ก, นาย ค =     𝟎. 𝟏𝟏 − 𝟎. 𝟏𝟑      𝟐+     𝟎. 𝟑𝟗 − 𝟎. 𝟒𝟒      𝟐+   𝟎. 𝟎𝟎 − 𝟎. 𝟏𝟏   𝟐   =    𝟎. 𝟎𝟐 𝟐 + 𝟎. 𝟎𝟓 𝟐 + 𝟎. 𝟏𝟏 𝟐 ≈ 𝟎. 𝟏𝟐𝟐
+
+𝒅 นาย ข, นาย ค =     𝟎. 𝟐𝟐 − 𝟎. 𝟏𝟑      𝟐+     𝟎. 𝟒𝟖 − 𝟎. 𝟒𝟒      𝟐+   𝟎. 𝟒𝟒 − 𝟎. 𝟏𝟏   𝟐   =    𝟎. 𝟎𝟗 𝟐 + 𝟎. 𝟎𝟒 𝟐 + 𝟎. 𝟑𝟑 𝟐 ≈ 𝟎. 𝟑𝟒𝟒
+
+นักศึกษาจะพบว่
+       07/08/69
+                าหลั ง การ Normalization แล้ ว ค่ า 𝒅 นาย ข, นาย ค จะมากกว่ า 𝒅 นาย ก, นาย ค                                                 18
+                   การปรั   บ ช่ ว งให้
+     Click to edit Master title style
+                                        อยู ใ
+                                            ่ นมาตรฐาน
+กรณีศึกษาที่ 2: จากข้อมูลทั้ง 3 ภาพให้นักศึกษาหาฮิสโตแกรมและวัดความคล้ายด้วย Euclidean distance เพื่อดูว่า
+ภาพ ก• มีค
+       Editวามคล้า ยคลึงกับ
+              Master       ภาพ ข
+                        text      หรือ ค มากกว่ากัน โดยกําหนดให้ข้อมูลอยู่ในช่วง 1 – 4 และจํานวนบินเท่ากับ 4
+                              styles
+                • Second level
+                   • Third level                                                       1   1   1   3   3   3
+                         • Fourth level                4   4   1   1                   1   1   1   3   3   3
+                             • Fifth level
+                     1           3                     4   4   1   1                   1   1   1   3   3   3
+                     1           4                     1   1   3   3                   1   1   1   4   4   4
+                         ภาพ ก
+                                                       1   1   3   3                   1   1   1   4   4   4
+  จํานวน                                      จํานวน                            จํานวน 1
+                                                           ภาพ ข                           1   1   4   4   4
+                                                                                               ภาพ ค
+
+
+
+     07/08/69                                                                                                       19
+                                     บินที่                            บินที่                              บินที่
+                 การปรั   บ ช่ ว งให้
+   Click to edit Master title style
+                                      อยู ใ
+                                          ่ นมาตรฐาน
+                                                                                                       1   1   1   3    3        3
+                                                                                                       1   1   1   3    3        3
+   • Edit Master text styles                                                                           1   1   1   3    3        3
+              • Second level
+                   • Third level                                                                       1   1   1   4    4        4
+                          • Fourth level                 4   4   1     1                               1   1   1   4    4        4
+                              • Fifth level
+                      1           3                      4   4   2     1                               1   1   1   4    4        4
+                                                                                                               ภาพ ค
+                      1           4                      2   2   3     3
+                          ภาพ ก
+                                                         1   1   3     3
+จํานวน                                          จํานวน                                        จํานวน
+                                                                                                                       feature = [18, 0, 9, 9]
+                                                             ภาพ ข
+                                                                     feature = [5, 3, 4, 4]
+              feature = [2, 0, 1, 1]
+
+
+
+   07/08/69                                                                                                                          20
+                                       บินที่                                  บินที่                                   บินที่
+                   การปรั   บ ช่ ว งให้
+     Click to edit Master title style
+                                        อยู ใ
+                                            ่ นมาตรฐาน
+กรณีศึกษาที่ 2: จากข้อมูลทั้ง 3 ภาพให้นักศึกษาหาฮิสโตแกรมและวัดความคล้ายด้วย Euclidean distance เพื่อดูว่า
+ภาพ ก• มีค
+       Editวามคล้า ยคลึงกับ
+              Master       ภาพ ข
+                        text      หรือ ค มากกว่ากัน โดยกําหนดให้ข้อมูลอยู่ในช่วง 1 – 4 และจํานวนบินเท่ากับ 4
+                              styles
+                • Second level
+                   • Third level
+                     ค่าฮิสโตแกรม
+                         • Fourth level          𝒅 ก, ข =   𝟐 −𝟓     𝟐+   𝟎 −𝟑   𝟐+   𝟏 −𝟒   𝟐+   𝟏 −𝟒   𝟐 = 𝟔. 𝟎𝟎
+
+   ภาพ ก              [2, 0, 1, •1]Fifth level
+   ภาพ ข              [5, 3, 4, 4]               𝒅 ก, ค =   𝟐 − 𝟏𝟖   𝟐+   𝟎 −𝟎   𝟐+   𝟏 −𝟗   𝟐+   𝟏 −𝟗    𝟐   ≈ 𝟏𝟗. 𝟔𝟎
+   ภาพ ค             [18, 0, 9, 9]
+
+จากกรณีข้างต้นกลายเป็นว่าเป็นการนับจํานวนพิกเซลที่แตกต่างในแต่ละบิน แน่นอนว่าภาพที่มีขนาดใหญ่กว่าย่อมมีค่า
+ผลต่างที่มากกว่า
+
+     07/08/69                                                                                                            21
+                  การปรั   บ ช่ ว งให้
+    Click to edit Master title style
+                                       อยู ใ
+                                           ่ นมาตรฐาน
+สําหรับกรณีนี้ นักศึกษาควร L1 Normalization แบบพิจารณาจํานวนประชากรข้อมูลก่อนการวัดความคล้าย โดย
+               "        𝒙𝒊
+อาศัย•สมการ
+       Edit 𝒙
+            Master
+               𝒊  =   text
+                       𝑵
+                             โดยค่
+                           styles  า ที ่
+                                        ไ ด้ จะอยู ใ
+                                                   ่ นช่ ว ง 0 ถึ ง 1
+                          ∑𝒊7𝟏 𝒙𝒊
+               • Second level
+                  • Third level
+                    ค่าฮิสโตแกรม                             ค่าฮิสโตแกรม                           ค่าฮิสโตแกรม
+                        • Fourth level
+   ภาพ ก             [2, 0, 1, •1]Fifth level                 [𝟐, 𝟎, 𝟏, 𝟏]                    [0.50, 0.00, 0.25, 0.25]
+                                                              𝟒 𝟒 𝟒 𝟒
+   ภาพ ข             [5, 3, 4, 4]                           [𝟓, 𝟑, 𝟒, 𝟒]                      [0.31, 0.18, 0.25, 0.25]
+                                                             𝟏𝟔 𝟏𝟔 𝟏𝟔 𝟏𝟔
+   ภาพ ค            [18, 0, 9, 9]                           [𝟏𝟖, 𝟎 , 𝟗 , 𝟗 ]                  [0.50, 0.00, 0.25, 0.25]
+                                                            𝟑𝟔 𝟑𝟔 𝟑𝟔 𝟑𝟔
+
+
+จากนั้น ให้นักศึกษาลองคํานวณความคล้ายของภาพ ก ต่อภาพ ข หรือ ค ใหม่อีกครั้ง
+    𝒅 ก, ข =        𝟎. 𝟓𝟎 − 𝟎. 𝟑𝟏    𝟐+     𝟎. 𝟎𝟎 − 𝟎. 𝟏𝟖    𝟐+    𝟎. 𝟐𝟓 − 𝟎. 𝟐𝟓   𝟐+   𝟎. 𝟐𝟓 − 𝟎. 𝟐𝟓   𝟐 ≈ 𝟎. 𝟐𝟔
+
+
+    𝒅 ก, ค =        𝟎. 𝟓𝟎 − 𝟎. 𝟓𝟎    𝟐+    𝟎. 𝟎𝟎 − 𝟎. 𝟎𝟎    𝟐+     𝟎. 𝟐𝟓 − 𝟎. 𝟐𝟓   𝟐+   𝟎. 𝟐𝟓 − 𝟎. 𝟐𝟓   𝟐 =𝟎
+
+
+
+    07/08/69                                                                                                             22
+                  การปรั   บ ช่ ว งให้
+    Click to edit Master title style
+                                       อยู ใ
+                                           ่ นมาตรฐาน
+Log normalization คือ การแปลงค่าข้อมูลด้วยฟังก์ชันลอการิทึม (logarithm) เพื่อลดความกระจายของข้อมูลที่มี
+ช่วงกว้• าEdit
+          งมากMaster
+               เพื่อทําให้text
+                           ข้อมูลstyles
+                                 กระจายตัวใกล้เคียงกับการแจกแจงแบบปกติ (normal distribution) และลดอิทธิพล
+           • Second
+ของ Outliers   ส่งผลทํlevel
+                       าให้ข้อมูล scale ใกล้เคียงกัน
+               • Third level
+                   • Fourth level
+                       • Fifth level
+
+
+
+
+• ทําให้ข้อมูลเหมาะกับโมเดลที่สมมติฐานเป็น linear และช่วยให้การแจกแจงของข้อมูลใกล้เคียง normal
+• ต้องใช้กับข้อมูลที่เป็นบวกเท่านั้น (X > 0) และหากมีค่า 0 หรือค่าติดลบ ควรใช้ log (X+1) หรือเพิ่มค่าคงที่ก่อน
+    07/08/69                                                                                          23
+                 การปรั   บ ช่ ว งให้
+   Click to edit Master title style
+                                      อยู ใ
+                                          ่ นมาตรฐาน
+สูตร
+   • Edit Master text styles               !
+              • Second level
+                                          𝑥 = 𝑎 % log " (𝑥)
+                 • Third level
+โดยทั่วไปจะกําหนดให้ a=1
+               • Fourth    และค่าฐาน b = 10 หรือ e (natural log)
+                        level
+                          • Fifth level
+                          !                            !
+                       𝑥 = log#$ (𝑥) หรือ 𝑥 = 𝑙𝑛(𝑥)
+
+ตัวอย่างเช่น
+                                     3.6 ≈ log#$ (4000)
+
+   07/08/69                                                        24
+                   การปรั   บ ช่ ว งให้
+     Click to edit Master title style
+                                        อยู ใ
+                                            ่ นมาตรฐาน
+Z-normalization คือ การแปลงค่าข้อมูลให้อยู่ในหน่วยของค่าเบี่ยงเบนมาตรฐาน (standard deviation) โดยทําให้
+(1) ค่า•เฉลี ย
+             ่   (mean) ของข้ อมู
+         Edit Master text styles  ล = 0 และ (2) ส่ ว นเบี ย
+                                                          ่ งเบนมาตรฐาน (standard deviation) = 1
+สูตร           • Second level
+              • Third level
+                                                !
+                                                   𝑥% − 𝑥̅
+                   • Fourth level              𝑥 =
+                       • Fifth level                  σ
+กําหนดให้ 𝑥' คือ ค่าของข้อมูลตัวที่ i และ 𝑥̅ คือ ค่าเฉลี่ยของชุดข้อมูล และ σ คือ ส่วนเบี่ยงเบนมาตรฐานของชุดข้อมูล
+                    ชื่อ                            คะแนนดิบ (X)                            Z-score
+                    A                                   70                                     -1
+                     B                                  80                                     0
+                    C                                   90                                     1
+      ว่า 𝑥̅ = 80 และ σ = 10
+สมมติ07/08/69                                                                                                       25
+              การปรั   บ ช่ ว งให้
+Click to edit Master title style
+                                   อยู ใ
+                                       ่ นมาตรฐาน
+• Edit  Master
+    คุณสมบั ติ textL1styles
+                      Normalization                         Max-Min Normalization              Z-Normalization              Log Normalization
+           • Second level                 [0,1]                                                 ค่ากระจายรอบ 0
+           ช่วงผลลั•พธ์Third level                                    [0,1]                                                  ขึ้นกับ log ฐานที่ใช้
+                                   (ผลรวมของฟีเจอร์ = 1)                                      (mean = 0, std = 1)
+                 • Fourth level
+  การกระจายหลังแปลง                -                              Linear scale               Standardized normal          ลด skew → กระจายดีขึ้น
+                     • Fifth level
+                                            สูง                       ตํ่า                                                        สูงมาก
+   ความทนต่อ Outlier                                                                               ปานกลาง
+                                 (norm ภายในแต่ละ sample)    (อ่อนไหวต่อ min/max)                                           (ลด outlier impact)
+ ใช้กับข้อมูลติดลบได้ไหม                     ได้                       ได้                            ได้                  ไม่ได้ (เว้นแต่ log(x+1))
+                                                                                                                            มี range ต่างกันมาก
+           เหมาะสมกับ                        -              ข้อมูลอยู่ใน scale ต่างกัน   ต้องการ normalize distribution
+                                                                                                                               หรือ skew มาก
+
+
+
+
+07/08/69                                                                                                                                               26
+Click to edit Master title style
+                        deuc= 0.5846                deuc= 1.1345                deuc= 2.6115
+• Edit Master text styles
+           • Second level
+              • Third level
+                  • Fourth level
+                      • Fifth level
+
+
+                                       deuc= 1.41                  deuc= 1.22
+
+
+
+
+07/08/69                                                                                       27
+    การวั  ด ความคล้   า ยโดยอาศั
+  Click to edit Master title style
+                                   ยระยะทาง (Distance)
+                                                    deuc= 1.41
+  • Edit Master text styles
+             • Second level
+                • Third level
+                    • Fourth level
+                        • Fifth level
+
+
+
+
+จากตัวอย่างนี้ นักศึกษาจะพบว่าทั้ง 2 ข้อมูล มีลักษณะที่คล้ายคลึงกันแต่อาจจะมีค่าที่อยู่คนละช่วงกัน
+ซึ่งปัญหานี้ค่อนข้างพบได้บ่อย ซึ่งในความจริงควรจะได้ค่าความคล้ายโดยอาศัยระยะทางเข้าใกล้ 0
+  07/08/69                                                                                    28
+            วิ ธก
+                ี ารแบ่     ง กลุ
+ Click to edit Master title style ม
+                                  ่ ข้ อ มู ล พื น
+                                                 ้ ฐาน
+• • Edit
+    การวัด ความคล้
+         Master text าstyles
+                       ยโดยอาศัยระยะทาง (Distance)
+            • Second level
+    •         Manhattan
+               • Third level distance  (also called 1-norm)
+    •              • Fourth level
+              Euclidean    distance
+                        • Fifth level
+                                      (also called 2-norm)
+• การวัดความคล้ายโดยอาศัยองศา (Degree)
+• โครงข่ายประสาทเทียม (Artificial neural networks: ANN)
+
+
+
+ 07/08/69                                                     2929
+การวั   ด ความคล้       า ยโดยอาศั
+Click to edit Master title style   ยองศา (Degree)
+• Edit Master text styles             cosine similarity คือ การวัดความคล้ายคลึงกันในรูปแบบของ
+           • Second level             องศาโดยอาศัยหลักการของ Cosine ซึ่งเป็นการวัดความคล้ายคลึงกัน
+              • Third level
+                  • Fourth level
+                                      ระหว่างสองเวกเตอร์ใด ๆ ที่ไม่ใช่ศูนย์สองตัวที่กําหนดไว้ การวัดความ
+                      • Fifth level   คล้ายคลึงกันของโคไซน์เป็นการวัดความแตกต่างเชิงมุมระหว่างเวกเตอร์
+                                      ดังสมการต่อไปนี้
+
+                                                                               $
+                                                          𝑋&𝑌                 ∑!"# 𝑥! 𝑦!
+                                           𝑑 𝑋, 𝑌 =            =
+                                                         𝑋 & 𝑌
+                                                                        ∑$!"# 𝑥! % ∑$!"# 𝑦! %
+
+
+
+
+07/08/69                                                                                         3030
+ การวั   ด ความคล้       า ยโดยอาศั
+ Click to edit Master title style   ยองศา (Degree)
+ตัว• อย่ าง จงหาค่ า ความคล้
+      Edit Master text styles
+                             า ยเชิ งมุ มโดยอาศั ย หลั ก การจาก Cosine similarity
+            • Second level
+                                   ข้อมูล        แอททริบิวตัวที่ 1    แอททริบิวตัวที่ 2
+               • Third level
+                   • Fourth level #1                   1                    3
+                        • Fifth level#2                4                    4
+
+
+
+
+                               ฝึกสอน ทดสอบ                    Cosine similarity
+                                                           𝟏×𝟒 + (𝟑×𝟒)
+                                  #1        #2                                     = 𝟎. 𝟖𝟗
+                                                     ( 𝟏𝟐 + 𝟑𝟐 )×( 𝟒𝟐 + 𝟒𝟐 )
+
+
+ 07/08/69                                                                                    3131
+ การวั   ด ความคล้       า ยโดยอาศั
+ Click to edit Master title style   ยองศา (Degree)
+ • Edit Master text styles
+            • Second level
+                                                                       Euclidean distance
+                 • Third level
+                     • Fourth level
+                         • Fifth level
+
+                                                          Manhattan
+                                                           distance
+                                                           Cosine similarity
+       วิธีการ                            ค่า                                                          ความหมาย
+Euclidean distance               ค่าอยู่ในช่วง 0 ถึง ∞     ค่าน้อยแสดงว่าข้อมูลมีความคล้ายคลึงกัน ขณะที่ ค่ามากแสดงว่าข้อมูลมีความแตกต่างกัน
+Manhattan distance               ค่าอยู่ในช่วง 0 ถึง ∞     ค่าน้อยแสดงว่าข้อมูลมีความคล้ายคลึงกัน ขณะที่ ค่ามากแสดงว่าข้อมูลมีความแตกต่างกัน
+ Cosine similarity               ค่าอยู่ในช่วง -1 ถึง 1    ค่ามากแสดงว่าข้อมูลมีความคล้ายคลึงกัน ขณะที่ ค่าน้อยแสดงว่าข้อมูลมีความแตกต่างกัน
+ 07/08/69                                                                                                                                      3232
+      ตั ว อย่ า งโปรแกรมการหา
+  Click to edit Master title style
+                                   Cosine distance
+# calculating Cosine distance between vectors
+  • Editscipy.spatial.distance
+import    Master text styles   as ssd
+             • Second level
+# define data
+         • Third level
+row1 = [10, 20,    15,level
+             • Fourth   10, 5]
+row2 = [12, 24, •18,      8, 7]
+                    Fifth level
+
+# calculate distance (p=1)
+                                                  𝑋A𝑌
+dist = 1 + ssd.cosine(row2, row2) # 𝑑 𝑋, 𝑌 = 1 −
+print('Distance : ',dist)                        𝑋 A 𝑌
+
+
+
+
+  07/08/69                                               33
+       การวั  ด ความคล้   า ยโดยอาศั
+     Click to edit Master title style
+                                      ยระยะทาง (Distance)
+ให้นักศึกษานํากรณีศึกษาที่ 1 และ 2 มาพิจารณาใหม่จะพบว่า ภาพ ก มีความคล้ายคลึงเชิงมุมกับภาพ ค มากกว่าภาพ ข โดย
+ที่ไม่ผ•่านกระบวนการ   Normalization
+          Edit Master text styles
+                                      แสดงว่    า  การวั ด ความคล้ า ยคลึ ง เชิ ง มุ ม  ค
+                                                                                       มี  วามทนทานต่     อ ช่ ว งของข้ อ มู ล และจํ า นวนของ
+ข้อมูล (ทนทานไม่ ได้ ห มายความว่
+            • Second level       าจะไม่ เกิ ด แต่ โอกาสเกิ  ดน้ อยมาก) เพราะเป็        น  การเปรี ยบเที ยบเชิ ง ทิ ศ ทางไม่ ใช้ ขนาด
+                 • Third level
+                      • Fourth level
+                          • Fifth level
+
+
+
+
+     07/08/69                 กรณีศึกษาที่ 1                                                         กรณีศึกษาที่ 2                  34
+      การวั  ด ความคล้   า ยโดยอาศั
+    Click to edit Master title style
+                                     ยระยะทาง (Distance)
+กรณีศึกษาที่ 3 ให้นักศึกษาพิจารณาดูว่าจุด (ก) ควรมีความคล้ายคลึงเชิงมุมและเชิงเส้นกับจุด (ข) หรือ (ค) มากกว่ากัน
+    • Edit Master text styles                             • Euclidean distance
+8              • Second level                                                         𝟐+                         𝟐
+                     • Third level
+                                                            𝒅 ก, ข =             −                   −
+7                                      (ข)
+                           • Fourth level
+6                              • Fifth level                𝒅 ก, ค =             −    𝟐+             −             𝟐
+
+5
+4                                                         • Cosine similarity
+3                (ก)                                                             ×    +(        ×        )
+                                                              𝒅 ก, ข =
+2                                (ค)                                     (       +   )×(         +           )
+1
+                                                                                 ×    +(        ×        )
+    1     2      3     4     5    6    7     8   9   10       𝒅 ก, ค =
+                                                                         (       +   )×(        +            )
+    07/08/69                                                                                                       35
+            วิ ธก
+                ี ารแบ่     ง กลุ
+ Click to edit Master title style ม
+                                  ่ ข้ อ มู ล พื น
+                                                 ้ ฐาน
+• • Edit
+    การวัด ความคล้
+         Master text าstyles
+                       ยโดยอาศัยระยะทาง (Distance)
+            • Second level
+    •         Manhattan
+               • Third level distance  (also called 1-norm)
+    •              • Fourth level
+              Euclidean    distance
+                        • Fifth level
+                                      (also called 2-norm)
+• การวัดความคล้ายโดยอาศัยองศา (Degree)
+• โครงข่ายประสาทเทียม (Artificial neural networks: ANN)
+
+
+
+ 07/08/69                                                     3636
+                  โครงข่   า ยประสาทเที
+Click to edit Master title style
+                                        ย ม
+• Edit Master text styles
+           • Second level
+              • Third level
+                  • Fourth level
+                      • Fifth level
+
+
+
+
+07/08/69             Source: Created by the author using ChatGPT (OpenAI), 2026.   37
+                       โครงข่   า ยประสาทเที
+     Click to edit Master title style
+                                             ย ม
+โครงข่ายประสาทเทียมประกอบด้วย 3 เลเยอร์หลัก ได้แก่ Input layer, Hidden layer และ Output layer
+     • Edit Master text styles
+            • Second level
+                   • Third level
+                          • Fourth level
+                              • Fifth level
+
+
+
+
+                               Source: Created by the author using ChatGPT (OpenAI), 2026.
+
+•   Input Layer คือ ใช้รับข้อมูล (feature) นําเข้าของโครงข่ายที่ได้รับการสกัดมาจากส่วนของ Feature Extraction ในขั้นตอนก่อนหน้า ณ เลเยอร์นี้จะไม่มีการคํานวณใด
+    ๆ เกิดขึ้น
+•   Hidden Layer คือ ชุดของ neurons กับค่าถ่วงนํ้าหนักที่ใช้เพื่อเรียนรู้ในแบบจําลอง สําหรับ Multilayer Perceptron อาจจะมี Hidden Layer ตั้งแต่ 1 เลเยอร์
+    หรือมากกว่า
+•   Output
+      07/08/69
+               Layer คื อ ชุ ดของ neurons ร่ วมกั บ Activation Function เพื อ
+                                                                            ่ ใช้ ค า
+                                                                                    ํ นวณค่ าความน่ าจะเป็ นของแต่ ล ะคลาส ซึ ง
+                                                                                                                              ่ จะมี จํ านวน neurons เท่ ากั บ จํ านวนคลาส
+                                                                                                                                                                      38
+                โครงข่     า ยประสาทเที
+ Click to edit Master title style
+                                        ย ม
+            w1       h1        w5
+                              จากตั   ว อย่ างแบบจํ าลองข้  างต้ นจะพบว่  า มี 3 Layer ได้ แ ก่  input, hidden   และ output layer
+i1 • Edit
+       w2
+          Master  text
+                  w6
+                       styles
+                       o1
+      • Second level          โดยที ่ input   layer ต้ อ งการ 2  ค่ า และทํ านายออกมาเพี ย  ง   2  คลาสเท่ านั น
+                                                                                                               ้
+                  • Third level
+                 w3     w7
+i2                        • Fourth level
+            w4                       o2level
+                             w8• Fifth
+                     h2
+            b1                 b2
+      b1                      b2
+
+
+
+
+ 07/08/69                                                                                                               39
+                    โครงข่     า ยประสาทเที
+     Click to edit Master title style
+                                            ย ม
+              h1             จากตั   ว อย่ างแบบจํ าลองข้  างต้ นจะพบว่  า มี 3 Layer ได้ แ ก่  input, hidden  และ output layer
+        w1        w5
+                             โดยที
+     • Edit Master text styles     ่ input   layer ต้ อ งการ 2  ค่ า และทํ านายออกมาเพี ย  ง   2 คลาสเท่ านั น
+                                                                                                             ้
+i1               w2                       o1
+                                   w6
+                • Second level                     เมื่อนักศึกษาพิจารณาการทํางานใน Hidden Node (h1) จะพบว่า (h1) จะนําค่าที่ได้จากการคูณ
+                      • Third level                กันระหว่าง input (i1 และ i2) กับ weight (wN) ของแต่ละอัน และนํามารวมกันพร้อมกับ Bias
+                     w3     w7
+i2                            • Fourth level
+                w4                       o2level
+                                 w8• Fifth                     i1 × w1
+                         h2
+                                                              i2 × w2                                         Y1 = (i1 × w1) + (i2 × w2) + b1
+                b1                 b2                                         (i1 × w1) + (i2 × w2) + b1
+          b1                      b2                              b1
+                                                                                      Summation
+
+
+
+                                                                                   Hidden Node #1
+                                                   นักศึกษาจะพบว่าผลลัพธ์ที่ได้จาก (i1 × w1) + (i2 × w2) + b1 สามารถเขียนให้อยู่ในรูปของ
+                                                   สมการเส้นตรงได้ 𝑦1 = ∑ 𝑥! 𝑤! + 𝑏 ซึ่งหมายความว่าโครงข่ายประสาทเทียมได้ออกแบบอยู่บน
+                                                   สมการเชิงเส้นตรง ทําให้ถ้าข้อมูลมีลักษณะไม่เชิงเส้นอาจส่งผลให้โครงข่ายประสาทเทียมทํางานได้
+     07/08/69                                      ไม่มีประสิทธิภาพเท่าที่ควร                                                          40
+Click to edit Master title style
+                                                                               +B
+                                      ใน Neural Network คําว่า Bias หมายถึง ค่าคงที่ (Constant) ที่ถูก
+                                      เพิ่มเข้าไปในสมการของ Neuron เพื่อช่วยปรับการเลื่อนของเส้นแบ่ง
+• Edit Master text styles             หรือระนาบ (Decision Boundary) หรือ ปรับตําแหน่งของ Activation
+           • Second level             Function ให้เหมาะสมกับข้อมูลมากขึ้น ในการจําแนกข้อมูลให้อยู่ใน
+              • Third level           ตําแหน่งที่เหมาะสมขึ้น ไม่ต้องผ่านจุดกําเนิดเสมอไป หากไม่มี bias เส้น
+                  • Fourth level
+                                      อาจไม่สามารถแยกข้อมูลออกจากกันได้ดี แม้ว่า slope จะถูกต้อง
+                      • Fifth level
+
+                                      ความสําคัญของ Bias ใน Layer
+                                      • ใน Hidden Layer นั้น Bias ช่วยให้แต่ละ neuron สามารถเปิด/ปิด
+                                         การทํางาน (activation) ได้แม้ x=0
+                                      • ใน Output Layer นั้น Bias ช่วยให้เส้นแบ่งข้อมูล หรือความน่าจะ
+                                         เป็นใน classification ปรับได้ดีขึ้น
+                                      • ถ้าไม่มี bias แล้ว activation บางชนิดอาจกลายเป็น 0 เสมอ →
+                                         ไม่สามารถเรียนรู้ได้
+07/08/69                                                                                           41
+               โครงข่     า ยประสาทเที
+Click to edit Master title style
+                                       ย ม
+• Edit Master text styles
+           • Second level
+              • Third level
+                  • Fourth level
+                      • Fifth level
+
+
+
+
+                                      อ้างอิงจาก https://playground.tensorflow.org/
+07/08/69                                                                              42
+               โครงข่     า ยประสาทเที
+Click to edit Master title style
+                                       ย ม
+• Edit Master text styles
+           • Second level
+              • Third level
+                  • Fourth level
+                      • Fifth level
+
+
+
+
+                                      อ้างอิงจาก https://playground.tensorflow.org/
+07/08/69                                                                              43
+                โครงข่     า ยประสาทเที
+ Click to edit Master title style
+                                        ย ม
+                     h1                        เพื่อที่จะแก้ไขปัญหาข้างต้น
+            w1                 w5
+i1 • Edit
+       w2
+          Master text
+                 w6
+                      styles
+                      o1   จะนําผลลัพธ์ (i1 × w1) + (i2 × w2) + b1 ผ่าน Activation Function เพื่อให้โครงข่าย
+            • Second level                     ประสาทเทียมรองรับการทํางานกับข้อมูลแบบไม่เชิงเส้นได้มีประสิทธิภาพมากขึ้น
+                  • Third level
+                 w3     w7
+i2                        • Fourth level
+            w4                       o2level
+                             w8• Fifth                   i1 × w1
+                     h2
+                                                        i2 × w2                                               𝑓((i1 × w1) + (i2 × w2) + b1)
+            b1                 b2                                   (i1 × w1) + (i2 × w2) + b1     𝑓 A
+                                                                             Summation           Activation
+      b1                      b2                           b1                                    Function
+
+
+                                                                              Hidden Node #1
+
+                                               Activation Function จะแปลงผลลัพธ์ (i1 × w1) + (i2 × w2) + b1 ก่อนออกจาก (h1) ให้มี
+                                               ลักษณะไม่เชิงเส้นมากยิ่งขึ้น โดยทั่วไปแล้ว Activation Function มีค่อนข้างมากแต่ที่ได้รับความ
+                                               นิยมในปัจจุบัน ได้แก่ Tanh และ Sigmoid
+ 07/08/69                                                                                                                                     44
+               โครงข่     า ยประสาทเที
+Click to edit Master title style
+                                       ย ม
+• Edit Master text styles
+           • Second level
+              • Third level
+                  • Fourth level
+                      • Fifth level
+
+
+
+
+                                      อ้างอิงจาก https://playground.tensorflow.org/
+07/08/69                                                                              45
+                                ทําไมต้องใช้งาน Activation Function
+     Click    to   edit    Master           title     style
+Activation Function มีหน้าที่เพิ่ม ความไม่เป็นเชิงเส้น (Nonlinearity) ให้กับโครงข่ายประสาท
+เทียม       ทําให้โมเดลสามารถเรียนรู้ความสัมพันธ์ที่ซับซ้อนและไม่เป็นเชิงเส้นของข้อมูลได้ หากไม่มี
+Activation
+      • Edit  Function
+                 Master    การคํtext
+                                 านวณในแต่  ละชั้นจะเป็นเพียงการแปลงเชิงเส้น และแม้จะเพิ่มจํานวน
+                                        styles
+ชั้นมากขึ้น •ผลลั พธ์ก็ยังเทีlevel
+               Second         ยบเท่ากับการแปลงเชิงเส้นเพียงชั้นเดียว ส่งผลให้โมเดลไม่สามารถเรียนรู้
+รูปแบบที่ซับซ้อนหรื• อสร้
+                     Thirdา level
+                           งขอบเขตการตัดสินใจแบบไม่เชิงเส้นได้ ดังนั้น Activation Function จึง
+ช่วยให้โครงข่ายประสาทเที • Fourth    level
+                              ยมสามารถแปลงข้  อมูลไปสู่ พื้นที่คุณลักษณะ (Feature Space) ที่
+                                • Fifth level
+เหมาะสม และเรียนรู้รูปแบบความสัมพันธ์ที่ซับซ้อนได้อย่างมีประสิทธิภาพ
+
+
+
+
+                                                                                                      Source: Created by the author using ChatGPT (OpenAI), 2026.
+
+
+
+         Source: Created by the author using ChatGPT (OpenAI), 2026.
+     07/08/69                                                                                                                                            46
+                       Activation
+      Click to edit Master title style
+                                       Function
+การใช้งาน Activation Function แบบไม่เชิงเส้น (Non-
+linear) มักจะพบเจอใน Hidden Layers และ Output
+           Edit Master
+Layer• ของโครงข่    ายประสาทเที  text
+                                   ยม เพืstyles
+                                           ่อให้โครงข่ายสามารถ
+             • Second
+เรียนรู้ลักษณะความไม่       level
+                        เชิงเส้ น (Non-linearity) ที่เป็น
+                   • Third level
+รูปแบบที่ซับซ้อน (Complex Patterns) ที่พบมากในข้อมูล
+                         • Fourth level
+ปัจจุบันนี้ ซึ่งโครงข่ายประสาทเที    ยมทีlevel
+                                 • Fifth  ่มี Hidden Layers
+มากแต่ไม่มีการใช้งาน Activation Function แบบไม่เชิงเส้น
+จะกลายเป็นว่าโครงข่ายมีการทํางานเหมือนกับแบบจําลอง
+การถดถอยเชิงเส้นขนาดยักษ์และไม่สามารถเรียนรู้รูปแบบ
+ข้อมูลที่มีความซับซ้อนได้มีประสิทธิภาพ
+ขณะที่ การเลือกใช้ Activation Function ใน Output
+Layer ขึ้นอยู่กับประเภทของปัญหาที่เราต้องการแก้ไข
+การเลือกใช้งาน Activation Function ขึ้นอยู่กับประเภท
+ของปัญหาที่เราต้องการแก้ไข                                       •   Johnson, N. & Vulimiri, P. & To, A. & Zhang, X. & Brice, C. & Kappes, Branden & Stebner, Aaron. (2020). Machine Learning for
+                                                                     Materials Developments in Metals Additive Manufacturing.
+      07/08/69                                                   •   https://towardsdatascience.com/how-to-choose-the-right-activation-function-for-neural-networks-3941ff0e6f9c 47
+                      Activation
+     Click to edit Master title style
+                                      Function
+Identity activation function
+                                                                                               Identity activation function หรือ Linear function เป็นฟังก์ชันเชิงเส้น (Linear) มี
+     • Edit Master text styles                                                                 ลักษณะกราฟรูปตัวเอส ที่ทําหน้าที่แปลงอินพุตให้เป็นค่าที่อยู่ในช่วงระหว่าง -∞ ถึง ∞
+              • Second level                                                                   ฟังก์ชันนี้นิยมนํามาใช้งานใน Output Layer ของแบบจําลองโมเดลโครงข่ายประสาทเทียม
+                        • Third level                                                          เท่านั้นสําหรับการแก้ปัญหาการถดถอย (Regression) เท่านั้น
+                                  • Fourth level
+                                      • Fifth level
+
+
+
+
+•   https://towardsdatascience.com/how-to-choose-the-right-activation-function-for-neural-networks-3941ff0e6f9c
+     07/08/69                                                                                                                                                            48
+                      Activation
+     Click to edit Master title style
+                                      Function
+Sigmoid activation function
+                                                                                             Sigmoid function หรือ Logistic function เป็นฟังก์ชันที่ไม่ใช่เชิงเส้น (Non-linear) มี
+     • Edit Master text styles                                                               ลักษณะกราฟรูปตัวเอส ที่ทําหน้าที่แปลงอินพุตให้เป็นค่าที่อยู่ในช่วงระหว่าง 0 ถึง 1 โดยที่
+              • Second level
+                                                                                             จะแปลงค่าให้ติดลบเมื่ออินพุตน้อยกว่า 0 ขณะที่          จะแปลงค่าให้จํานวนบวกเมื่ออินพุต
+                        • Third level
+                                  • Fourth level
+                                                                                             มากกว่ากว่า 0 ซึ่งจะคืนค่า 0.5 สําหรับอินพุต 0 ค่าผลลัพธ์ท่ี 0.5 จะสามารถเรียกว่าค่าเกณฑ์
+                                      • Fifth level                                          (Threshold) ซึ่งสามารถตัดสินใจว่าอินพุตที่กําหนดเป็นของคลาสใดจากสองประเภท
+                                                                                             Sigmoid function นิยมนํามาใช้งานเป็น Activation function สําหรับ Hidden Layer
+                                                                                             หรือ Output Layer ใน Multilayer Perceptron (MLP), CNN และ RNN โดยเฉพาะอย่าง
+                                                                                             ยิ่งในงานทางด้าน binary classifier หรือ multilabel classification ตัว Sigmoid
+                                                                                             function ยังคงได้รับความนิยมอย่างมาก
+                                                                                             Sigmoid function ไม่นิยมนํามาใช้ใน Hidden Layer เนื่องจาก Sigmoid function มักจะ
+                                                                                             พบกับปัญหา vanishing gradient problem หรือเรียกอีกอย่างว่า “Saturation of the
+                                                                                             gradients” ทําให้มีการลู่เข้าอย่างช้า ๆ ส่งผลทําให้กระบวนการปรับปรุงค่าถ่วงนํ้าหนักของ
+                                                                                             แบบจําลองทํางานได้ยากขึ้น อีกทั้ง ยังใช้เวลาและทรัพยากรในการคํานวณค่อนข้างมาก
+
+•   https://towardsdatascience.com/how-to-choose-the-right-activation-function-for-neural-networks-3941ff0e6f9c
+     07/08/69                                                                                                                                                                 49
+                 Activation
+Click to edit Master title style
+                                 Function
+• Edit Master text styles
+         • Second level
+                  • Third level
+                           • Fourth level
+                               • Fifth level
+
+
+
+
+   Source: Created by the author using ChatGPT (OpenAI), 2026.
+07/08/69                                                         https://towardsdatascience.com/how-to-choose-the-right-activation-function-for-neural-networks-3941ff0e6f9c
+                                                                                                                                                                          50
+                      Activation
+     Click to edit Master title style
+                                      Function
+Tangent hyperbolic (Tanh) activation function
+     • Edit Master text styles                                                                 Tanh function เป็นฟังก์ชันที่ไม่ใช่เชิงเส้น (Non-linear) มีลักษณะกราฟรูปตัวเอส ที่ทํา
+              • Second level                                                                   หน้าที่แปลงอินพุตให้เป็นค่าที่อยู่ในช่วงระหว่าง -1 ถึง 1 โดยที่ ค่าผลลัพธ์ท่ี 0 จะสามารถ
+                        • Third level                                                          เรียกว่าค่าเกณฑ์ (Threshold) ซึ่งสามารถตัดสินใจว่าอินพุตที่กําหนดเป็นของคลาสใดจาก
+                                  • Fourth level                                               สองประเภท หรือเรียกว่าค่ากึ่งกลางได้ ทําให้ Tanh function มีประสิทธิภาพสําหรับ
+                                      • Fifth level
+                                                                                               กระบวนการปรับปรุงค่าถ่วงนํ้าหนักของแบบจําลอง เช่นเดียวกับ Sigmoid function ซึ่ง
+                                                                                               Tanh function นิยมนํามาใช้งานเป็น Activation function สําหรับ Hidden Layer เท่านั้น
+                                                                                               ใน Multilayer Perceptron (MLP), CNN และ RNN ในปัจจุบันนี้ ReLU หรือ Leaky ReLU
+                                                                                               ได้รับความนิยมอย่างแพร่หลายและนิยมนํามาใช้งานแทนที่ Tanh function (แต่ยกเว้นงาน
+                                                                                               ทางด้าน RNN ที่ยังคงนิยมนํามาใช้งานเหมือนเดิม) เนื่องจาก Tanh function มักจะพบกับ
+                                                                                               ปัญหา vanishing gradient problem เช่นเดียวกับ Sigmoid function ทําให้มีการลู่เข้า
+                                                                                               อย่างช้า ๆ ของ Optimizer ส่งผลทําให้กระบวนการปรับปรุงค่าถ่วงนํ้าหนักของแบบจําลอง
+                                                                                               ทํางานได้ยากขึ้น อีกทั้ง ยังใช้เวลาและทรัพยากรในการคํานวณค่อนข้างมาก
+
+•   https://towardsdatascience.com/how-to-choose-the-right-activation-function-for-neural-networks-3941ff0e6f9c
+     07/08/69                                                                                                                                                                 51
+                      Activation
+     Click to edit Master title style
+                                      Function
+Rectified Linear Unit (ReLU) activation function
+                                                                                      ReLU function เป็นฟังก์ชันเชิงเส้นแบ่งส่วน (Piecewise linear function) ที่ประกอบจาก
+     • Edit Master text styles                                                        เชิงเส้นสองส่วน หรืออาจจะกล่าวว่าเป็นสมการไม่เชิงเส้นก็ได้ (Non-linear) ที่ทําหน้าที่แปลง
+              • Second level
+                                                                                      อินพุตให้เป็นค่าที่อยู่ในช่วงระหว่าง 0 ถึง ∞ ซึ่ง ReLU function เป็นทางเลือกใหม่ท่ีได้รับ
+                        • Third level
+                                  • Fourth level
+                                                                                      ความนิยมอย่างมากสําหรับการเรียนเรียนรู้เชิง (Deep Learning) แทนที่การใช้งาน Sigmoid
+                                      • Fifth level                                   function และ/หรือ Tanh function จากงานวิจัยพบว่า ReLU function ไม่ก่อให้เกิด
+                                                                                      ปัญหา vanishing gradient problem อีกทั้ง ยังใช้เวลาและทรัพยากรในการคํานวณน้อย
+                                                                                      กว่า Sigmoid function และ/หรือ Tanh function ถึง 6 เท่า เนื่องจากมีการกําหนด
+                                                                                      อนุพันธ์คงที่สําหรับส่วนประกอบเชิงเส้นหนึ่ง (ส่วนที่ติดลบให้มีค่าเป็นศูนย์) และอนุพันธ์ที่
+                                                                                      เป็นศูนย์สําหรับส่วนประกอบเชิงเส้น (ส่วนที่มาค่าเป็นบวก)
+                                                                                      ดังนั้น กระบวนการเรียนรู้จึงเร็วขึ้นมาก และ Optimizer สามารถปรับปรุงค่าถ่วงนํ้าหนักของ
+                                                                                      แบบจําลองทํางานได้เร็วขึ้น ReLU function นิยมนํามาใช้งานเป็น Activation function
+                                                                                      สําหรับ Hidden Layer เท่านั้น ใน Multilayer Perceptron (MLP) และ CNN ในปัจจุบันนี้
+                                                                                      แต่ไม่นิยมนํามาใช้ใน RNN อย่างไรก็ตาม ค่าของ ReLU function มีเพียงค่าบวกส่งผลทําให้
+•   https://towardsdatascience.com/how-to-choose-the-right-activation-function-for-   ค่ามีแนวโน้มจะสูงมากขึ้นไปเรื่อย ๆ สิ่งนี้นําไปสู่ปัญหาการใช้เวลาและทรัพยากรระหว่างการ
+    neural-networks-3941ff0e6f9c
+     07/08/69                                                                         ฝึกอบรมมากขึ้น                                                                   52
+        Click to edit Master title style
+
+        • Edit Master text styles
+                 • Second level
+                          • Third level
+ReLU6 activation• Fourth
+                  function
+                         level
+ReLU6 function เป็นฟังก์ชันที•่พัฒFifth
+                                   นาต่อlevel
+                                         ยอดมาจาก ReLU function เพียงแต่ค่าอินพุตที่มากกว่าหรือเท่ากับ 6 เป็นฟังก์ชันเชิงเส้นแบ่งส่วน (Piecewise
+linear function) ที่ประกอบจากเชิงเส้นสามส่วน
+Leaky ReLU activation function
+Leaky ReLU function เป็นฟังก์ชันที่พัฒนาต่อยอดมาจาก ReLU function ที่ทําหน้าที่แปลงอินพุตให้เป็นค่าที่อยู่ในช่วงระหว่าง αx ถึง x โดยที่ α เป็น
+ค่าคงที่ ๆ มีค่าน้อยมากซึ่งนิยมกําหนดไว้ที่ 0.01 เนื่องจากผลลัพธ์ของอินพุทที่น้อยกว่าไม่เท่ากับ 0 ทําให้หลีกเลี่ยงปัญหาที่พบใน ReLU ได้ นอกจากนี้
+กระบวนการเรียนรู้ด้วย Leaky ReLU function รวดเร็วขึ้นกว่า ReLU function
+Parametric ReLU (PReLU) activation function
+PReLU ReLU function เป็นฟังก์ชันที่พัฒนาต่อยอดมาจาก Leaky ReLU                                                               function เพียงแต่ α เป็นพารามิเตอร์ที่สามารถเรียนรู้และปรับเปลี่ยนได้
+(learnable parameter)
+•        07/08/69
+    https://towardsdatascience.com/how-to-choose-the-right-activation-function-for-neural-networks-3941ff0e6f9c และ https://miro.medium.com/max/1400/1*ypsvQH7kvtI2BhzR2eT_Sw.png       53
+                      Activation
+     Click to edit Master title style
+                                      Function
+Binary step activation function
+     • Edit Master text styles
+              • Second level                                                                  Binary step function หรือ Threshold function เป็นฟังก์ชันที่สามารถกําหนดค่า
+                        • Third level                                                        threshold (t) ได้ด้วยตนเองจากภาพตัวอย่างกําหนดให้เป็น 0 และทําหน้าที่แปลงอินพุตให้
+                                  • Fourth level                                             เป็นค่าที่อยู่เป็น 0 หรือ 1 โดยที่ ถ้าอินพุตมีค่ามากกว่า t แล้วจะได้ผลลัพธ์เท่ากับ 1 ขณะที่ ที่
+                                      • Fifth level
+                                                                                             ถ้าอินพุตมีค่าน้อยกว่าหรือเท่ากับ t แล้วจะได้ผลลัพธ์เท่ากับ 0 ซึ่ง Binary step function
+                                                                                             เป็นฟังก์ชันเชิงเส้นแบ่งส่วน (Piecewise linear function) ที่ประกอบจากเชิงเส้นสองส่วน
+                                                                                             หรืออาจจะกล่าวว่าเป็นสมการไม่เชิงเส้นก็ได้ (Non-linear)
+                                                                                             Binary step function ไม่นิยมนํามาใช้งานเป็น Activation function สําหรับ Multilayer
+                                                                                             Perceptron (MLP), CNN และ RNN แต่นิยมนํามาใช้งานเพื่ออธิบายแนวคิดเชิงทฤษฎีต่าง ๆ
+
+
+
+
+•   https://towardsdatascience.com/how-to-choose-the-right-activation-function-for-neural-networks-3941ff0e6f9c
+     07/08/69                                                                                                                                                                       54
+ HardClick
+      Swishto
+            (H-Swish) activation function
+               edit Master title style
+
+     • Edit Master text styles
+                • Second level
+                   • Third level
+                       • Fourth level
+                           • Fifth level
+
+
+
+
+Hard Swish (H-Swish) activation function เป็นสมการไม่เชิงเส้น (Non-linear) ที่มีลักษณะคล้าย ReLU function แต่มีลักษณะที่ smooth มากกว่า
+ReLU function เพื่อๆ ทําให้ Optimizerใช้เวลาระหว่างการฝึกอบรมน้อยลงและลดการใช้งานทรัพยากรในการคํานวณลงจาก Swish activation function
+ด้วยการใช้สมการ ReLU6 function มาประยุกต์ใช้งาน ซึ่งนิยมนํามาใช้งานใน Hidden Layer เพียงอย่างเดียว
+     07/08/69                                                                                                                  55
+                   Activation
+  Click to edit Master title style
+                                   Function
+Softmax function
+                                        Softmax คือ ฟังก์ชันที่ใช้เพื่อคํานวณหาคะแนนความน่าจะเป็นในแต่ละคลาส
+  • Edit Master text styles
+             • Second level
+                                        ของภาพทดสอบดังกล่าว ซึ่งนิยมนํามาใช้งานเป็นเลเยอร์สุดท้ายของโครงข่าย
+                • Third level           ประสาทแบบคอนโวลูชัน โดยอาศัยสมการดังต่อไปนี้
+                    • Fourth level
+                        • Fifth level
+
+
+
+
+                                        เนื่องจาก Softmax ค่อนข้างง่ายและสะดวกในมุมมองของมนุษย์สําหรับการ
+                                        ตีความและนําไปบ่งบอกว่าเป็นคลาสใด นอกจากนี้ ยังสามารถนําความน่าจะ
+                                        เป็นดังกล่าวมาจัดลําดับได้ (Ranking) เพราะบางภาพอาจจะตีความได้มากกว่า
+                                        1 คลาส (คล้าย ๆ soft clustering)
+
+  07/08/69                                                           อ้างอิง http://rinterested.github.io/statistics/softmax.html
+                                                                                                                         56
+                         Softmax
+     Click to edit Master title style
+                                      Output
+Softmax ถือว่าเป็นฟังก์ชันไม่เชิงเส้นในกลุ่มเดียวกับ Sigmoid Function แต่ได้รับการออกแบบมาเพื่อปัญหาการแบ่งแยกข้อมูลแบบหลายกลุ่ม
+(จํานวนคลาสมากกว่า 2: Multi-classification) ซึ่งผลลัพธ์อยู่ในช่วง 0 ถึง 1 ในรูปแบบความน่าจะเป็น อย่างไรก็ตาม ถ้าเป็นปัญหาการ
+     • Edit Master text styles
+แบ่งแยกข้อมูลแบบสองกลุ่ม (Binary Classification) แล้ว Sigmoid Function จะมีความเหมาะสมและเป็นธรรมชาติกับข้อมูลมากกว่า
+           • Second level
+นอกจากนี้ เวลาในการประมวลผลของ
+               • Third level
+                                       Softmax   จะแปรผั นตรงตามจํ านวนของคลาส
+                      • Fourth level         Scoring Function    Unnormalized Probabilities             Normalized Probabilities              Ranking
+                          • Fifth level
+                                     Dog           -3.44             exp(-3.44) = 0.0321              0.0321 ÷ 53.5659 = 0.0006                   4
+                                     Cat            1.16             exp(1.16) = 3.1899               3.1899 ÷ 53.5659 = 0.0596                   2
+                                    Boat           -0.81             exp(-0.81) = 0.4449              0.4449 ÷ 53.5659 = 0.0083                   3
+           ภาพทดสอบ               Airplane          3.91             exp(3.91) = 49.8990              49.8990 ÷ 53.5659 = 0.9315                  1
+
+
+                                             อินพุทของ Softmax   นําค่าอินพุทของ Softmax ไปผ่าน          นําค่าที่ผ่านฟังก์ชัน exp ไป      ผลการจัดลําดับ
+                                                                            ฟังก์ชัน exp                       Normalization
+
+                                             sum                            53.5659                                1.000
+
+     07/08/69                                                                                                                                           57
+                                                                                  อ้างอิง https://www.pyimagesearch.com/2016/09/12/softmax-classifiers-explained/
+        คํ า แนะนํ  า การเลื อ กใช้  งาน
+       Click to edit Master title style
+                                         Activation Function
+คําแนะนําจํานวน 9 ข้อสําหรับการเลือกใช้งาน Activation Function จาก Rukshan Pramoditha (ในปี ค.ศ. 2022) ได้แก่
+• ใน Input Layer จะไม่มีการใช้งาน Activation Function
+       • Edit Master text styles
+                • Second level
+• ใน Output Layer จะกําหนด Activation Function จากชนิดของปัญหาที่ต้องการจัดการ อาทิเช่น
+              • Third level
+    • Identity activation function
+                    • Fourth level
+                                   เหมาะสมกั บ งาน Regression problem โดยกํ าหนดให้ Output layer มี เพี ย ง 1 โหนด
+    • Sigmoid activation •function เหมาะสมกับงาน Binary classifier
+                            Fifth level                               โดยกําหนดให้ Output layer มีเพียง 1 โหนด
+    • Softmax activation function เหมาะสมกับงาน Multiclass classifier โดยกําหนดให้ Output layer มีจํานวนโหนดเท่ากับจํานวนคลาส
+    • Sigmoid activation function เหมาะสมกับงาน Multilabel classifier โดยกําหนดให้ Output layer มีจํานวนโหนดเท่ากับจํานวนคลาส
+
+• ใน Hidden Layer จะนิยมใช้งาน Activation Function แบบไม่เชิงเส้น อาทิเช่น
+    • ReLU หรือ Leaky ReLU เป็นค่าเริ่มต้นในงานทางด้าน MLP และ CNN
+    • Sigmoid หรือ Tanh* เป็นค่าเริ่มต้นในงานทางด้าน RNN
+    • Identity และ Softmax ไม่นิยมนํามาใช้งานสําหรับ Hidden Layer
+    • Tanh, ReLU (รวมถึงที่พัฒนาต่อยอดมาจาก ReLU), Swish และ Hard swish function นิยมนํามาใช้งานใน Hidden Layer เท่านั้น
+
+  •   https://towardsdatascience.com/how-to-choose-the-right-activation-function-for-neural-networks-3941ff0e6f9c
+       07/08/69                                                                                                                 58
+

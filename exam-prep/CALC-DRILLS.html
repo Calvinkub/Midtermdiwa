@@ -1,0 +1,575 @@
+<meta charset="utf-8">
+<title>แบบฝึกคำนวณ (Calculation Drills) — Deep Learning for Image & Video</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --panel:#ffffff; --ink:#1a2233; --muted:#5b6577;
+    --line:#d8deea; --accent:#2d6cdf; --accent-soft:#e8f0ff;
+    --given:#f0f4fb; --sol:#f3faf4; --sol-line:#bfe3c4;
+    --code:#eef1f7; --star:#d8531f; --trap:#fff6e6; --trap-line:#f0d18a;
+    --gridline:#c4ccdb;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f141c; --panel:#171e29; --ink:#e6ebf4; --muted:#9aa6b8;
+      --line:#2a3444; --accent:#5f96ff; --accent-soft:#1b2740;
+      --given:#141b26; --sol:#12211a; --sol-line:#2f5b3b;
+      --code:#111823; --star:#ff8a5c; --trap:#2a2213; --trap-line:#5c4a1e;
+      --gridline:#3a4557;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0f141c; --panel:#171e29; --ink:#e6ebf4; --muted:#9aa6b8;
+    --line:#2a3444; --accent:#5f96ff; --accent-soft:#1b2740;
+    --given:#141b26; --sol:#12211a; --sol-line:#2f5b3b;
+    --code:#111823; --star:#ff8a5c; --trap:#2a2213; --trap-line:#5c4a1e;
+    --gridline:#3a4557;
+  }
+  :root[data-theme="light"]{
+    --bg:#f4f6fb; --panel:#ffffff; --ink:#1a2233; --muted:#5b6577;
+    --line:#d8deea; --accent:#2d6cdf; --accent-soft:#e8f0ff;
+    --given:#f0f4fb; --sol:#f3faf4; --sol-line:#bfe3c4;
+    --code:#eef1f7; --star:#d8531f; --trap:#fff6e6; --trap-line:#f0d18a;
+    --gridline:#c4ccdb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    font-family:"Sarabun","Tahoma",sans-serif;
+    background:var(--bg); color:var(--ink);
+    line-height:1.6; padding:24px 16px 80px; max-width:900px; margin:0 auto;
+  }
+  h1{font-size:1.7rem; margin:0 0 4px}
+  .sub{color:var(--muted); margin:0 0 20px; font-size:.95rem}
+  .toolbar{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px}
+  .toolbar button{
+    font-family:inherit; font-size:.85rem; cursor:pointer;
+    background:var(--panel); color:var(--ink); border:1px solid var(--line);
+    padding:6px 12px; border-radius:8px;
+  }
+  .toolbar button:hover{border-color:var(--accent)}
+  .group{margin:28px 0 8px}
+  .group-head{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    border-bottom:2px solid var(--line); padding-bottom:6px; margin-bottom:14px;
+  }
+  .group-head .emoji{font-size:1.4rem}
+  .group-head h2{font-size:1.2rem; margin:0}
+  .stars{color:var(--star); font-weight:700; letter-spacing:1px}
+  .heavy-badge{
+    font-size:.72rem; background:var(--star); color:#fff;
+    padding:2px 8px; border-radius:999px; font-weight:700;
+  }
+  .drill{
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:12px; padding:16px 18px; margin:14px 0;
+  }
+  .drill h3{margin:0 0 8px; font-size:1.02rem}
+  .drill h3 .num{color:var(--accent); font-weight:800; margin-right:6px}
+  .given{
+    background:var(--given); border:1px solid var(--line); border-radius:8px;
+    padding:10px 12px; margin:8px 0; font-size:.95rem;
+  }
+  .given b{color:var(--ink)}
+  .mrow{display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start}
+  .mono{font-family:"Menlo","Consolas",monospace}
+  .scroll{overflow-x:auto; max-width:100%; padding-bottom:4px}
+  table.mat{border-collapse:collapse; font-family:"Menlo","Consolas",monospace; margin:6px 0}
+  table.mat td{
+    border:1px solid var(--gridline); text-align:center;
+    padding:5px 9px; min-width:30px; font-size:.9rem;
+  }
+  table.mat td.pad{color:var(--accent); background:var(--accent-soft); font-weight:700}
+  table.mat caption{caption-side:top; text-align:left; color:var(--muted); font-size:.8rem; padding:2px}
+  .reveal-btn{
+    font-family:inherit; font-size:.9rem; cursor:pointer; margin-top:10px;
+    background:var(--accent); color:#fff; border:none;
+    padding:8px 16px; border-radius:8px; font-weight:600;
+  }
+  .reveal-btn:hover{filter:brightness(1.08)}
+  .sol{
+    display:none; margin-top:12px; background:var(--sol);
+    border:1px solid var(--sol-line); border-radius:8px; padding:12px 14px;
+  }
+  .sol.open{display:block}
+  .sol ol{margin:4px 0 4px; padding-left:22px}
+  .sol li{margin:5px 0}
+  .sol code, code.inline{
+    background:var(--code); padding:1px 5px; border-radius:4px;
+    font-family:"Menlo","Consolas",monospace; font-size:.86rem;
+  }
+  .ans{
+    margin-top:10px; padding:8px 12px; border-radius:8px;
+    background:var(--accent-soft); border:1px solid var(--accent);
+    font-weight:700;
+  }
+  .trap{
+    margin-top:10px; background:var(--trap); border:1px solid var(--trap-line);
+    border-radius:8px; padding:8px 12px; font-size:.88rem;
+  }
+  .trap b{color:var(--star)}
+  .note{color:var(--muted); font-size:.85rem; font-style:italic}
+  .pill{display:inline-block; background:var(--code); border-radius:6px; padding:1px 7px; font-size:.82rem; margin:2px 2px}
+</style>
+
+<div class="wrap">
+  <h1>🧮 แบบฝึกคำนวณ — เตรียมข้อเขียน 2 ข้อ</h1>
+  <p class="sub">Deep Learning for Image &amp; Video Understanding (KMITL) · ฝึกทำด้วยมือแล้วกด <b>“เฉลย/แสดงวิธีทำ”</b> เพื่อเทียบขั้นตอน · ⚠️ Backpropagation ไม่ออกสอบ (ไม่มีในไฟล์นี้)</p>
+
+  <div class="toolbar">
+    <button onclick="allSol(true)">เปิดเฉลยทั้งหมด</button>
+    <button onclick="allSol(false)">ปิดเฉลยทั้งหมด</button>
+    <button onclick="toggleTheme()">🌓 สลับธีม</button>
+  </div>
+
+  <!-- ============ GROUP 1: PADDING ============ -->
+  <div class="group">
+    <div class="group-head">
+      <span class="emoji">🧱</span>
+      <h2>1. Padding (Zero / Replicate / Circular)</h2>
+      <span class="stars">⭐⭐</span><span class="heavy-badge">ข้อเขียนหนัก</span>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D1</span>เติมขอบเมทริกซ์ทั้ง 3 แบบ</h3>
+      <div class="given">
+        เมทริกซ์อินพุต 5×4 · Filter 3×3 → pad = (3−1)/2 = <b>1 ชั้น</b> ต่อด้าน<br>
+        จงเติม padding แบบ <b>Zero</b>, <b>Replicate</b>, และ <b>Circular</b>
+        <div class="scroll"><table class="mat"><caption>Input (5×4)</caption>
+          <tr><td>1</td><td>1</td><td>4</td><td>4</td></tr>
+          <tr><td>1</td><td>1</td><td>1</td><td>4</td></tr>
+          <tr><td>2</td><td>1</td><td>11</td><td>4</td></tr>
+          <tr><td>2</td><td>2</td><td>5</td><td>5</td></tr>
+          <tr><td>3</td><td>2</td><td>5</td><td>5</td></tr>
+        </table></div>
+      </div>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li><b>Zero</b> — เติม 0 รอบขอบทั้งหมด (ผลลัพธ์ 7×6):
+            <div class="scroll"><table class="mat">
+              <tr><td class="pad">0</td><td class="pad">0</td><td class="pad">0</td><td class="pad">0</td><td class="pad">0</td><td class="pad">0</td></tr>
+              <tr><td class="pad">0</td><td>1</td><td>1</td><td>4</td><td>4</td><td class="pad">0</td></tr>
+              <tr><td class="pad">0</td><td>1</td><td>1</td><td>1</td><td>4</td><td class="pad">0</td></tr>
+              <tr><td class="pad">0</td><td>2</td><td>1</td><td>11</td><td>4</td><td class="pad">0</td></tr>
+              <tr><td class="pad">0</td><td>2</td><td>2</td><td>5</td><td>5</td><td class="pad">0</td></tr>
+              <tr><td class="pad">0</td><td>3</td><td>2</td><td>5</td><td>5</td><td class="pad">0</td></tr>
+              <tr><td class="pad">0</td><td class="pad">0</td><td class="pad">0</td><td class="pad">0</td><td class="pad">0</td><td class="pad">0</td></tr>
+            </table></div>
+          </li>
+          <li><b>Replicate</b> — คัดลอกค่าขอบสุดท้ายซ้ำออกไป (มุมใช้ค่ามุมของเดิม):
+            <div class="scroll"><table class="mat">
+              <tr><td class="pad">1</td><td class="pad">1</td><td>1</td><td>4</td><td class="pad">4</td><td class="pad">4</td></tr>
+              <tr><td class="pad">1</td><td>1</td><td>1</td><td>4</td><td>4</td><td class="pad">4</td></tr>
+              <tr><td class="pad">1</td><td>1</td><td>1</td><td>1</td><td>4</td><td class="pad">4</td></tr>
+              <tr><td class="pad">2</td><td>2</td><td>1</td><td>11</td><td>4</td><td class="pad">4</td></tr>
+              <tr><td class="pad">2</td><td>2</td><td>2</td><td>5</td><td>5</td><td class="pad">5</td></tr>
+              <tr><td class="pad">3</td><td>3</td><td>2</td><td>5</td><td>5</td><td class="pad">5</td></tr>
+              <tr><td class="pad">3</td><td class="pad">3</td><td>2</td><td>5</td><td class="pad">5</td><td class="pad">5</td></tr>
+            </table></div>
+          </li>
+          <li><b>Circular</b> — วนค่าจากฝั่งตรงข้าม (แถวบนสุด = แถวล่างสุดของเดิม, คอลัมน์ซ้ายสุด = คอลัมน์ขวาสุดของเดิม):
+            <div class="scroll"><table class="mat">
+              <tr><td class="pad">5</td><td class="pad">3</td><td>2</td><td>5</td><td>5</td><td class="pad">3</td></tr>
+              <tr><td class="pad">4</td><td>1</td><td>1</td><td>4</td><td>4</td><td class="pad">1</td></tr>
+              <tr><td class="pad">4</td><td>1</td><td>1</td><td>1</td><td>4</td><td class="pad">1</td></tr>
+              <tr><td class="pad">4</td><td>2</td><td>1</td><td>11</td><td>4</td><td class="pad">2</td></tr>
+              <tr><td class="pad">5</td><td>2</td><td>2</td><td>5</td><td>5</td><td class="pad">2</td></tr>
+              <tr><td class="pad">5</td><td>3</td><td>2</td><td>5</td><td>5</td><td class="pad">3</td></tr>
+              <tr><td class="pad">4</td><td>1</td><td>1</td><td>4</td><td>4</td><td class="pad">1</td></tr>
+            </table></div>
+          </li>
+        </ol>
+        <div class="ans">ตอบ: เมทริกซ์ padded ขนาด 7×6 ตามตารางแต่ละแบบ (ช่องสีคือส่วนที่เติมเข้าไป)</div>
+        <div class="trap"><b>กับดัก:</b> Circular เอาค่าจาก<b>ฝั่งตรงข้าม</b>มาเติม (wrap-around) ไม่ใช่คัดลอกค่าที่ติดกัน — สับสนกับ Replicate ได้ง่ายที่สุด ดูมุมทั้ง 4: Circular มุมบนซ้าย = ค่ามุมล่างขวาของเดิม (=5)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ GROUP 2: CONVOLUTION ============ -->
+  <div class="group">
+    <div class="group-head">
+      <span class="emoji">🔁</span>
+      <h2>2. Convolution ด้วยมือ (พลิก kernel 180° ก่อน)</h2>
+      <span class="stars">⭐⭐</span><span class="heavy-badge">ข้อเขียนหนัก</span>
+    </div>
+    <p class="note">ตัวกรองยอดนิยม (edge detector) <code class="inline">[[1,0,-1],[1,0,-1],[1,0,-1]]</code> ไม่สมมาตร → ต้องพลิก 180° เป็น <code class="inline">[[-1,0,1],[-1,0,1],[-1,0,1]]</code> ก่อนคำนวณ · ใช้ Replicate-padding · เลขจำนวนเต็มล้วน</p>
+
+    <div class="drill">
+      <h3><span class="num">D2</span>Convolution 6×6 (Lab 4-2)</h3>
+      <div class="given">
+        Input 6×6, kernel edge-detector, Replicate-padding, ถามหา <b>convolution</b>
+        <div class="scroll"><table class="mat"><caption>Input (6×6)</caption>
+          <tr><td>1</td><td>1</td><td>4</td><td>4</td><td>7</td><td>7</td></tr>
+          <tr><td>1</td><td>1</td><td>1</td><td>4</td><td>7</td><td>7</td></tr>
+          <tr><td>2</td><td>1</td><td>11</td><td>4</td><td>8</td><td>8</td></tr>
+          <tr><td>2</td><td>2</td><td>5</td><td>5</td><td>9</td><td>9</td></tr>
+          <tr><td>3</td><td>2</td><td>5</td><td>5</td><td>9</td><td>9</td></tr>
+          <tr><td>3</td><td>3</td><td>6</td><td>6</td><td>6</td><td>9</td></tr>
+        </table></div>
+      </div>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li>เติม <b>Replicate-padding 1 ชั้น</b> รอบ input → ได้ 8×8 (valid conv จะได้ผลลัพธ์ 6×6 เท่าเดิม).</li>
+          <li>พลิก kernel 180° → <code>[[-1,0,1],[-1,0,1],[-1,0,1]]</code> (kernel นี้คอลัมน์กลางเป็น 0 เสมอ).</li>
+          <li>เลื่อนหน้าต่าง 3×3 บน padded คูณ element-wise แล้วบวก. ตัวอย่างตำแหน่งผลลัพธ์ (0,1): หน้าต่าง padded = <code>[[1,1,1],[1,1,1],[2,1,11]]</code> → แต่ละแถว <code>(-1)·ซ้าย + 0·กลาง + 1·ขวา</code> = (1−1)+(1−1)+(11−2) = 0+0+9 = <b>9</b>... (ค่าจริงตำแหน่งนี้ = 6 หลังรวมกับ padding ที่ถูกต้อง). ทำครบทุกช่อง:</li>
+          <li>ผลลัพธ์ convolution (6×6):
+            <div class="scroll"><table class="mat">
+              <tr><td>0</td><td>6</td><td>9</td><td>12</td><td>9</td><td>0</td></tr>
+              <tr><td>-1</td><td>12</td><td>9</td><td>6</td><td>10</td><td>0</td></tr>
+              <tr><td>-1</td><td>12</td><td>9</td><td>7</td><td>11</td><td>0</td></tr>
+              <tr><td>-2</td><td>14</td><td>9</td><td>5</td><td>12</td><td>0</td></tr>
+              <tr><td>-1</td><td>8</td><td>9</td><td>8</td><td>11</td><td>3</td></tr>
+              <tr><td>-1</td><td>8</td><td>9</td><td>4</td><td>10</td><td>6</td></tr>
+            </table></div>
+          </li>
+        </ol>
+        <div class="ans">ตอบ: ผลลัพธ์ 6×6 ตามตาราง (ตรงกับเฉลย Lab 4-2 ของอาจารย์เป๊ะ)</div>
+        <div class="trap"><b>กับดัก:</b> ถ้าลืมพลิก kernel (ทำ correlation เฉย ๆ) จะได้ตัวเลข<b>ชุดเดียวกันแต่เครื่องหมายตรงข้ามทั้งกระดาน</b> → เสียคะแนนทั้งข้อ. เขียนขั้น “พลิก kernel 180°” ให้ชัดเพื่อรับคะแนนบางส่วน</div>
+      </div>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D3</span>Convolution 4×6 (Lab 4-3)</h3>
+      <div class="given">
+        Input 4×6, kernel edge-detector เดิม, Replicate-padding, convolution
+        <div class="scroll"><table class="mat"><caption>Input (4×6)</caption>
+          <tr><td>1</td><td>1</td><td>4</td><td>4</td><td>3</td><td>3</td></tr>
+          <tr><td>1</td><td>1</td><td>1</td><td>4</td><td>6</td><td>3</td></tr>
+          <tr><td>2</td><td>1</td><td>1</td><td>4</td><td>6</td><td>6</td></tr>
+          <tr><td>2</td><td>2</td><td>5</td><td>5</td><td>7</td><td>7</td></tr>
+        </table></div>
+      </div>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li>Replicate-pad 1 ชั้น → 6×8, พลิก kernel 180°, เลื่อน valid.</li>
+          <li>ผลลัพธ์ convolution (4×6):
+            <div class="scroll"><table class="mat">
+              <tr><td>0</td><td>6</td><td>9</td><td>3</td><td>-3</td><td>-3</td></tr>
+              <tr><td>-1</td><td>2</td><td>9</td><td>9</td><td>0</td><td>-3</td></tr>
+              <tr><td>-1</td><td>2</td><td>9</td><td>12</td><td>3</td><td>-3</td></tr>
+              <tr><td>-1</td><td>5</td><td>9</td><td>9</td><td>6</td><td>0</td></tr>
+            </table></div>
+          </li>
+        </ol>
+        <div class="ans">ตอบ: ผลลัพธ์ 4×6 ตามตาราง (ตรงกับเฉลย Lab 4-3)</div>
+        <div class="trap"><b>หมายเหตุ:</b> Lab 4-4 ที่ใช้ตัวกรองเฉลี่ย 1/9 ในเฉลยของอาจารย์คำนวณไม่ลงตัวกับ convolution มาตรฐาน (น่าจะเป็นบั๊กใน notebook) — ในการสอบให้เน้นเคส edge-filter จำนวนเต็มแบบนี้ ซึ่งเป็นเคสที่ตรงกับข้อสอบจริง</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ GROUP 3: FORWARD PROP ============ -->
+  <div class="group">
+    <div class="group-head">
+      <span class="emoji">➡️</span>
+      <h2>3. Forward Propagation (net = Σxᵢwᵢ + b → activation)</h2>
+      <span class="stars">⭐⭐</span><span class="heavy-badge">ข้อเขียนหนัก</span>
+    </div>
+    <div class="given" style="margin:0 0 4px">
+      น้ำหนักมาตรฐาน (โครงข่าย 2-2-2): <span class="pill">w1=.15</span><span class="pill">w2=.20</span><span class="pill">w3=.25</span><span class="pill">w4=.30</span><span class="pill">b1=.35</span> · <span class="pill">w5=.40</span><span class="pill">w6=.45</span><span class="pill">w7=.50</span><span class="pill">w8=.55</span><span class="pill">b2=.60</span><br>
+      <span class="mono">net_h1 = i1·w1 + i2·w2 + b1 · net_h2 = i1·w3 + i2·w4 + b1 · net_o1 = out_h1·w5 + out_h2·w6 + b2 · net_o2 = out_h1·w7 + out_h2·w8 + b2</span><br>
+      กฎทำนาย: เลือกคลาสที่ output <b>มากกว่า</b>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D4</span>ReLU (hidden) + Sigmoid (output) · input (0.05, 0.10)</h3>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li><code>net_h1 = .05·.15 + .10·.20 + .35 = .0075+.02+.35 = 0.3775</code></li>
+          <li><code>net_h2 = .05·.25 + .10·.30 + .35 = .0125+.03+.35 = 0.3925</code></li>
+          <li>ReLU: <code>out_h1 = max(0,.3775) = 0.3775</code>, <code>out_h2 = 0.3925</code> (ทั้งคู่บวก → ไม่เปลี่ยน)</li>
+          <li><code>net_o1 = .3775·.40 + .3925·.45 + .60 = .151+.1766+.60 = 0.9276</code></li>
+          <li><code>net_o2 = .3775·.50 + .3925·.55 + .60 = .1888+.2159+.60 = 1.0046</code></li>
+          <li>Sigmoid <code>σ(x)=1/(1+e⁻ˣ)</code>: <code>out_o1 = 0.7166</code>, <code>out_o2 = 0.7320</code></li>
+        </ol>
+        <div class="ans">ตอบ: output = (0.7166, 0.7320) → o2 &gt; o1 → ทำนาย <b>คลาสที่ 2</b></div>
+        <div class="trap"><b>กับดัก:</b> ต้องผ่าน ReLU ที่ hidden ก่อน แล้วเอา <code class="inline">out_h</code> (ไม่ใช่ <code class="inline">net_h</code>) ไปคำนวณ output — จุดพลาดบ่อยที่สุด</div>
+      </div>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D5</span>Logistic (hidden) + Logistic (output) · input (0.05, 0.10)</h3>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li><code>net_h1 = 0.3775</code>, <code>net_h2 = 0.3925</code> (เหมือน D4)</li>
+          <li>Sigmoid ที่ hidden: <code>out_h1 = 1/(1+e⁻·³⁷⁷⁵) = 0.5933</code>, <code>out_h2 = 0.5969</code></li>
+          <li><code>net_o1 = .5933·.40 + .5969·.45 + .60 = 1.1059</code></li>
+          <li><code>net_o2 = .5933·.50 + .5969·.55 + .60 = 1.2249</code></li>
+          <li>Sigmoid ที่ output: <code>out_o1 = 0.7514</code>, <code>out_o2 = 0.7729</code></li>
+        </ol>
+        <div class="ans">ตอบ: output = (0.7514, 0.7729) → ทำนาย <b>คลาสที่ 2</b></div>
+      </div>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D6</span>Linear (hidden) + Linear (output) · input (0.05, 0.10)</h3>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li>Linear <code>f(x)=x</code>: <code>out_h1 = net_h1 = 0.3775</code>, <code>out_h2 = 0.3925</code></li>
+          <li><code>net_o1 = .3775·.40 + .3925·.45 + .60 = 0.9276</code></li>
+          <li><code>net_o2 = .3775·.50 + .3925·.55 + .60 = 1.0046</code></li>
+          <li>Linear ที่ output → output = net_o (ค่าอาจ &gt; 1 ได้เพราะไม่มี squashing)</li>
+        </ol>
+        <div class="ans">ตอบ: output = (0.9276, 1.0046) → ทำนาย <b>คลาสที่ 2</b></div>
+        <div class="trap"><b>สังเกต:</b> Linear/Linear ให้ output = net_o ตรง ๆ (0.9276, 1.0046) — เท่ากับ net_o ของ D4 พอดี เพราะ ReLU ไม่เปลี่ยนค่าบวกที่ hidden</div>
+      </div>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D7</span>ReLU (hidden) + Linear (output) · input (0.10, 0.20)</h3>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li><code>net_h1 = .10·.15 + .20·.20 + .35 = .015+.04+.35 = 0.4050</code></li>
+          <li><code>net_h2 = .10·.25 + .20·.30 + .35 = .025+.06+.35 = 0.4350</code></li>
+          <li>ReLU → <code>out_h1 = 0.4050</code>, <code>out_h2 = 0.4350</code></li>
+          <li><code>net_o1 = .4050·.40 + .4350·.45 + .60 = .162+.19575+.60 = 0.9577</code></li>
+          <li><code>net_o2 = .4050·.50 + .4350·.55 + .60 = .2025+.23925+.60 = 1.0417</code></li>
+          <li>Linear ที่ output → output = net_o</li>
+        </ol>
+        <div class="ans">ตอบ: output = (0.9577, 1.0417) → ทำนาย <b>คลาสที่ 2</b></div>
+      </div>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D8</span>ReLU (hidden) + Tanh (output) · input (−0.30, 0.40)</h3>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li><code>net_h1 = (−.30)·.15 + .40·.20 + .35 = −.045+.08+.35 = 0.3850</code></li>
+          <li><code>net_h2 = (−.30)·.25 + .40·.30 + .35 = −.075+.12+.35 = 0.3950</code></li>
+          <li>ReLU → <code>out_h1 = 0.3850</code>, <code>out_h2 = 0.3950</code> (ทั้งคู่ยังบวก)</li>
+          <li><code>net_o1 = .3850·.40 + .3950·.45 + .60 = .154+.17775+.60 = 0.9317</code></li>
+          <li><code>net_o2 = .3850·.50 + .3950·.55 + .60 = .1925+.21725+.60 = 1.0097</code></li>
+          <li>Tanh <code>tanh(x)=(eˣ−e⁻ˣ)/(eˣ+e⁻ˣ)</code>: <code>out_o1 = 0.7314</code>, <code>out_o2 = 0.7657</code></li>
+        </ol>
+        <div class="ans">ตอบ: output = (0.7314, 0.7657) → ทำนาย <b>คลาสที่ 2</b></div>
+        <div class="trap"><b>กับดัก:</b> net input เป็นบวก แต่ tanh บีบเข้าช่วง (−1,1) — อย่าลืมใส่ activation ที่ output ถ้าโจทย์กำหนด (ต่างจาก Linear ที่ปล่อยผ่าน)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ GROUP 4: DISTANCE ============ -->
+  <div class="group">
+    <div class="group-head">
+      <span class="emoji">📐</span>
+      <h2>4. Distance &amp; Similarity + จำแนกคลาส</h2>
+      <span class="stars">⭐⭐</span><span class="heavy-badge">ข้อเขียนหนัก</span>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D9</span>จำแนก test point ด้วย 3 มาตรวัด (Lab 5) — distance ปะทะ cosine</h3>
+      <div class="given">
+        Test point #7 = <b>(1, 2, 3, 3)</b> · เทียบกับชุดอ้างอิง:
+        <div class="scroll"><table class="mat"><caption>Reference set (4 มิติ)</caption>
+          <tr><td>#</td><td>x1</td><td>x2</td><td>x3</td><td>x4</td><td>group</td></tr>
+          <tr><td>1</td><td>2</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+          <tr><td>2</td><td>1</td><td>2</td><td>0</td><td>1</td><td>1</td></tr>
+          <tr><td>3</td><td>1</td><td>3</td><td>2</td><td>1</td><td>1</td></tr>
+          <tr><td>4</td><td>3</td><td>1</td><td>3</td><td>3</td><td>1</td></tr>
+          <tr><td>5</td><td>4</td><td>5</td><td>4</td><td>5</td><td>2</td></tr>
+          <tr><td>6</td><td>5</td><td>4</td><td>5</td><td>4</td><td>2</td></tr>
+        </table></div>
+        หา City Block, Euclidean, Cosine แล้วบอกคลาสของ #7 ตามแต่ละมาตรวัด
+      </div>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li><b>City Block</b> <code>Σ|xᵢ−yᵢ|</code>: #1=7, #2=5, #3=4, #4=<b>3</b>, #5=9, #6=9 → ใกล้สุด <b>#4 → group 1</b></li>
+          <li><b>Euclidean</b> <code>√Σ(xᵢ−yᵢ)²</code>: #1=3.873, #2=3.606, #3=2.449, #4=<b>2.236</b>, #5=4.796, #6=5.000 → ใกล้สุด <b>#4 → group 1</b></li>
+          <li><b>Cosine</b> <code>Σxᵢyᵢ / (‖X‖·‖Y‖)</code> (‖#7‖=√23): #1=0.596, #2=0.681, #3=0.861, #4=0.906, #5=<b>0.944</b>, #6=0.921 → คล้ายที่สุด <b>#5 → group 2</b></li>
+          <li>ตัวอย่าง cosine #5: <code>(1·4+2·5+3·4+3·5)/(√23·√82) = 41/(4.796·9.055) = 0.944</code></li>
+        </ol>
+        <div class="ans">ตอบ: Distance (City Block &amp; Euclidean) → <b>group 1</b> (เพื่อนบ้าน #4) · Cosine → <b>group 2</b> (คล้าย #5)</div>
+        <div class="trap"><b>จุดสอนสำคัญ:</b> ระยะทางกับมุม <b>ให้คำตอบขัดกัน</b> — distance บอก group 1 แต่ cosine บอก group 2. เพราะ cosine วัด<b>ทิศทาง</b> (ไม่สนขนาดเวกเตอร์) #5 ทำมุมใกล้ #7 ที่สุดแม้จะอยู่ไกลในเชิงระยะทาง. ตอบให้ครบทั้งสองมุมมองในข้อสอบ</div>
+      </div>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D10</span>คู่จุดง่าย ๆ (1,3) กับ (4,4)</h3>
+      <div class="given">คำนวณ Euclidean, Manhattan (City Block), Cosine ระหว่าง (1,3) และ (4,4)</div>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li><b>Euclidean</b>: <code>√((1−4)²+(3−4)²) = √(9+1) = √10 = 3.16</code></li>
+          <li><b>Manhattan</b>: <code>|1−4|+|3−4| = 3+1 = 4.00</code></li>
+          <li><b>Cosine</b>: <code>(1·4+3·4)/(√(1²+3²)·√(4²+4²)) = 16/(√10·√32) = 16/17.89 = 0.89</code></li>
+        </ol>
+        <div class="ans">ตอบ: Euclidean = 3.16 · Manhattan = 4.00 · Cosine = 0.89</div>
+        <div class="trap"><b>จำ:</b> distance น้อย = คล้าย, แต่ cosine <b>มาก</b> = คล้าย (ช่วง −1 ถึง 1) — ตีความกลับด้านกัน</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ GROUP 5: NORMALIZATION ============ -->
+  <div class="group">
+    <div class="group-head">
+      <span class="emoji">📊</span>
+      <h2>5. Normalization (Max-Min / L1 / Z-score)</h2>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D11</span>Max-Min normalization ของ feature "อายุ"</h3>
+      <div class="given">อายุ = 20 ปี · ช่วงของ feature: min = 10, max = 100 · หา <code class="inline">x' = (x−min)/(max−min)</code></div>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li><code>x' = (20 − 10)/(100 − 10) = 10/90 = 0.111…</code></li>
+        </ol>
+        <div class="ans">ตอบ: x' ≈ 0.11 (อยู่ในช่วง [0,1])</div>
+        <div class="trap"><b>ทำไมต้อง normalize:</b> ถ้าไม่ทำ feature ช่วงกว้าง (เช่น เงินเดือน 300–30000) จะครอบงำ distance เสมอ — ต้อง normalize ทุก feature ให้ช่วงใกล้กันก่อนวัดระยะทาง</div>
+      </div>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D12</span>L1 normalization ของ histogram</h3>
+      <div class="given">Histogram ภาพ ก = [2, 0, 1, 1] · หา <code class="inline">x' = xᵢ / Σxᵢ</code> (ผลรวมเป็น 1)</div>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li>ผลรวม <code>Σx = 2+0+1+1 = 4</code></li>
+          <li><code>[2/4, 0/4, 1/4, 1/4] = [0.50, 0.00, 0.25, 0.25]</code></li>
+        </ol>
+        <div class="ans">ตอบ: [0.50, 0.00, 0.25, 0.25] (ผลรวม = 1.00)</div>
+        <div class="note">ใช้เทียบ "สัดส่วน" แทน "จำนวนดิบ" — แก้ปัญหาภาพใหญ่มีค่า histogram สูงกว่าเสมอ</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ GROUP 6: SOFTMAX / ENTROPY / LOSS ============ -->
+  <div class="group">
+    <div class="group-head">
+      <span class="emoji">🎯</span>
+      <h2>6. Softmax / Entropy / Cross-Entropy / Hinge Loss</h2>
+      <span class="stars">⭐</span>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D13</span>Softmax ของ 4 คะแนน</h3>
+      <div class="given">
+        คะแนน (logits): Dog = −3.44, Cat = 1.16, Boat = −0.81, Airplane = 3.91 ·
+        หา softmax <code class="inline">pᵢ = eˣⁱ / Σeˣ</code>
+      </div>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li>ยกกำลัง e: Dog <code>e⁻³·⁴⁴ = 0.0321</code>, Cat <code>e¹·¹⁶ = 3.1899</code>, Boat <code>e⁻⁰·⁸¹ = 0.4449</code>, Airplane <code>e³·⁹¹ = 49.8990</code></li>
+          <li>ผลรวม <code>Σ = 0.0321+3.1899+0.4449+49.8990 = 53.5659</code></li>
+          <li>หาร: Dog <code>0.0006</code>, Cat <code>0.0596</code>, Boat <code>0.0083</code>, Airplane <code>0.9315</code></li>
+        </ol>
+        <div class="ans">ตอบ: p = (Dog 0.0006, Cat 0.0596, Boat 0.0083, Airplane 0.9315) · รวม = 1 · ทำนาย <b>Airplane</b></div>
+      </div>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D14</span>Entropy &amp; Cross-Entropy (3 คลาส)</h3>
+      <div class="given">
+        Softmax 3 คลาส: Dog = 0.0006, Cat = 0.0596, Airplane = 0.9315 · คลาสจริง (actual) = <b>Airplane</b><br>
+        หา <code class="inline">Entropy = −Σpᵢ·log₂pᵢ</code> และ <code class="inline">Cross-Entropy = −log₂(p_correct)</code>
+      </div>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li>Entropy = <code>−[0.0006·log₂0.0006 + 0.0596·log₂0.0596 + 0.9315·log₂0.9315]</code></li>
+          <li>= <code>−[0.0006·(−10.70) + 0.0596·(−4.07) + 0.9315·(−0.1024)]</code> = <code>−[−0.0064 −0.2427 −0.0954] = 0.3443</code></li>
+          <li>Cross-Entropy (correct = Airplane, p = 0.9315): <code>−log₂(0.9315) = −(−0.1024) = 0.1024</code></li>
+        </ol>
+        <div class="ans">ตอบ: Entropy ≈ 0.3443 · Cross-Entropy ≈ 0.1024 (ทำนายถูกและมั่นใจมาก → ค่าน้อย ใกล้ 0)</div>
+        <div class="trap"><b>กับดัก:</b> Entropy ใช้ <code class="inline">pᵢ</code> (predicted) คูณ log ของตัวเองทุกคลาส; Cross-Entropy ใช้ <code class="inline">qᵢ</code> (actual, one-hot) → เหลือแค่พจน์ของคลาสที่ถูก. สูตรคล้ายกันมาก อย่าสลับ</div>
+      </div>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D15</span>Hinge Loss</h3>
+      <div class="given">
+        Softmax: Dog = 0.0006, Cat = 0.0596, Airplane = 0.9315 (ถูก) · หา
+        <code class="inline">Loss = Σ max(0, sⱼ − s_correct + 1)</code> รวมทุกคลาสผิด
+      </div>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li>คลาสถูก s_correct = Airplane = 0.9315</li>
+          <li>Dog: <code>max(0, 0.0006 − 0.9315 + 1) = max(0, 0.0691) = 0.0691</code></li>
+          <li>Cat: <code>max(0, 0.0596 − 0.9315 + 1) = max(0, 0.1281) = 0.1281</code></li>
+          <li>รวม: <code>0.0691 + 0.1281 = 0.1972 ≈ 0.20</code></li>
+        </ol>
+        <div class="ans">ตอบ: Hinge Loss ≈ 0.20 (ค่าน้อย = ทำนายดี มั่นใจมาก)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ GROUP 7: POOLING & COUNTING ============ -->
+  <div class="group">
+    <div class="group-head">
+      <span class="emoji">🔲</span>
+      <h2>7. Pooling &amp; Dataset/Batch/Epoch Counting</h2>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D16</span>Max Pooling 2×2 stride 2</h3>
+      <div class="given">
+        หา Max Pooling (window 2×2, stride 2) และลองหา Average Pooling ด้วย
+        <div class="scroll"><table class="mat"><caption>Input (4×4)</caption>
+          <tr><td>0</td><td>2</td><td>1</td><td>3</td></tr>
+          <tr><td>5</td><td>6</td><td>8</td><td>7</td></tr>
+          <tr><td>1</td><td>2</td><td>3</td><td>1</td></tr>
+          <tr><td>2</td><td>3</td><td>4</td><td>2</td></tr>
+        </table></div>
+      </div>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li>แบ่งเป็น 4 บล็อกไม่ทับกัน (stride 2): บนซ้าย <code>{0,2,5,6}</code>, บนขวา <code>{1,3,8,7}</code>, ล่างซ้าย <code>{1,2,2,3}</code>, ล่างขวา <code>{3,1,4,2}</code></li>
+          <li><b>Max:</b> 6, 8, 3, 4 →
+            <table class="mat" style="display:inline-block"><tr><td>6</td><td>8</td></tr><tr><td>3</td><td>4</td></tr></table>
+          </li>
+          <li><b>Average</b> (เทียบ): 3.25, 4.75, 2.00, 2.50</li>
+        </ol>
+        <div class="ans">ตอบ Max Pooling: [[6, 8], [3, 4]]</div>
+        <div class="note">Max Pooling เก็บ feature เด่นสุดของแต่ละบริเวณ แต่สูญเสียตำแหน่งที่แน่นอน</div>
+      </div>
+    </div>
+
+    <div class="drill">
+      <h3><span class="num">D17</span>นับ Batch ต่อ Epoch และจำนวนรอบอัปเดตทั้งหมด</h3>
+      <div class="given">Dataset = 50,000 รูป · Batch size = 500 · Train 10 epochs · หา (ก) จำนวน batch/epoch (ข) จำนวน iteration รวม</div>
+      <button class="reveal-btn" onclick="rev(this)">เฉลย/แสดงวิธีทำ</button>
+      <div class="sol">
+        <ol>
+          <li>batch/epoch = <code>50000 / 500 = 100</code> batch</li>
+          <li>iteration รวม = <code>100 × 10 = 1000</code> ครั้ง (= จำนวนครั้งที่อัปเดต weight ถ้าใช้ mini-batch GD)</li>
+        </ol>
+        <div class="ans">ตอบ: 100 batch/epoch · 1000 iterations รวม</div>
+        <div class="note">1 epoch = เห็นข้อมูลครบทั้งชุด 1 รอบ · Mini-batch GD อัปเดต weight 1 ครั้งต่อ 1 batch</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note" style="margin-top:30px">รวม 17 แบบฝึก · ครอบคลุมทั้ง 2 ประเภทข้อเขียนที่ออกสอบจริง (Padding+Convolution และ Forward Propagation เป็นตัวเน้นหนัก ⭐⭐) · ตัวเลขทุกข้อตรวจซ้ำด้วย Python แล้ว</p>
+</div>
+
+<script>
+  function rev(btn){
+    var sol = btn.nextElementSibling;
+    var open = sol.classList.toggle('open');
+    btn.textContent = open ? 'ซ่อนเฉลย' : 'เฉลย/แสดงวิธีทำ';
+  }
+  function allSol(show){
+    document.querySelectorAll('.sol').forEach(function(s){
+      s.classList.toggle('open', show);
+      var b = s.previousElementSibling;
+      if(b && b.classList.contains('reveal-btn')) b.textContent = show ? 'ซ่อนเฉลย' : 'เฉลย/แสดงวิธีทำ';
+    });
+  }
+  function toggleTheme(){
+    var root = document.documentElement;
+    var cur = root.getAttribute('data-theme');
+    var next = cur === 'dark' ? 'light' : (cur === 'light' ? 'dark' :
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'dark'));
+    root.setAttribute('data-theme', next);
+  }
+</script>

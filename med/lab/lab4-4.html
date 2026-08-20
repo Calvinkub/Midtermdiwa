@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<!-- saved from url=(0070)https://jlearn.it.kmitl.ac.th/api/bucket/file/6a62b23b6b5bafb530c5d7ac -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convolution with Zero-Padding</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        h2 {
+            color: #555;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+        }
+        p {
+            margin-bottom: 10px;
+        }
+        .matrix {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+            font-family: Arial, sans-serif;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Convolution with Zero-Padding</h1>
+
+        <h2>ข้อมูลอินพุต</h2>
+        <div class="matrix">
+            1 1 4 4<br>
+            1 1 1 4<br>
+            2 1 11 4<br>
+            2 2 5 5<br>
+            3 2 5 5<br>
+        </div>
+
+        <h2>ตัวกรอง</h2>
+        <div class="matrix">
+            1/9 1/9 1/9<br>
+            1/9 1/9 1/9<br>
+            1/9 1/9 1/9<br>
+        </div>
+
+        <h2>Zero-Padding</h2>
+        <p>เติมข้อมูลด้วยวิธีการ Zero-Padding (หนึ่งชั้น):</p>
+        <div class="matrix">
+            0 0 0 0 0 0<br>
+            0 1 1 4 4 0<br>
+            0 1 1 1 4 0<br>
+            0 2 1 11 4 0<br>
+            0 2 2 5 5 0<br>
+            0 3 2 5 5 0<br>
+            0 0 0 0 0 0<br>
+        </div>
+        <textarea id="zero-padding-input" placeholder="ป้อนคำตอบ Zero-Padding ของคุณที่นี่..."></textarea>
+        <button onclick="checkZeroPadding()">ตรวจสอบคำตอบ Zero-Padding</button>
+
+        <h2>การคอนโวลูชัน</h2>
+        <p>คำนวณการคอนโวลูชัน:</p>
+        <div class="matrix">
+            0.00 1.11 1.00 1.00<br>
+            0.00 2.00 3.11 3.00<br>
+            1.00 2.11 3.22 3.11<br>
+            1.00 3.00 4.11 3.00<br>
+            0.00 2.00 2.00 2.00<br>
+        </div>
+        <textarea id="convolution-input" placeholder="ป้อนคำตอบการคอนโวลูชันของคุณที่นี่..."></textarea>
+        <button onclick="checkConvolution()">ตรวจสอบคำตอบการคอนโวลูชัน</button>
+    </div>
+
+    <script>
+        function checkZeroPadding() {
+            const zeroPaddingAnswer = `0 0 0 0 0 0
+0 1 1 4 4 0
+0 1 1 1 4 0
+0 2 1 11 4 0
+0 2 2 5 5 0
+0 3 2 5 5 0
+0 0 0 0 0 0`;
+
+            const zeroPaddingInput = document.getElementById('zero-padding-input').value.trim();
+
+            if (zeroPaddingInput === zeroPaddingAnswer) {
+                alert('คำตอบ Zero-Padding ถูกต้อง');
+            } else {
+                alert('คำตอบ Zero-Padding ไม่ถูกต้อง');
+            }
+        }
+
+        function checkConvolution() {
+            const convolutionAnswer = `0.00 1.11 1.00 1.00
+0.00 2.00 3.11 3.00
+1.00 2.11 3.22 3.11
+1.00 3.00 4.11 3.00
+0.00 2.00 2.00 2.00`;
+
+            const convolutionInput = document.getElementById('convolution-input').value.trim();
+
+            if (convolutionInput === convolutionAnswer) {
+                alert('คำตอบการคอนโวลูชันถูกต้อง');
+            } else {
+                alert('คำตอบการคอนโวลูชันไม่ถูกต้อง');
+            }
+        }
+    </script>
+
+
+</body></html>

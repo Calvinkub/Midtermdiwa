@@ -1,0 +1,208 @@
+<meta charset="utf-8">
+<title>Cheat Sheet A4 — Deep Learning for Image & Video</title>
+<style>
+  :root{ --ink:#111; --red:#c0121a; --blue:#123a8f; --grey:#555; --box:#d8d8d8; --hl:#fff6d5; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:#f0f0f0; color:var(--ink);
+    font-family:"Sarabun","Tahoma","Segoe UI",sans-serif; }
+  .sheet{ width:210mm; min-height:297mm; margin:6mm auto; background:#fff; padding:6mm 6mm 4mm;
+    columns:3; column-gap:5mm; font-size:7.4px; line-height:1.28; }
+  h1{ column-span:all; font-size:12px; margin:0 0 3px; color:var(--blue); text-align:center;
+    border-bottom:2px solid var(--blue); padding-bottom:2px; }
+  h1 small{ font-weight:normal; color:var(--grey); font-size:8px; }
+  .box{ break-inside:avoid; border:1px solid var(--box); border-radius:3px; padding:3px 4px;
+    margin:0 0 4px; }
+  .box h2{ font-size:8px; margin:0 0 2px; color:var(--blue); border-bottom:1px solid #eee; padding-bottom:1px;}
+  .box.hot h2{ color:var(--red); }
+  .box.hot{ border-color:#f0b3b3; background:#fffafa; }
+  code,.f{ font-family:"Consolas","Menlo",monospace; font-size:7px; background:#f4f4f4;
+    padding:0 2px; border-radius:2px; white-space:nowrap; }
+  .fb{ display:block; font-family:"Consolas","Menlo",monospace; font-size:7px; background:#f4f4f4;
+    padding:2px 3px; border-radius:2px; margin:1px 0; white-space:pre-wrap; }
+  .hl{ background:var(--hl); padding:0 1px; }
+  .red{ color:var(--red); font-weight:bold; }
+  .blue{ color:var(--blue); font-weight:bold; }
+  table{ border-collapse:collapse; width:100%; font-size:6.8px; margin:1px 0; }
+  td,th{ border:1px solid #ddd; padding:1px 2px; text-align:left; vertical-align:top; }
+  th{ background:#eef2fb; }
+  ul{ margin:1px 0 1px 10px; padding:0; }
+  li{ margin:0; }
+  .tag{ display:inline-block; background:var(--red); color:#fff; font-size:6px; padding:0 3px;
+    border-radius:6px; vertical-align:middle; }
+  .note{ column-span:all; text-align:center; font-size:6.5px; color:var(--grey); margin-top:2px; }
+  @media print{ body{ background:#fff; } .sheet{ margin:0; box-shadow:none; width:auto; } .noprint{display:none;} }
+  .noprint{ column-span:all; text-align:center; background:#fff6d5; border:1px solid #e5c95a;
+    border-radius:4px; padding:4px; margin-bottom:5px; font-size:9px; }
+</style>
+
+<div class="sheet">
+<h1>DEEP LEARNING FOR IMAGE &amp; VIDEO — CHEAT SHEET <small>· 06016389/06026163 · <span class="red">🖨️ ลอกลงกระดาษ A4 ด้วยมือ 1 หน้า</span></small></h1>
+
+<div class="noprint">📌 ห้องสอบให้ <b>จดมือ 1 หน้า A4</b> เท่านั้น — ใช้แผ่นนี้เป็น "แม่แบบ" คัดลอกด้วยลายมือตัวเอง (การเขียนเองช่วยจำด้วย). <span class="red">🔴 = หัวข้อออกหนัก/เป็นข้อเขียน</span>. Backprop ไม่ออก.</div>
+
+<!-- ===== W1 ===== -->
+<div class="box">
+<h2>📘 W1 · ภาพ &amp; ปริภูมิสี</h2>
+<b>Tensor:</b> R0 scalar · R1 vector · R2 matrix · R3+ tensor · วีดิโอสี=<b>R4</b>(f,h,w,c)<br>
+<b>Raster</b>=พิกเซล ขยายเห็นบล็อก · <b>Vector</b>=สมการเส้น ขยายคม<br>
+High freq=ขอบ/ลวดลาย · Low=พื้นเรียบ · Contrast ดูจาก histogram<br>
+<b class="blue">Grayscale:</b> <span class="hl f">0.299R+0.587G+0.114B</span> (ITU-R BT.601-7, <b>ไม่ใช่</b>เฉลี่ย)<br>
+Binary=2ระดับ,1บิต · Gray=8บิต · Otsu=Global T · Niblack/Sauvola=Local T<br>
+<b>Cones:</b> L(แดง60%) M(เขียว30%) S(น้ำเงิน) · Rods=ขาวดำ/ที่มืด · แสง 380-780nm
+</div>
+
+<div class="box hot">
+<h2>📘 ปริภูมิสี 🔴</h2>
+<table>
+<tr><th>สี</th><th>แสง</th><th>สี(color)</th></tr>
+<tr><td>RGB</td><td colspan="2"><span class="red">ปนกัน ไม่แยก</span></td></tr>
+<tr><td>YCbCr</td><td>Y</td><td>Cb,Cr</td></tr>
+<tr><td>HSV</td><td>V</td><td>H,S</td></tr>
+</table>
+<span class="f">Y=0.299(R−G)+G+0.114(B−G)</span><br>
+<span class="f">Cb=0.564(B−Y) ; Cr=0.713(R−Y)</span><br>
+HSV: <span class="f">V=max ; S=(max−min)/max</span> ; H=0°แดง 120°เขียว<br>
+White=(255,255,255) Black=(0,0,0)
+</div>
+
+<!-- ===== W2 ===== -->
+<div class="box">
+<h2>📗 W2 · OpenCV/numpy</h2>
+<span class="f">cv2.imread('x',1)</span>=<b class="red">BGR</b> 3มิติ · <span class="f">,0</span>=gray<br>
+🔴 ต้อง <span class="f">cvtColor(img,COLOR_BGR2RGB)</span> ก่อน imshow ไม่งั้นสีเพี้ยน<br>
+<span class="f">.shape</span>=(h,w,c); gray มีแค่(h,w)→<span class="f">.shape[2]</span> Error<br>
+<span class="f">.size</span>=h·w·c (256²·3=196608) · dtype: double(0-1)/uint8(0-255)<br>
+<span class="f">img[100,100,2]</span>=R (BGR, index จาก 0)<br>
+slice <span class="f">a:b:s</span> ไม่รวม b · <span class="red">y=x คืออ้างอิง! ต้อง x.copy()</span><br>
+np.dot=matrix · **=สเกลาร์ · concatenate([[x],[y]])=2มิติ
+</div>
+
+<!-- ===== W3 ===== -->
+<div class="box hot">
+<h2>📙 W3 · Padding &amp; Conv 🔴🔴</h2>
+filter k×k → pad=(k−1)/2 (3×3→1, 5×5→2)<br>
+แถว <span class="f">[1,1,4,4]</span> pad=1:<br>
+Zero <span class="f">[0,1,1,4,4,0]</span><br>
+Replicate <span class="f">[1,1,1,4,4,4]</span> (คัดลอกขอบ)<br>
+Circular <span class="f">[4,1,1,4,4,1]</span> (<span class="red">วนฝั่งตรงข้าม</span>)<br>
+<b class="red">Convolution = พลิก kernel 180° ก่อน!</b> · Correlation ไม่พลิก<br>
+Conv=Corr เมื่อ kernel สมมาตร (avg/Gaussian)<br>
+ตย. identity diag: 7+9+8=<b>24</b><br>
+<span class="red">ลืมพลิก → เครื่องหมายกลับทั้งกระดาน</span>
+</div>
+
+<!-- ===== W4 distance ===== -->
+<div class="box hot">
+<h2>📕 W4 · Distance/Similarity 🔴🔴</h2>
+<span class="f">Euclid = √Σ(xᵢ−yᵢ)²</span><br>
+<span class="f">Manhattan = Σ|xᵢ−yᵢ|</span> (City Block)<br>
+<span class="f">Minkowski (Σ|·|^q)^(1/q)</span> q1=Man q2=Euc<br>
+<span class="f">Cosine = Σxy/(√Σx²·√Σy²)</span><br>
+ตย.(1,3)(4,4): Euc=√10=3.16 · Man=4 · Cos=0.89<br>
+<table>
+<tr><th></th><th>ช่วง</th><th>คล้าย=</th></tr>
+<tr><td>Euc/Man</td><td>0→∞</td><td>น้อย</td></tr>
+<tr><td>Cosine</td><td>−1→1</td><td><span class="red">มาก</span></td></tr>
+</table>
+</div>
+
+<!-- ===== W4 normalization ===== -->
+<div class="box hot">
+<h2>📕 W4 · Normalization 🔴</h2>
+<table>
+<tr><th>วิธี</th><th>สูตร</th><th>ผล</th></tr>
+<tr><td>Max-Min</td><td><span class="f">(x−min)/(max−min)</span></td><td>[0,1]</td></tr>
+<tr><td>L1</td><td><span class="f">xᵢ/Σx</span></td><td>Σ=1</td></tr>
+<tr><td>Z</td><td><span class="f">(x−x̄)/σ</span></td><td>μ0,σ1</td></tr>
+<tr><td>Log</td><td><span class="f">logᵦ(x)</span></td><td>x&gt;0</td></tr>
+</table>
+🔴 ต้อง normalize ก่อนวัดระยะ (feature ช่วงกว้างครอบงำ)<br>
+ตย. อายุ:(20−10)/(100−10)=0.11
+</div>
+
+<!-- ===== W4 activation ===== -->
+<div class="box hot">
+<h2>📕 W4 · Activation 🔴</h2>
+ไม่มี activation → ซ้อนกี่ชั้นก็ <span class="f">y=Wx+b</span> เดียว<br>
+<span class="f">Sigmoid 1/(1+e⁻ˣ)</span>(0,1) · <span class="f">Tanh</span>(−1,1) · <span class="f">ReLU max(0,x)</span>[0,∞)<br>
+<b class="red">ReLU: piecewise linear แต่ non-linear</b> (R(−1+1)=0≠R(−1)+R(1)=1)<br>
+<table>
+<tr><th>Layer</th><th>ใช้</th></tr>
+<tr><td>Hidden MLP/CNN</td><td>ReLU/LeakyReLU</td></tr>
+<tr><td>Hidden RNN</td><td>Sigmoid/Tanh</td></tr>
+<tr><td>Out Regression</td><td>Identity</td></tr>
+<tr><td>Out Binary</td><td>Sigmoid</td></tr>
+<tr><td>Out Multiclass</td><td>Softmax</td></tr>
+</table>
+Identity/Softmax ห้ามใน hidden · ReLU เร็วกว่า sig/tanh ~6×
+</div>
+
+<!-- ===== W5 forward ===== -->
+<div class="box hot">
+<h2>📓 W5 · Forward Prop 🔴🔴</h2>
+<span class="f">net = Σxᵢwᵢ + b</span> → ผ่าน activation<br>
+w1.15 w2.20 w3.25 w4.30 b1.35 | w5.40 w6.45 w7.50 w8.55 b2.60<br>
+in(.05,.10): net_h1=.05·.15+.10·.20+.35=<b>.3775</b> ; net_h2=<b>.3925</b><br>
+Linear→ o1=.3775·.40+.3925·.50+.60=<b>.947</b> o2=<b>.984</b><br>
+Sigmoid hid→ out_h=(.593,.596)→o=(.755,.766)<br>
+<span class="red">🔴 ผ่าน activation ที่ hidden (ใช้ out_h) ก่อนต่อ output!</span><br>
+ทำนาย=คลาสที่ output มากกว่า
+</div>
+
+<!-- ===== W5 loss ===== -->
+<div class="box">
+<h2>📓 W5 · Loss</h2>
+<span class="f">SqErr E=½(t−o)²</span><br>
+<span class="f">Info=−log₂p · Entropy=−Σpᵢlog₂pᵢ</span><br>
+<span class="f">CrossEnt=−Σqᵢlog₂pᵢ=−q_c·log₂(p_c)</span> (q=จริง p=ทาย)<br>
+ตย.(.0006,.0596,.9315): Ent=0.344 CE=0.102<br>
+<span class="f">Hinge=Σmax(0,sⱼ−s_yi+1)</span> (คู่ Tanh)<br>
+Regr: MSE(L2,ไว outlier) MAE(L1,ทน) Huber Log-Cosh<br>
+<span class="red">Entropy ใช้ p·log p ; CrossEnt ใช้ q·log p</span>
+</div>
+
+<!-- ===== W5 optimize ===== -->
+<div class="box">
+<h2>📓 W5 · Optimize/LR</h2>
+<span class="f">x' = x − α·∇f(x)</span><br>
+GD: Batch(ทั้งset) · Mini(N ภาพ) · <b>SGD</b>(1 ภาพ,แกว่ง,ข้อมูลใหญ่)<br>
+α น้อย=ช้า · α มาก=<span class="red">ข้าม overshoot</span> · นิยม .001-.3<br>
+LR: Fixed/Time <span class="f">/(1+k·ep)</span>/Step/Exp/Warmup<br>
+AdaGrad(สะสม g², ลดเร็วเกิน) · RMSProp(เฉลี่ย g², γ.9)<br>
+<b>Vanishing</b>(g≈0,แก้ ReLU/BN/Residual) vs <b>Exploding</b>(g สูง/NaN,แก้ clip/warmup)
+</div>
+
+<!-- ===== W6 CNN core ===== -->
+<div class="box hot">
+<h2>📔 W6 · CNN หลักการ 🔴</h2>
+<b>3 หลักการ:</b> Local Receptive Fields · <b>Shared Weights</b> · Pooling → พารามิเตอร์น้อย, ทน translation, ลด Overfit<br>
+Multi-ch: #kernel/filter = #channel input ; depth ถัดไป = <b>#filter</b><br>
+VGG rule: ลึกขึ้น→(h,w)เล็ก depth เพิ่ม<br>
+<b>Max Pool 2×2 s2:</b> <span class="f">[[0,2,1,3],[5,6,8,7],[1,2,3,1],[2,3,4,2]]→[[6,8],[3,4]]</span> (เก็บเด่น เสียตำแหน่ง)<br>
+Flatten→1มิติ ต่อ FC · GAP=เฉลี่ย/map ลด param
+</div>
+
+<!-- ===== W6 dropout/BN ===== -->
+<div class="box hot">
+<h2>📔 W6 · Dropout &amp; BatchNorm 🔴</h2>
+<b>Dropout:</b> สุ่มปิด neuron p แต่ละรอบ → ลด Co-adapt, Ensemble 2ⁿ<br>
+🔴 <b>FC p=0.5</b> ; <b>Conv/Input p=0.8-0.9</b> (drop น้อย) · <span class="f">W_test=p·W_train</span><br>
+<b>BatchNorm:</b> แก้ Internal Covariate Shift → Zero mean/Unit var<br>
+4 ขั้น: mean&var → normalize → <b>Scale&Shift γ,β</b>(เรียนได้) → EMA<br>
+γ,β = undo normalize ได้ · inference ใช้ EMA<br>
+<b>Regularization:</b> DataAug + BatchNorm + Dropout
+</div>
+
+<!-- ===== W6 misc ===== -->
+<div class="box">
+<h2>📔 W6 · Overfit &amp; Data</h2>
+<b>Overfit:</b> train acc สูง / val ต่ำ / ช่องว่างใหญ่ (ซับซ้อนเกิน)<br>
+<b>Underfit:</b> train&val สูงทั้งคู่ (ไม่ซับซ้อนพอ)<br>
+Dataset(ทั้งหมด) · Batch(ต่อ 1 อัปเดต) · Epoch(ครบ 1 รอบ)<br>
+ตย. 50000÷batch500=100 batch/ep · ×10ep=1000 batch<br>
+แบ่ง 3 ชุด: Train / Validation(ปรับ hyperparam) / Test(สุดท้าย)<br>
+Deep vs Traditional: DL เรียน feature เอง (low→high)
+</div>
+
+<div class="note">⚠️ ทวนสอบตัวเลขทุกตัวด้วย Python แล้ว · แผ่นนี้เป็นแม่แบบ ใช้คัดลอกลงกระดาษด้วยมือ 1 หน้า A4 · Backprop chain rule ไม่ออกสอบ</div>
+</div>

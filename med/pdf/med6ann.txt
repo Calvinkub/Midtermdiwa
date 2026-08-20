@@ -1,0 +1,4447 @@
+Click to edit Master title style
+• Edit Master text styles
+
+Chapter 05 Artificial Neural Networks
+(ANN) – Part 2
+• Second level
+
+• Third level
+
+• Fourth level
+• Fifth level
+
+บรรยายโดย ผศ.ดร.ธราวิเชษฐ2 ธิติจรูญโรจน2
+07/08/68
+
+คณะเทคโนโลยีสารสนเทศ
+สถาบันเทคโนโลยีพระจอมเกล8าเจ8าคุณทหารลาดกระบัง
+
+1
+
+วิ
+ธ
+ก
+ี
+ารแบD
+ง
+กลุ
+ม
+D
+ขJ
+อ
+มู
+ล
+พื
+น
+้
+ฐาน
+Click to edit Master title style
+• • Edit
+การวัด
+ความคล=
+ยโดยอาศัยระยะทาง (Distance)
+Master
+text าstyles
+•
+•
+
+• Second level
+
+Manhattan
+distance
+(also
+called
+1-norm)
+• Third level
+• Fourth level
+Euclidean
+distance
+(also
+called
+2-norm)
+• Fifth level
+
+• การวัดความคล=ายโดยอาศัยองศา (Degree)
+• โครงขOายประสาทเทียม (Artificial neural networks: ANN)
+
+07/08/68
+
+22
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Forward
+Click to edit Master title style
+w1
+
+h1
+
+w5
+
+Master
+text
+styles
+o1
+i1 • Edit
+w2
+w6
+• Second level
+
+i2
+
+w4
+
+• Third level
+w3
+w7
+h2
+
+• Fourth level
+o2level
+w8• Fifth
+
+b1
+
+b2
+
+b1
+
+b2
+
+Backward
+07/08/68
+
+Forward Propagation คือ กระบวนการที่ป/อน Input เข8าสู;แบบจำลองที่ฝBกสอนเรียบร8อย
+แล8ว และคืนค;าเปDนความน;าจะเปDน (Normalized Probabilities) ของแต;ละคลาส จากนั้น
+จะนำค;าดังกล;าวมาใช8ทำนายว;า Input ควรเปDนคลาสใด
+Backward Propagation คือ กระบวนการที่นำค;า Normalized Probabilities ไปใช8เพื่อ
+ปรับปรุง Weight ของแบบจำลองให8เกิดความแม;นยำมากยิ่งขึ้น
+
+Y=W•X
+
+output
+
+weight
+
+input
+3
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Forward
+Click to edit Master title style
+w1
+
+h1
+
+w5
+
+Master
+text
+styles
+o1
+i1 • Edit
+w2
+w6
+• Second level
+
+i2
+
+w4
+
+• Third level
+w3
+w7
+h2
+
+• Fourth level
+o2level
+w8• Fifth
+
+b1
+
+b2
+
+b1
+
+b2
+
+Backward
+07/08/68
+
+Forward Propagation คือ กระบวนการที่ป/อน Input เข8าสู;แบบจำลองที่ฝBกสอนเรียบร8อย
+แล8ว และคืนค;าเปDนความน;าจะเปDน (Normalized Probabilities) ของแต;ละคลาส จากนั้น
+จะนำค;าดังกล;าวมาใช8ทำนายว;า Input ควรเปDนคลาสใด
+Backward Propagation คือ กระบวนการที่นำค;า Normalized Probabilities ไปใช8เพื่อ
+ปรับปรุง Weight ของแบบจำลองให8เกิดความแม;นยำมากยิ่งขึ้น
+
+?=W•X
+
+output
+
+weight
+
+input
+4
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Click to edit Master title style
+ตั
+ว
+อย6
+า
+งที
+่
+1
+การทำงานแบบ
+Forward
+ของโครงข;
+า
+ยประสาทเที
+ย
+ม
+โดยกำหนดให8
+แ
+บบจำลองมี
+ค
+า
+;
+0. 40
+5
+0. 1
+ถ;
+ว
+งน้
+ำ
+หนั
+ก
+และ
+bias
+ดั
+ง
+แสดงในรู
+ป
+นอกจากนี
+้
+กำหนดให8
+Activation
+Function
+เปD
+น
+Linear
+styles
+i1 • Edit Master text o1
+0.05
+และ input vector = 0.10
+• Second level
+0. 2
+
+• Third level
+
+5
+
+0. 4
+
+0. 2
+
+0
+
+h1
+
+0. 5
+
+0. 30
+
+h2
+0.35
+b1
+0.05
+𝑖𝑛𝑝𝑢𝑡 =
+0.10
+
+07/08/68
+
+และ
+
+• Fourth level
+o2level
+•
+Fifth
+5
+.5
+
+0
+
+5
+
+i2
+
+0
+
+0.60
+b2
+0.01
+𝑒𝑥𝑝𝑒𝑐𝑡𝑒𝑑 𝑜𝑢𝑡𝑝𝑢𝑡 =
+0.99
+
+5
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Click to edit Master title style
+ตั
+ว
+อย6
+า
+งที
+่
+1
+การทำงานแบบ
+Forward
+ของโครงข;
+า
+ยประสาทเที
+ย
+ม
+โดยกำหนดให8
+แ
+บบจำลองมี
+ค
+า
+;
+0. 40
+5
+0. 1
+ถ;
+ว
+งน้
+ำ
+หนั
+ก
+และ
+bias
+ดั
+ง
+แสดงในรู
+ป
+นอกจากนี
+้
+กำหนดให8
+Activation
+Function
+เปD
+น
+Linear
+styles
+i1 • Edit Master text o1
+0.05
+และ input vector = 0.10
+• Second level
+0. 2
+
+• Third level
+
+5
+
+0. 4
+
+0. 2
+
+0
+
+h1
+
+0. 5
+
+0
+
+5
+
+i2
+
+0. 30
+
+h2
+0.35
+b1
+
+• Fourth level
+o2level
+•
+Fifth
+5
+.5
+
+0
+
+0.60
+b2
+
+วิธีทำ
+พิจารณาที่ (h1) จะพบว;าผลลัพธqที่ออกจาก (h1) จะเรียกว;า y1 สามารถคำนวณได8ดังนี้
+y1 = f( (0.05)(0.15) + (0.10)(0.20) + 0.35 ) % x = f(x) เป*นรูปแบบ Linear (ไม8ทำ Activation)
+= 0.0075 + 0.02 + 0.35 = 0.3775
+
+พิจารณาที่ (h2) จะพบว;าผลลัพธqที่ออกจาก (h2) จะเรียกว;า y2 สามารถคำนวณได8ดังนี้
+y2 = f( (0.05)(0.25) + (0.10)(0.30) + 0.35 ) % x = f(x) เป*นรูปแบบ Linear (ไม8ทำ Activation)
+= 0.0125 + 0.03 + 0.35 = 0.3925
+
+07/08/68
+
+6
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Click to edit Master title style
+0.3775
+
+ตั
+ว
+อย6
+า
+งที
+่
+1
+การทำงานแบบ
+Forward
+ของโครงข;
+า
+ยประสาทเที
+ย
+ม
+โดยกำหนดให8
+แ
+บบจำลองมี
+ค
+า
+;
+0. 40
+ถ;
+ว
+งน้
+ำ
+หนั
+ก
+และ
+bias
+ดั
+ง
+แสดงในรู
+ป
+นอกจากนี
+้
+กำหนดให8
+Activation
+Function
+เปD
+น
+Linear
+styles
+i1 • Edit Master text o1
+0.05
+และ input vector = 0.10
+• Second level
+h1
+
+0. 4
+
+5
+
+• Third level
+0
+
+• Fourth level
+o2level
+•
+Fifth
+5
+.5
+
+0. 5
+
+i2
+h2
+b1
+
+0
+
+0.3925 0.60
+b2
+
+วิธีทำ
+พิจารณาที่ (h1) จะพบว;าผลลัพธqที่ออกจาก (h1) จะเรียกว;า y1 สามารถคำนวณได8ดังนี้
+y1 = f( (0.05)(0.15) + (0.10)(0.20) + 0.35 ) % x = f(x) เป*นรูปแบบ Linear (ไม8ทำ Activation)
+= 0.0075 + 0.02 + 0.35 = 0.3775
+
+พิจารณาที่ (h2) จะพบว;าผลลัพธqที่ออกจาก (h2) จะเรียกว;า y2 สามารถคำนวณได8ดังนี้
+y2 = f( (0.05)(0.25) + (0.10)(0.30) + 0.35 ) % x = f(x) เป*นรูปแบบ Linear (ไม8ทำ Activation)
+= 0.0125 + 0.03 + 0.35 = 0.3925
+
+07/08/68
+
+7
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Click to edit Master title style
+0.3775
+
+ตั
+ว
+อย6
+า
+งที
+่
+1
+การทำงานแบบ
+Forward
+ของโครงข;
+า
+ยประสาทเที
+ย
+ม
+โดยกำหนดให8
+แ
+บบจำลองมี
+ค
+า
+;
+0. 40
+ถ;
+ว
+งน้
+ำ
+หนั
+ก
+และ
+bias
+ดั
+ง
+แสดงในรู
+ป
+นอกจากนี
+้
+กำหนดให8
+Activation
+Function
+เปD
+น
+Linear
+styles
+i1 • Edit Master text o1
+0.05
+และ input vector = 0.10
+• Second level
+h1
+
+0. 4
+
+5
+
+• Third level
+0
+
+• Fourth level
+o2level
+•
+Fifth
+5
+.5
+
+0. 5
+
+i2
+h2
+b1
+
+0
+
+0.3925 0.60
+b2
+
+วิธีทำ
+พิจารณาที่ (o1) จะพบว;าผลลัพธqที่ออกจาก (o1) สามารถคำนวณได8ดังนี้
+o1 = (0.3775)(0.40) + (0.3925)(0.50) + 0.60
+= 0.151 + 0.196 + 0.60 = 0.947
+
+พิจารณาที่ (o2) จะพบว;าผลลัพธqที่ออกจาก (o2) สามารถคำนวณได8ดังนี้
+o2 = (0.3775)(0.45) + (0.3925)(0.55) + 0.60
+= 0.169 + 0.215 + 0.60 = 0.984
+
+07/08/68
+
+8
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Click to edit Master title style
+ตัวอย6างที่ 1 การทำงานแบบ Forward ของโครงข;ายประสาทเทียม โดยกำหนดให8แบบจำลองมีค;า
+ถ;
+ว
+งน้
+ำ
+หนั
+ก
+และ
+bias
+ดั
+ง
+แสดงในรู
+ป
+นอกจากนี
+้
+กำหนดให8
+Activation
+Function
+เปD
+น
+Linear
+styles
+i1 • Edit Master text o1
+0.947
+0.05
+และ input vector = 0.10
+• Second level
+h1
+
+• Third level
+
+i2
+h2
+b1
+
+วิธีทำ
+• Fourth level
+o2level
+0.984 พิจารณาที่ (o1) จะพบว;าผลลัพธqที่ออกจาก (o1) สามารถคำนวณได8ดังนี้
+• Fifth
+o1 = (0.3775)(0.40) + (0.3925)(0.50) + 0.60
+
+b2
+
+= 0.151 + 0.196 + 0.60 = 0.947
+
+พิจารณาที่ (o2) จะพบว;าผลลัพธqที่ออกจาก (o2) สามารถคำนวณได8ดังนี้
+o2 = (0.3775)(0.45) + (0.3925)(0.55) + 0.60
+= 0.169 + 0.215 + 0.60 = 0.984
+
+0.05
+∴ เมื่อนำ 0.10 ไปทำนายจะได8ผลลัพธqเปDนคลาสที่ 2 เนื่องจากค;าของ o2 มากกว;า o1
+07/08/68
+
+9
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Click to edit Master title style
+ตั
+ว
+อย6
+า
+งที
+่
+2
+การทำงานแบบ
+Forward
+ของโครงข;
+า
+ยประสาทเที
+ย
+ม
+โดยกำหนดให8
+แ
+บบจำลองมี
+ค
+า
+;
+0. 40
+5
+0. 1
+ถ;
+ว
+งน้
+ำ
+หนั
+ก
+และ
+bias
+ดั
+ง
+แสดงในรู
+ป
+นอกจากนี
+้
+กำหนดให8
+Activation
+Function
+เปD
+น
+Logistic
+styles
+i1 • Edit Master text o1
+0.05
+function และ input vector = 0.10
+• Second level
+0. 2
+
+• Third level
+
+5
+
+0. 4
+
+0. 2
+
+0
+
+h1
+
+0. 5
+
+0. 30
+
+h2
+0.35
+b1
+0.05
+𝑖𝑛𝑝𝑢𝑡 =
+0.10
+
+07/08/68
+
+และ
+
+• Fourth level
+o2level
+•
+Fifth
+5
+.5
+
+0
+
+5
+
+i2
+
+0
+
+0.60
+b2
+0.01
+𝑒𝑥𝑝𝑒𝑐𝑡𝑒𝑑 𝑜𝑢𝑡𝑝𝑢𝑡 =
+0.99
+
+10
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Click to edit Master title style
+ตั
+ว
+อย6
+า
+งที
+่
+2
+การทำงานแบบ
+Forward
+ของโครงข;
+า
+ยประสาทเที
+ย
+ม
+โดยกำหนดให8
+แ
+บบจำลองมี
+ค
+า
+;
+0. 40
+5
+0. 1
+ถ;
+ว
+งน้
+ำ
+หนั
+ก
+และ
+bias
+ดั
+ง
+แสดงในรู
+ป
+นอกจากนี
+้
+กำหนดให8
+Activation
+Function
+เปD
+น
+Logistic
+styles
+i1 • Edit Master text o1
+0.05
+function และ input vector = 0.10
+• Second level
+0. 2
+
+• Third level
+
+5
+
+0. 4
+
+0. 2
+
+0
+
+h1
+
+0. 5
+
+0. 30
+
+h2
+0.35
+b1
+
+• Fourth level
+o2level
+•
+Fifth
+5
+.5
+
+0
+
+5
+
+i2
+
+0
+
+0.60
+b2
+
+วิธีทำ
+พิจารณาที่ (h1) จะพบว;าผลลัพธqที่ออกจาก (h1) จะเรียกว;า y1 สามารถคำนวณได8ดังนี้
+y1 = f( (0.05)(0.15) + (0.10)(0.20) + 0.35 ) = f( 0.0075 + 0.02 + 0.35) = f( 0.3775 )
+% out = f(in) =
+=
+
+%
+
+%
+
+%&' !"#
+
+%&' !(%.'(())
+
+เป*นรูปแบบ Logistic function (ทำ Activation)
+
+= 0.593
+
+พิจารณาที่ (h2) จะพบว;าผลลัพธqที่ออกจาก (h2) จะเรียกว;า y2 สามารถคำนวณได8ดังนี้
+y2 = f( (0.05)(0.25) + (0.10)(0.30) + 0.35 ) = f( 0.0125 + 0.03 + 0.35 ) = f( 0.3925 )
+=
+07/08/68
+
+!
+
+!"# !(#.%&'()
+
+= 0.596
+11
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Click to edit Master title style
+0.593
+
+ตั
+ว
+อย6
+า
+งที
+่
+2
+การทำงานแบบ
+Forward
+ของโครงข;
+า
+ยประสาทเที
+ย
+ม
+โดยกำหนดให8
+แ
+บบจำลองมี
+ค
+า
+;
+0. 40
+ถ;
+ว
+งน้
+ำ
+หนั
+ก
+และ
+bias
+ดั
+ง
+แสดงในรู
+ป
+นอกจากนี
+้
+กำหนดให8
+Activation
+Function
+เปD
+น
+Logistic
+styles
+i1 • Edit Master text o1
+0.05
+function และ input vector = 0.10
+• Second level
+h1
+
+0. 4
+
+5
+
+• Third level
+0
+
+• Fourth level
+o2level
+•
+Fifth
+5
+.5
+
+0. 5
+
+i2
+h2
+
+0.596
+b1
+
+0
+
+0.60
+b2
+
+วิธีทำ
+พิจารณาที่ (h1) จะพบว;าผลลัพธqที่ออกจาก (h1) จะเรียกว;า y1 สามารถคำนวณได8ดังนี้
+y1 = f( (0.05)(0.15) + (0.10)(0.20) + 0.35 ) = f( 0.0075 + 0.02 + 0.35) = f( 0.3775 )
+% out = f(in) =
+=
+
+%
+
+%
+
+%&' !"#
+
+%&' !(%.'(())
+
+เป*นรูปแบบ Logistic function (ทำ Activation)
+
+= 0.593
+
+พิจารณาที่ (h2) จะพบว;าผลลัพธqที่ออกจาก (h2) จะเรียกว;า y2 สามารถคำนวณได8ดังนี้
+y2 = f( (0.05)(0.25) + (0.10)(0.30) + 0.35 ) = f( 0.0125 + 0.03 + 0.35 ) = f( 0.3925 )
+=
+07/08/68
+
+!
+
+!"# !(#.%&'()
+
+= 0.596
+12
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Click to edit Master title style
+0.593
+
+ตั
+ว
+อย6
+า
+งที
+่
+2
+การทำงานแบบ
+Forward
+ของโครงข;
+า
+ยประสาทเที
+ย
+ม
+โดยกำหนดให8
+แ
+บบจำลองมี
+ค
+า
+;
+0. 40
+ถ;
+ว
+งน้
+ำ
+หนั
+ก
+และ
+bias
+ดั
+ง
+แสดงในรู
+ป
+นอกจากนี
+้
+กำหนดให8
+Activation
+Function
+เปD
+น
+Logistic
+styles
+i1 • Edit Master text o1
+0.05
+function และ input vector = 0.10
+• Second level
+h1
+
+0. 4
+
+5
+
+• Third level
+0
+
+• Fourth level
+o2level
+•
+Fifth
+5
+.5
+
+0. 5
+
+i2
+h2
+
+0.596
+b1
+
+0
+
+0.60
+b2
+
+วิธีทำ
+พิจารณาที่ (o1) จะพบว;าผลลัพธqที่ออกจาก (o1) สามารถคำนวณได8ดังนี้
+o1 = f( (0.593)(0.40) + (0.596)(0.50) + 0.60 ) = f( 1.13 )
+=
+
+%
+
+%&' !(
+
+1.13) = 0.755
+
+พิจารณาที่ (o2) จะพบว;าผลลัพธqที่ออกจาก (o2) สามารถคำนวณได8ดังนี้
+o2 = f( (0.593)(0.45) + (0.596)(0.55) + 0.60 ) = f( 1.19 )
+=
+07/08/68
+
+%
+
+%&' !(
+
+1.19) = 0.766
+13
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Click to edit Master title style
+ตัวอย6างที่ 2 การทำงานแบบ Forward ของโครงข;ายประสาทเทียม โดยกำหนดให8แบบจำลองมีค;า
+ถ;
+ว
+งน้
+ำ
+หนั
+ก
+และ
+bias
+ดั
+ง
+แสดงในรู
+ป
+นอกจากนี
+้
+กำหนดให8
+Activation
+Function
+เปD
+น
+Logistic
+styles
+0.755
+i1 • Edit Master text o1
+0.05
+function และ input vector = 0.10
+• Second level
+h1
+
+• Third level
+
+• Fourth level
+วิ
+ธ
+ท
+ี
+ำ
+o2level
+0.766
+• Fifth
+
+i2
+
+พิจารณาที่ (o1) จะพบว;าผลลัพธqที่ออกจาก (o1) สามารถคำนวณได8ดังนี้
+o1 = f( (0.593)(0.40) + (0.596)(0.50) + 0.60 ) = f( 1.13 )
+
+h2
+b1
+
+b2
+
+=
+
+%
+
+%&' !(
+
+1.13) = 0.755
+
+พิจารณาที่ (o2) จะพบว;าผลลัพธqที่ออกจาก (o2) สามารถคำนวณได8ดังนี้
+o2 = f( (0.593)(0.45) + (0.596)(0.55) + 0.60 ) = f( 1.19 )
+=
+07/08/68
+
+%
+
+%&' !(
+
+∴ เมื่อนำ
+
+1.19) = 0.766
+
+0.05
+0.10
+
+ไปทำนายจะไดAผลลัพธGเปHนคลาสที่ 2 เนื่องจากคNาของ o2 มากกวNา o1
+
+14
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Click to edit Master title style
+อยNางไรก็ตาม การประเมินประสิทธิภาพของโครงขNายประสาทเทียมจะพิจารณาจาก 2 ปYจจัย ไดAแกN (1) ผล
+ทำนายถูกตAองหรือไมN และ (2) ค)าความมั่นใจของแบบจำลองเปHนอยNางไร อาทิเชNน
+
+h1
+
+styles
+0.755
+i1 • Edit Master text o1
+• Second level
+
+• Third level
+• Fourth level
+o2level
+0.766
+• Fifth
+
+i2
+h2
+
+0.05
+𝑖𝑛𝑝𝑢𝑡 =
+0.10
+
+07/08/68
+
+0.05
+0.10
+
+b2
+
+b1
+
+และ
+
+• กรณีที่ 1 : ทำนายถูก และมีความมั่นใจมาก
+• กรณีที่ 2 : ทำนายถูก และมีความมั่นใจนPอย
+• กรณีที่ 3 : ทำนายไม8ถูก และมีความมั่นใจมาก
+0.755
+ไปทำนายจะไดAผลลัพธGเปHน 0.766 ซึ่งสรุปไดAวNาผลลัพธGเปHน
+
+จากตัวอยNางที่ 2 จะพบวNาเมื่อป`อน
+คลาสที่ 2 เนื่องจากคNาของ o2 มากกวNา o1 ถึงแม4ว)าผลการทำนายจะถูกต4อง แต)แบบจำลองไม)มีความ
+0.01
+มั่นใจเนื่องจากคNา o1 และ o2 ใกลAกันมากและยังหNางไกลจากผลลัพธGที่คาดหวัง 0.99
+
+0.01
+𝑒𝑥𝑝𝑒𝑐𝑡𝑒𝑑 𝑜𝑢𝑡𝑝𝑢𝑡 =
+0.99
+
+15
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Forward
+Click to edit Master title style
+w1
+
+h1
+
+w5
+
+Master
+text
+styles
+o1
+i1 • Edit
+w2
+w6
+• Second level
+
+i2
+
+w4
+
+• Third level
+w3
+w7
+h2
+
+• Fourth level
+o2level
+w8• Fifth
+
+b1
+
+b2
+
+b1
+
+b2
+
+Backward
+07/08/68
+
+Forward Propagation คือ กระบวนการที่ป/อน Input เข8าสู;แบบจำลองที่ฝBกสอนเรียบร8อย
+แล8ว และคืนค;าเปDนความน;าจะเปDน (Normalized Probabilities) ของแต;ละคลาส จากนั้น
+จะนำค;าดังกล;าวมาใช8ทำนายว;า Input ควรเปDนคลาสใด
+Backward Propagation คือ กระบวนการที่นำค;า Normalized Probabilities ไปใช8เพื่อ
+ปรับปรุง Weight ของแบบจำลองให8เกิดความแม;นยำมากยิ่งขึ้น
+
+Y=W•X
+
+output
+
+weight
+
+input
+16
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Forward
+Click to edit Master title style
+w1
+
+h1
+
+w5
+
+Master
+text
+styles
+o1
+i1 • Edit
+w2
+w6
+• Second level
+
+i2
+
+w4
+
+• Third level
+w3
+w7
+h2
+
+• Fourth level
+o2level
+w8• Fifth
+
+b1
+
+b2
+
+b1
+
+b2
+
+Backward
+07/08/68
+
+Forward Propagation คือ กระบวนการที่ป/อน Input เข8าสู;แบบจำลองที่ฝBกสอนเรียบร8อย
+แล8ว และคืนค;าเปDนความน;าจะเปDน (Normalized Probabilities) ของแต;ละคลาส จากนั้น
+จะนำค;าดังกล;าวมาใช8ทำนายว;า Input ควรเปDนคลาสใด
+Backward Propagation คือ กระบวนการที่นำค;า Normalized Probabilities ไปใช8เพื่อ
+ปรับปรุง Weight ของแบบจำลองให8เกิดความแม;นยำมากยิ่งขึ้น
+
+?=W•X
+
+output
+
+weight
+
+input
+17
+
+โครงข&
+า
+ยประสาทเที
+ย
+ม
+Forward
+Click to edit Master title style
+w1
+
+h1
+
+w5
+
+Master
+text
+styles
+o1
+i1 • Edit
+w2
+w6
+• Second level
+
+i2
+
+w4
+
+• Third level
+w3
+w7
+h2
+
+• Fourth level
+o2level
+w8• Fifth
+
+b1
+
+b2
+
+b1
+
+b2
+
+Backward
+07/08/68
+
+Forward Propagation คือ กระบวนการที่ป/อน Input เข8าสู;แบบจำลองที่ฝBกสอนเรียบร8อย
+แล8ว และคืนค;าเปDนความน;าจะเปDน (Normalized Probabilities) ของแต;ละคลาส จากนั้น
+จะนำค;าดังกล;าวมาใช8ทำนายว;า Input ควรเปDนคลาสใด
+Backward Propagation คือ กระบวนการที่นำค;า Normalized Probabilities ไปใช8เพื่อ
+ปรับปรุง Weight ของแบบจำลองให8เกิดความแม;นยำมากยิ่งขึ้น
+
+Y= ?• X
+
+output
+
+weight
+
+input
+18
+
+อ"างอิง https://hmkcode.com/ai/backpropagation-step-by-step/
+
+Back
+Propagation
+Click to edit Master title style
+Forward : ใช8อินพุทเพื่อทำนายคลาส
+
+• Edit Master text styles
+• Second level
+• Third level
+• Fourth level
+0.05
+Input Feature
+=
+• Fifth0.10
+level
+
+0.01
+Input Class = 0.99
+
+Backward : นำค]าความผิดพลาดไปใช8เพื่อปรับค]าถ]วงน้ำหนัก
+07/08/68
+
+19
+
+https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+
+องค$
+ระกอบที
+่ควรรู
+/สำหรับการฝ6กสอนแบบจำลอง
+Clickปto
+edit Master
+title style
+• • Edit
+LossMaster
+Function
+(Objective or Cost Function)
+text styles
+• Second level
+• Optimization
+• Third level
+• Learning Rate
+• Fourth level
+• Fifth level
+
+07/08/68
+
+2020
+
+องค$
+ระกอบที
+่ควรรู
+/สำหรับการฝ6กสอนแบบจำลอง
+Clickปto
+edit Master
+title style
+• • Edit
+LossMaster
+Function
+(Objective or Cost Function)
+text styles
+• Second level
+• Optimization
+• Third level
+• Learning Rate
+• Fourth level
+• Fifth level
+
+07/08/68
+
+2121
+
+Loss Function (Objective or Cost Function)
+
+าความแตกต1าง (Difference)
+หรือค1าความผิดพลาด (Error) ระหว1างค1าที่ไดFจากแบบจำลองกับค1าจากขFอมูลจริง ซึ่งนิยมนำมาใชFเพื่อวัด
+Clickคือ สมการผลรวมของค1
+to edit Master
+title style
+ประสิทธิภาพของแบบจำลองว1ามีความเหมาะสมกับขFอมูลหรือไม1 โดยทั่วไปแลFวค1าของสมการยิ่งนFอยยิ่งดี
+
+Master
+text
+Loss• Edit
+Functions
+จะสะทAอนถึ
+งประสิstyles
+ทธิภาพของแบบจำลอง หรือกลNาวไดAวNา “พารามิเตอรUแต8ละตัวของแบบจำลองมีความเหมาะสมกับขPอมูลหรือไม8” ซึ่ง
+• Second
+Loss Functions
+จะรับคNาlevel
+จาก output layer มาคำนวณเพื่อดูวNา (1) ผลทำนายถูกตAองหรือไมN และ (2) ค)าความมั่นใจของแบบจำลองเปHนอยNางไร เชNน
+• Third level
+
+• กรณีที่ 1 : ทำนายถู
+ก level
+และมีความมั่นใจมาก ซึ่งจะสามารถเรียกไดPว8า ดีและจะใหPค8า Loss ที่นPอย
+• Fourth
+level
+• กรณีที่ 2 : ทำนายถู• ก Fifth
+และมี
+ความมั่นใจนPอย ซึ่งจะสามารถเรียกไดPว8า ไม8ดีและจะใหPค8า Loss ที่มาก
+• กรณีที่ 3 : ทำนายไม8ถูก และมีความมั่นใจมาก ซึ่งจะสามารถเรียกไดPว8า ไม8ดีและจะใหPค8า Loss ที่มาก
+ในตัวอยNางในบทนี้อาศัย Squared Error Function
+𝟏
+𝑬𝒕𝒐𝒕𝒂𝒍 = 𝒕𝒂𝒓𝒈𝒆𝒕 − 𝒐𝒖𝒕𝒑𝒖𝒕 𝟐
+𝟐
+0.05
+0.10
+
+0.755
+ไปทำนายจะไดAผลลัพธGเปHน 0.766 ซึ่งสรุปไดAวNาผลลัพธGเปHนคลาสที่ 2 เนื่องจากคNาของ o2
+
+จากตัวอยNางที่ 2 จะพบวNาเมื่อป`อน
+มากกวNา o1
+0.01
+ถึงแม4ว)าผลการทำนายจะถูกต4อง แต)แบบจำลองไม)มีความมั่นใจเนื่องจากคNา o1 และ o2 ใกลAกันมากและยังหNางไกลจากผลลัพธGที่คาดหวัง 0.99
+07/08/68
+
+22
+
+Loss
+Function
+(Objective
+or
+Cost
+Function)
+Click to edit Master title style
+Loss Functions คือ ฟ•งกqชันสำหรับคำนวณหาความแตกต;างระหว;างผลลัพธq
+ของโครงข;
+ายกับผลลั
+พธqท่ีคาดหวั
+ง เพืstyles
+่อใช8เปDนวิธีการประเมินประสิทธิภาพของ
+• Edit
+Master
+text
+โครงข;ายประสาทเที
+ยม level
+ซึ่งสามารถแบ;งได8เปDน 2 กลุ;ม (1) สำหรับงาน
+• Second
+• Thirdจะได8
+level
+ทางด8าน Classification
+ผลลัพธqเปDนค;าไม;ต;อเนื่อง (discrete values)
+•
+Fourth
+level
+อาทิเช;น 0,1,2… เปDนต8น และ (2) สำหรับงานทางด8าน regression จะได8
+• Fifth level
+ผลลัพธqเปDนค;าแบบต;อเนื่อง (continuous values)
+“A way to measure whether the algorithm is doing a good job —
+This is necessary to determine the distance between the algorithm’s
+current output and its expected output. The measurement is used
+as a feedback signal to adjust the way the algorithm works. This
+adjustment step is what we call learning.”
+François Chollet, Deep learning with Python (2017), Manning,
+chapter 1 p.6
+07/08/68
+
+23
+
+Loss
+Function
+(Objective
+or
+Cost
+Function)
+Click to edit Master title style
+• งานทางด&านการแบ+งแยกชนิดของข&อมูล (Classification)
+
+Master text styles
+• Edit
+Cross-entropy
+• Second
+Binary cross-entropy
+(Log-Loss) สำหรับ binary classification problem
+level
+• Third level
+• Categorical
+cross-entropy สำหรับ binary และ multiclass problem โดยควรทำเฉลยแบบ one-hot encoding อาทิเชNน 3 คลาส [1,
+• 1,
+Fourth
+0, 0] , [0,
+0] และlevel
+[1,0,0]
+• Fifth level
+• Sparse cross-entropy สำหรับ binary และ multiclass problem โดยควรทำเฉลยดAวยเลขจำนวนเต็ม อาทิเชNน 3 คลาส 1,2 และ
+• Hinge Loss
+
+• งานทางด&านการทำนายค+าต+อเนื่อง หรือทดถอย (Regression)
+•
+•
+•
+•
+
+Mean Absolute Error Loss (L1 regularization)
+Mean Square Error Loss (L2 regularization)
+Huber Loss (a combination of MAE and MSE)
+Log-Cosh Loss
+
+07/08/68
+อ-างอิง https://towardsdatascience.com/what-is-loss-function-1e2605aeb904
+
+24
+
+Loss
+Function
+(Objective
+or
+Cost
+Function)
+Click to edit Master title style
+
+Cross-entropy Loss
+
+คือ Loss Function ที่นิยมนำมาใชAงานทางดAาน Classification โดยพัฒนาอยูNบนหลักการของ Log
+• Edit Master text styles Loss ที่ใชAคำนวณความแตกตNางระหวNางสองความนNาจะเปHน ซึ่งคNาของ Cross-entropy จะลดลงเมื่อ
+• Second level
+ความนNาจะเปHนของคNาที่คาดการณGใกลAเคียงกับคNาของผลเฉลย นอกจากนี้ ยังนิยมนำมาใชAงานใน
+• Third level
+Machine Learning คNอนขAางมาก เนื่องจากทำใหAไดAรับแบบจำลองที่ better generalization และ
+• Fourth level
+การฝŒกสอนคNอนขAางรวดเร็ว โดยที่ คNาของ Cross-entropy Loss คือ คNาความนNาจะเปHนที่อยูNในชNวง
+• Fifth level
+ระหวNาง 0 ถึง 1 ซึ่งสามารถคำนวณไดAจากสมการดังตNอไปนี้
+สำหรับข2อมูลจำนวน 2 กลุ;ม
+
+ช"วงของค"า
+เทHากับ 0.00
+น"อยกวHา 0.02
+น"อยกวHา 0.05
+น"อยกวHา 0.20
+มากกวHา 0.30
+เทHากับ 1.00
+มากกวHา 2.00
+07/08/68
+
+ความหมาย
+Perfect probabilities
+Great probabilities
+In a good way
+Great
+Not great
+Hell
+Something is not working
+
+สำหรับข2อมูลจำนวนหลายกลุ;ม
+
+25
+อ-างอิง https://builtin.com/machine-learning/common-loss-functions และ https://towardsdatascience.com/what-is-loss-function-1e2605aeb904
+
+Loss Functions (Cost Function) for Classification Problem
+
+องกันระหว;
+าง Information,
+Entropy
+และ Cross-Entropy
+Clickความเกี
+to่ยวข2
+edit
+Master
+title
+style
+ในป• ค.ศ.
+Shannon
+ไดAศึกstyles
+ษาเกี่ยวกับการหาปริมาณ Information การบีบ
+• 1948
+EditClaude
+Master
+text
+อัดขAอมูล และขี
+จำกัดของการประมวลผลสั
+ญญาณ เขาพบวNา
+• ดSecond
+level
+• Third level
+
+“เหตุการณ*ที่มีโอกาสเกิดขึ้น•ต่ำ Fourth
+(Low Probability)
+level จะมีความนKาสนใจ หรือมี Information สูง
+ในขณะที่เหตุการณ*ที่มีโอกาสเกิดขึ้น•สูงFifth
+(High level
+Probability) จะมี Information ต่ำ”
+ซึ่งสามารถนำมาสรFางสมการไดFโดยอาศัยหลักการ Logarithm ต1อไปนี้
+
+𝐈𝐧𝐟𝐨𝐫𝐦𝐚𝐭𝐢𝐨𝐧 𝐱 = − 𝒍𝒐𝒈𝟐 (𝒑(𝒙))
+− 𝒍𝒐𝒈𝟐 (𝒑(𝒙))
+
+𝒙
+
+Output ของ Softmax
+
+Normalized Probabilities
+
+Dog
+Cat
+Airplane
+
+0.0006
+0.0596
+0.9315
+
+Information(Dog)
+= −𝑙𝑜𝑔0 (0.0006) = 10.70
+Information(Cat)
+= −𝑙𝑜𝑔0 (0.0596) = 4.0685
+Information(Airplane) = −𝑙𝑜𝑔0 (0.9315) = 0.1024
+
+ค"าความน"าจะเป+นของโอกาสในการเกิด (ค"าที่ได<จาก Softmax)
+
+𝒍𝒐𝒈𝟐 (𝒑(𝒙))
+
+ตัวอย;างที่ 1
+
+จากวิธีการคำนวณขFางตFนจะพบว1าเราจะไดFค1า information มา
+ทั้งหมด 3 ค1า
+𝒙
+
+07/08/68
+อ-างอิง https://pytorch.org/docs/stable/nn.html และ https://blog.pjjop.org/loss-functions-for-training-deep-learning-model-part2/
+
+26
+
+Loss Functions (Cost Function) for Classification Problem
+
+องกันระหว;
+าง Information,
+Entropy
+และ Cross-Entropy
+Clickความเกี
+to่ยวข2
+edit
+Master
+title
+style
+
+Entropy
+• Edit Master text styles
+
+คือ ค1าที่ใชFบ1งบอกความบริสุทธc (Purity) หรือความปะปนกันของขFอมูล นอกจากนี้ ในงานทางดFานการ
+• Second level
+เรียนรูFของเครื่องจักรยังสามารถบ1งบอกถึงความน1าสนใจของขFอมูลไดF โดยที่ คKา Entropy ยิ่งนZอยยิ่งดี
+
+ตัวอย;างที่ 1
+
+Output ของ Softmax
+
+Normalized Probabilities
+
+• Third level
+
+Dog
+Cat
+Airplane
+
+• Fourth
+level
+ค"าความน"
+าจะเป+นของโอกาสในการเกิด (ค"าที่ได<จาก Softmax)
+• Fifth level
+𝑬𝒏𝒕𝒓𝒐𝒑𝒚(𝐱) = − ? 𝒑𝒊 (𝒙)𝒍𝒐𝒈𝟐 (𝒑𝒊 (𝒙))
+𝒊#𝟎
+
+0.0006
+0.0596
+0.9315
+
+Entropy = -{
+(0.0006 × log2(0.0006)) +
+(0.0596 × log2(0.0596)) +
+
+ค2า Entropy
+
+(0.9315 × log2(0.9315))
+}
+= -(-0.3442)
+
+− ? 𝒑𝒊 (𝒙)𝒍𝒐𝒈𝟐 (𝒑𝒊 (𝒙))
+𝒊#𝟎
+
+90:10 0000 80:20 0000
+
+ความปะปนของ
+70:30 0000 60:40 0000 50:50 ข+อมูล 2 กลุ2ม
+
+07/08/68
+อ-างอิง https://pytorch.org/docs/stable/nn.html และ https://blog.pjjop.org/loss-functions-for-training-deep-learning-model-part2/
+
+= 0.3442
+
+จากวิธีการคำนวณขFางตFนจะพบว1าค1า Entropy ของผลการรูFจำอยู1
+ที่ 0.3442 และไดFรับมาเพียงค1าเดียว นั้นหมายความว1า 1 ภาพ
+ทำนาย ต1อ 1 ค1า Entropy
+27
+
+Loss Functions (Cost Function) for Classification Problem
+
+องกันระหว;
+าง Information,
+Entropy
+และ Cross-Entropy
+Clickความเกี
+to่ยวข2
+edit
+Master
+title
+style
+
+Cross-Entropy
+Loss (หรือtext
+Logistic
+Loss หรือ Multinomial Logistic Loss)
+• Edit Master
+styles
+
+ตัวอย;างที่ 1
+
+Output ของ Softmax
+
+คือ Loss Function
+ซึ
+่
+ง
+อยู
+1
+บ
+นพื
+้
+น
+ฐานของความน1
+า
+จะเปp
+น
+ของ
+Shannon
+ที
+่
+น
+ิ
+ย
+มนำมาใชF
+ใ
+นงาน
+multi• Second level
+class classification • Third level
+ค"าจาก Softmax ของ Actual
+
+• Fourth level
+• Fifth level
+
+Normalized Probabilities
+
+Dog
+Cat
+Airplane
+
+ค"าจาก Softmax ของ Predict
+
+𝑪𝒓𝒐𝒔𝒔𝑬𝒏𝒕𝒓𝒐𝒑𝒚(𝐱) = − ? 𝒒𝒊 (𝒙)𝒍𝒐𝒈𝟐 (𝒑𝒊 (𝒙))
+𝒊#𝟎
+
+CrossEntropy = -{
+
+ซึ่งสามารถลดรูปไดFดังสมการต1อไปนี้
+𝑪𝒓𝒐𝒔𝒔𝑬𝒏𝒕𝒓𝒐𝒑𝒚 𝐱 = −𝒒𝒄𝒐𝒓𝒓𝒆𝒄𝒕 (𝒙)𝒍𝒐𝒈𝟐 (𝒑𝒄𝒐𝒓𝒓𝒆𝒄𝒕 (𝒙))
+
+โดยที่ค1า Cross-Entropy ยิ่งนFอยยิ่งดี ซึ่งในงานทางดFานการเรียนรูFของเครื่องจักรหมายถึงแบบจำลอง
+ทำนายถูกและมีความมั่นใจมาก
+07/08/68
+
+0.0006
+0.0596
+0.9315
+
+}
+
+(0 × log2(0.0006)) +
+
+// Dog
+
+(0 × log2(0.0596)) +
+
+// Cat
+
+(1 × log2(0.9315))
+
+// AirPlane
+
+0
+0
+1
+(Actual)
+
+= -(-0.1023)
+
+0.0006
+0.0596
+0.9315
+(Predict)
+= 0.1023
+
+จะพบวCาคCา Cross -Entropy ของผลการรูRจำอยูCที่ 0.1023 และไดRรับมา
+เพียงคCาเดียว นั้นหมายความวCา 1 ภาพทำนาย ตCอ 1 คCา
+Cross-Entropy
+28
+
+Loss
+Function
+(Objective
+or
+Cost
+Function)
+Click to edit Master title style
+Weighted Cross-Entropy
+
+• Edit Master text styles
+
+ค"าจาก Softmax ของ Actual
+
+• Second level
+
+ค"าจาก Softmax ของ Predict
+
+• Third level
+
+𝑪𝒓𝒐𝒔𝒔𝑬𝒏𝒕𝒓𝒐𝒑𝒚(𝐱) = − / 𝒘𝒊 𝒒𝒊 (𝒙)𝒍𝒐𝒈𝟐 (𝒑𝒊 (𝒙))
+
+• Fourth level
+• Fifth level
+
+𝒊"𝟎
+
+คือ Loss Function ที่นิยมนำมาใชAงานทางดAาน Classification และ Segmentation ที่พัฒนาตNอยอดมาจาก Cross-Entropy โดยการเพิ่มพจนG Weight ลง
+ไปในพารามิเตอรGบางตัวของสมการทำใหAสามารถหลีกเลี่ยงปYญหาที่เกิดจาก imbalanced datasets (จำนวนขAอมูลตัวอยNาง ในแตNละกลุNมมีจำนวนที่แตกตNาง
+กันคNอนขAางมาก) ไดA
+
+07/08/68
+
+อ-างอิง https://towardsdatascience.com/choosing-and-customizing-loss-functions-for-image-processing-a0e4bf665b0a
+
+29
+
+Loss
+Function
+(Objective
+or
+Cost
+Function)
+Click to edit Master title style
+
+Hinge Loss
+
+คือ Loss Function ที่นิยมนำมาใชAงานทางดAาน Classification และนิยมนำมาใชAงานกับ activation
+• Edit Master text styles function แบบ Tanh ในเลเยอรGสุดทAายของเครือขNาย เนื่องจาก Hinge Loss จะทำงานไดAดีกับคNาในชNวง • Second level
+1 ถึง 1 แทนที่จะเปHน 0 ถึง 1 หลักการทำงานคลAายกับ Cross-entropy Loss แตNจะลงโทษ (1) การ
+• Third level
+ทำนายผิดและ (2) การทายถูกที่ไมNมั่นใจ (ไดAเพียงระดับหนึ่งเทNานั้น) ซึ่งสามารถคำนวณไดAจากสมการ
+• Fourth level
+ดังตNอไปนี้
+• Fifth level
+
+(y_pred) (y_true)
+
+จากสมการจะพบวNามีการใชAเครื่องหมาย (+ / -) ของการจำแนกประเภทเพื่อนำมาคำนวณคNาของ Loss
+Function ซึ่งคNาของ Loss Function จะยิ่งมากขึ้นหากคNาของผลเฉลยมีเครื่องหมายตรงกันขAามกับคNาที่
+ทำนายไดA
+
+07/08/68
+30
+อ-างอิง https://medium.com/analytics-vidhya/overview-of-loss-functions-for-machine-learning-61829095fa8a และ https://builtin.com/machine-learning/common-loss-functions และ https://towardsdatascience.com/what-is-loss-function-1e2605aeb904
+
+Loss Functions (Cost Function) for Classification Problem
+
+Click to edit Master title style
+Hinge•Loss
+Edit Master text styles
+
+คือ Loss Functions
+ที่ออกแบบอยู
+1บนแนวคิดที่ว1า “maximum• Second
+level
+margin classification• และค1
+า (score)
+Third
+levelของกลุ1มที่ถูกตFองจะตFอง
+สูงกว1าค1าของผลรวมในกลุ1มที่ผ•ิด”Fourth level
+
+ตัวอย;างที่ 1
+
+Normalized Probabilities
+
+Dog
+Cat
+Airplane
+
+•ค"าความน"
+Fifth
+level
+าจะเป+
+นจากกลุ"มถูก
+L𝒐𝒔𝒔 = ? max(𝟎, 𝒔𝒋 − 𝒔𝒚𝒊 + 𝟏)
+𝒋 , 𝒚𝒊
+
+ค"าความน"าจะเป+นจากกลุ"มผิด
+
+โดยที่ 𝒔𝒋 และ 𝒔𝒚𝒊 คือ Normalized Probabilities ที่ไดFรับจาก
+Softmax ของกลุ1มที่ถูกและกลุ1มที่ผิดตามลำดับ
+
+07/08/68
+
+Output ของ Softmax
+
+0.0006
+0.0596
+0.9315
+
+Airplane vs Cat
+Airplane vs Dog
+Loss = max(0, 0.0006 - 0.9315 + 1) + max(0, 0.0596 - 0.9315 + 1)
+= max(0, 0.0745) + max(0, 0.1281)
+= 0.0745 + 0.1281
+= 0.2026
+
+จากวิธีการคำนวณขFางตFนจะไดFรับค1า Loss เท1ากับ 0.2026 แสดงว1าทำนายไดFถูกตFองและมีค1าความ
+มั่นใจมาก เนื่องจากคKา Loss เขZาใกลZ 0
+อ-างอิง https://pytorch.org/docs/stable/nn.html
+และ
+31
+https://towardsdatascience.com/common-loss-functions-in-machine-learning-46af0ffc4d23
+
+Loss Functions (Cost Function) for Classification Problem
+
+Click to edit Master title style
+Hinge•Loss
+Edit Master text styles
+
+คือ Loss Functions
+ที่ออกแบบอยู
+1บนแนวคิดที่ว1า “maximum• Second
+level
+margin classification• และค1
+า (score)
+Third
+levelของกลุ1มที่ถูกตFองจะตFอง
+สูงกว1าค1าของผลรวมในกลุ1มที่ผ•ิด”Fourth level
+
+ตัวอย;างที่ 2
+Normalized Probabilities
+
+Dog
+Cat
+Airplane
+
+•ค"าความน"
+Fifth
+level
+าจะเป+
+นจากกลุ"มถูก
+L𝒐𝒔𝒔 = ? max(𝟎, 𝒔𝒋 − 𝒔𝒚𝒊 + 𝟏)
+𝒋 , 𝒚𝒊
+
+ค"าความน"าจะเป+นจากกลุ"มผิด
+
+โดยที่ 𝒔𝒋 และ 𝒔𝒚𝒊 คือ Normalized Probabilities ที่ไดFรับจาก
+Softmax ของกลุ1มที่ถูกและกลุ1มที่ผิดตามลำดับ
+
+07/08/68
+
+0.691
+0.245
+0.064
+
+Loss = max(0, 0.691 - 0.245 + 1) + max(0, 0.064 - 0.245 + 1)
+= max(0, 1.446) + max(0, 0.819)
+= 1.446 + 0.819
+= 2.265
+
+จากวิธีการคำนวณขFางตFนจะไดFรับค1า Loss เท1ากับ 2.265 แสดงว1าทำนายไดFไม1ถูกตFองและมีค1าความ
+มั่นใจนFอย เนื่องจากคKา Loss เขZามากกวKา 0
+อ-างอิง https://pytorch.org/docs/stable/nn.html
+และ
+32
+https://towardsdatascience.com/common-loss-functions-in-machine-learning-46af0ffc4d23
+
+Loss
+Function
+(Objective
+or
+Cost
+Function)
+Click to edit Master title style
+Mean Square Error (MSE) or Squared Error Loss or Quadratic Loss (L2 (Ridge) regularization)
+• Edit Master text styles
+• Second level
+• Third level
+• Fourth level
+• Fifth level
+
+คือ Loss Function ที่นิยมนำมาใชAงานทางดAาน Regression ซึ่งจะพิจารณาจากคNาเฉลี่ยของคNา
+ความแตกตNาง (หรือคNาความคลาดเคลื่อน) ระหวNางผลลัพธGของโครงขNายประสาทเทียม (y_pred)
+กับผลลัพธGที่คาดหวัง (y_true) ในรูปแบบผลตNางยกกำลังสอง ซึ่ง MSE ไมNเหมาะสมกับขAอมูลที่
+พบ Outlier คNอนขAางมาก เพราะการคำนวณหาคNา MSE จะคิดจากผลตNางยกกำลังสองทำใหA
+ขAอมูล Outlier ใหAคNาผลตNางคNอนสูง สNงผลใหAการฝŒกสอนแบบจำลองมีการคลาดเคลื่อนตามมา
+คNาที่ไมNไดAสะทAอนกลุNมขAอมูลหลัก
+
+07/08/68
+33
+อ-างอิง https://medium.com/analytics-vidhya/overview-of-loss-functions-for-machine-learning-61829095fa8a และ https://builtin.com/machine-learning/common-loss-functions และ https://towardsdatascience.com/what-is-loss-function-1e2605aeb904
+
+Loss
+Function
+(Objective
+or
+Cost
+Function)
+Click to edit Master title style
+Mean Absolute Error (MAE) Loss (L1 (Lasso) regularization)
+• Edit Master text styles
+• Second level
+• Third level
+• Fourth level
+• Fifth level
+
+คือ Loss Function ที่นิยมนำมาใชAงานทางดAาน Regression ซึ่งจะพิจารณาจากคNาเฉลี่ยของคNา
+ความแตกตNาง (หรือคNาความคลาดเคลื่อน) ระหวNางผลลัพธGของโครงขNายประสาทเทียม (y_pred)
+กับผลลัพธGที่คาดหวัง (y_true) ในรูปแบบคNาสมบูรณG ซึ่ง MAE มีความทนทานกับขAอมูลที่พบ
+Outlier มากกวNา MSE เนื่องจาก MAE มีพฤติกรรมคลAายกับ Median ของทางสถิติ แตNอยNางไรก็
+ตาม การนำคNา MAE ไปใชAเพื่อ Optimization แบบจำลองอาจจะใชAเวลาในการฝŒกสอนนานเกิน
+ความจำเปHน เนื่องจากขยับคNาอยูNในชNวง +1 ถึง -1
+
+'
+
+1
+𝐿𝑜𝑠𝑠 = ( 𝑦$ − 𝑦()#*$+,_$
+𝑛
+$%&
+
+07/08/68
+34
+อ-างอิง https://medium.com/analytics-vidhya/overview-of-loss-functions-for-machine-learning-61829095fa8a และ https://builtin.com/machine-learning/common-loss-functions และ https://towardsdatascience.com/what-is-loss-function-1e2605aeb904
+
+Loss
+Function
+(Objective
+or
+Cost
+Function)
+Click to edit Master title style
+Huber Loss (Smooth Mean Absolute Error)
+• Edit Master text styles
+• Second level
+• Third level
+• Fourth level
+• Fifth level
+
+คือ Loss Function ที่ผสมผสานการทำงานระหวNาง MAE และ MSE เขAาดAวยกัน และนิยม
+นำมาใชA ง านทางดA า น Regression โดยอาศั ย หลั ก การ Log ของ hyperbolic cosine ซึ ่ ง
+พั ฒ นามาจากแนวความคิ ด ที ่ ว N า MSE เหมาะสมกั บ ขA อ ผิ ด พลาดเล็ ก นA อ ย ขณะที ่ MAE
+เหมาะสมกับขAอผิดพลาดขนาดใหญN โดยอาศัยคNา Delta เปHนตัวกำกับการตัดสินใจ นอกจากนี้
+Huber Loss ยังคงเหมาะสมกับงานทางดAาน Regression แมAวNา Huber Loss ไดAรวมเอาขAอดี
+ของ MSE และ MAE เขAาดAวยกัน แตNคNา Delta จะกลายเปHนหนึ่งในไฮเปอรGพารามิเตอรGอีกอัน
+ที่ตAองฝŒกสอนแบบจำลองเพื่อคAนหาคNาที่เหมาะสม
+
+07/08/68
+35
+อ-างอิง https://medium.com/analytics-vidhya/overview-of-loss-functions-for-machine-learning-61829095fa8a และ https://builtin.com/machine-learning/common-loss-functions และ https://towardsdatascience.com/what-is-loss-function-1e2605aeb904
+
+Loss
+Function
+(Objective
+or
+Cost
+Function)
+Click to edit Master title style
+
+Log-Cosh Loss
+
+• Edit Master text styles
+• Second level
+
+คือ Loss Function ที่คลAายคลึงกับ MSE ที่มีความทนทานตNอขAอมูล Outlier และนิยม
+นำมาใชAงานทางดAาน Regression ที่พยายามจะนำขAอดีของ MSE Loss และ MAE มา
+ผสมผสานเขAาดAวยกัน
+
+• Third level
+• Fourth level
+• Fifth level
+
+โดยที่ a ∈ R+ เปHนพารามิเตอรGที่ตAองฝŒกสอน และลอการิทึมเปHนฐานธรรมชาติ คNามาก LogCosh Loss อยูNในชNวง −1 ถึง 1 สำหรับ a ที่ตNางกัน ซึ่งถAาพิจารณาจะพบวNา คNาของ t คือ
+ผลตNางระหวNางผลลัพธGของโครงขNายประสาทเทียม (y_pred) กับผลลัพธGที่คาดหวัง (y_true)
+ซึ่ง ถAา |t| มีคNามาก Log-Cosh Loss จะมีพฤติกรรมคลAายกับ MAE ขณะที่ ถAา |t| มีคNานAอย
+Log-Cosh Loss จะมีพฤติกรรมคลAายกับ MSE
+นอกจากนี้ Log-Cosh Loss ยังใชAเวลาคำนวณนAอยกวNา Huber Loss แตNอยNางไรก็ตาม LogCosh Loss สามารถปรับเปลี่ยนลักษณะของกราฟไดAนAอยกวNา Huber Loss
+07/08/68
+อ-างอิง https://stats.stackexchange.com/questions/464354/when-is-log-cosh-loss-used
+
+36
+
+องค$
+ระกอบที
+่ควรรู
+/สำหรับการฝ6กสอนแบบจำลอง
+Clickปto
+edit Master
+title style
+• • Edit
+LossMaster
+Function
+(Objective or Cost Function)
+text styles
+• Second level
+• Optimization
+• Third level
+• Learning Rate
+• Fourth level
+• Fifth level
+
+07/08/68
+
+3737
+
+Optimization
+
+Click to edit Master title style
+• Edit Master text styles
+• Second level
+• Third level
+• Fourth level
+• Fifth level
+
+คือ อัลกอริทึมสำหรับปรับปรุงแบบจำลอง (Optimization Algorithm) ให8มีประสิทธิภาพมากยิ่งขึ้น โดยพิจารณาจากค;าความผิดพลาดที่เกิดขึ้น
+เพื่อไปคำนวณหาค;าพารามิเตอรqต;าง ๆ ของแบบจำลองใหม; นอกจากนี้ Optimizer ยังเก็บข8อมูลสถานะและค;าพารามิเตอรqต;าง ๆ ของแบบจำลอง
+ไว8 และOptimizer ต8องการกำหนดค;าพารามิเตอรqต;าง ๆ ที่จำเปDน อาทิเช;น learning rate, optimizer-specific เปDนต8น
+ในป•จจุบันนี้ มีวิธีการสร8าง Optimizer ค;อนข8างหลากหลาย แต;ตัวที่เปDนพื้นฐาน ได8แก; Gradient Descent ร;วมกับ Loss Function โดยที่
+Gradient Descent มีหน8าที่บ;งบอกทิศทาง ขณะที่ Loss Function มีหน8าที่บ;งบอกว;าถูกหรือผิด
+07/08/68
+
+38
+อ"างอิง https://medium.com/mmp-li/gradient-descent-คีย>เวิร>ดที่-data-science-ต"องรู"จัก-machine-learning-101-b5c78c1787a0
+
+Gradient Descent
+
+ลกอริedit
+ทึมปรับปรุงMaster
+แบบจำลอง (Optimization
+Clickคือ อัto
+titleAlgorithm)
+styleแบบทำงานซ้ำไปเรื่อย ๆ จนกวNาจะพบ (1) คNาต่ำสุดของฟWงกXชัน หรือ (2) จนกวNาจะเข\าใกล\คNา
+ต่ำสุดที่สามารถยอมรับได\
+
+นอกจากนี
+้
+Gradient
+Descent
+ยั
+ง
+เปH
+น
+อั
+ล
+กอริ
+ธ
+ึ
+ม
+การเพิ
+่
+ม
+ประสิ
+ท
+ธิ
+ภ
+าพแบบอนุ
+พ
+ั
+น
+ธG
+ล
+ำดั
+บ
+ที
+่
+ห
+นึ
+่
+ง
+ที
+่
+น
+ิ
+ย
+ม
+• Edit Master text styles
+ในการเรี
+ย
+นรู
+A
+ข
+องเครื
+่
+อ
+งและการเรี
+ย
+นรู
+A
+เ
+ชิ
+ง
+ลึ
+ก
+ซึ
+่
+ง
+จะพิ
+จ
+ารณาเฉพาะอนุ
+พ
+ั
+น
+ธG
+ล
+ำดั
+บ
+แรกเมื
+่
+อ
+ทำการอั
+พ
+เดต
+• Second level
+พารามิเตอรGตNาง ๆ ในทิศทางตรงกันขAามกับการไลNระดับของฟYงกGชันจุดประสงคG (Objective Function:
+• Third level
+𝑓 $ ) ในการทำซ้ำแตNละรอบ ซึ่งขนาดในการเปลี่ยนแปลงจะขึ้นอยูNกับอัตราการเรียนรูA (Learning
+• Fourth level
+• Fifth level
+rate: 𝛼) โดยอาศัยสมการตNอไปนี้
+current position
+
+opposite direction
+
+gradients of loss function
+
+/
+𝒙𝒊 = 𝐱 𝐢 − 𝛂𝛁𝐟(𝐱 𝐢 )
+next position
+
+07/08/68
+
+learning rate (step size)
+
+ซึ่ง Gradient Descent มีหลายประเภท อาทิเชNน (1) Batch Gradient Descent, (2) Mini-batch
+Gradient Descent, และ (3) Stochastic Gradient Descent.
+39
+
+อ"างอิง https://medium.com/mmp-li/gradient-descent-คีย>เวิร>ดที่-data-science-ต"องรู"จัก-machine-learning-101-b5c78c1787a0 และ https://towardsdatascience.com/gradient-descent-algorithm-and-its-variants-10f652806a3
+
+Gradient
+Descent
+Click to edit Master title style
+Gradient Descent มีหลายประเภท อาทิเชNน (1) Batch, (2) Mini-batch และ (3) Stochastic Gradient Descent
+
+• Edit Master text styles
+• Second
+level
+Batch
+Gradient
+Descent
+• Third level
+
+Mini-batch Gradient Descent
+
+Stochastic Gradient Descent
+
+• Fourth level
+• Fifth level
+
+แต"ละครั้งไม"ได<การันตีว"าค"า Loss Function จะลดลง ซึ่งอาจจะเพิ่มขึ้นก็ได<
+
+ภาพรวมของกราฟค"า loss function จะค"อย ๆ ลดลงในทุก ๆ epoch
+
+อัพเดตคCาพารามิเตอรeของแบบจำลองเพียงครั้งเดียวตCอการ
+ประมวลผลขRอมูลทั้งหมดจากชุดฝjกสอน ซึ่งเปnนการปรับปรุง
+แบบจำลองตามคCาเฉลี่ยของ Loss Function
+
+07/08/68
+
+อัพเดตคCาพารามิเตอรeของแบบจำลองเพียงครั้งเดียวตCอการ
+ประมวลผลขR อ มู ล N ภาพจากชุ ด ฝj ก สอน ซึ ่ ง เปn น การ
+ปรับปรุงแบบจำลองตามคCาเฉลี่ยของ Loss Functionจาก
+ขRอมูล N ภาพ
+
+อัพเดตคCาพารามิเตอรeของแบบจำลองเพียงหนึ่งครั้งตCอ
+การประมวลผลขRอมูล 1 ภาพจากชุดฝjกสอน ซึ่งเปnนการ
+ปรับปรุงแบบจำลองตามคCา Loss Function ของภาพนั้น
+ๆ และมีความเหมาะสมกับฐานขRอมูลขนาดใหญC เพราะจะ
+ทำใหRคCา Loss Function ลดลงเร็วมากกวCา
+40
+
+อ"างอิง https://towardsdatascience.com/batch-mini-batch-stochastic-gradient-descent-7a62ecba642a
+
+Back
+Propagation
+:
+Output
+Layer
+Click to edit Master title style
+จุดประสงคG คือ “เราจะใชPค8าความผิดพลาดทั้งหมดเพื่อใชPในการปรับค8าถ8วงน้ำหนัก ณ ตำแหน8ง w5”
+
+• Edit Master text styles
+• Second level
+• Third level
+
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+
+คื
+อ
+การเปลี
+ย
+่
+นแปลงของคN
+า
+ถN
+ว
+งน้
+ำ
+หนั
+ก
+ตั
+ว
+ที
+่
+5
+(Weight)
+ที
+ส
+่
+ง
+N
+ผลตN
+อ
+คN
+า
+ความผิ
+ด
+พลาด
+(Error)
+𝝏𝒘𝟓
+จากรูปนักศึกษาจะพบวNาการที่จะใชAคNาความผิดพลาดเพื่อปรับปรุงคNาถNวงน้ำหนักนั้นไมNสามารถ
+คำนวณไดAโดยตรง ซึ่งจะพบวNา
+ค"าความผิดพลาด (𝑬𝒕𝒐𝒕𝒂𝒍 )
+
+• Fourth level
+• Fifth level
+
+¯
+𝒐𝒖𝒕𝒐𝟏 = 𝟎. 𝟕𝟓
+
+ผลลัพธ0ของเครือข"าย (𝒐𝒖𝒕𝒐𝟏 )
+
+𝑳𝟏 = 𝟎. 𝟎𝟏
+
+¯
+
+ผลลัพธ0ของเลเยอร0ก"อนหน;า (𝒏𝒆𝒕𝒐𝟏 = 𝒉𝟏 ×𝒘𝟓 )
+¯
+𝒐𝒖𝒕𝒐𝟐 = 𝟎. 𝟕𝟕
+
+ค"าถ"วงน้ำหนัก (𝒘𝟓 )
+
+𝑳𝟐 = 𝟎. 𝟗𝟗
+
+ซึ่งจากกฏของ Chain rule จะสามารถเขียนเปHนสมการคณิตศาสตรGไดAดังนี้
+
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍 𝝏𝑬𝒕𝒐𝒕𝒂𝒍 𝝏𝒐𝒖𝒕𝒐𝟏 𝝏𝒏𝒆𝒕𝒐𝟏
+𝝏𝑬𝒐𝟏 𝝏𝒐𝒖𝒕𝒐𝟏 𝝏𝒏𝒆𝒕𝒐𝟏
+=
+∗
+∗
+=
+∗
+∗
+𝝏𝒘𝟓
+𝝏𝒐𝒖𝒕𝒐𝟏 𝝏𝒏𝒆𝒕𝒐𝟏
+𝝏𝒘𝟓
+𝝏𝒐𝒖𝒕𝒐𝟏 𝝏𝒏𝒆𝒕𝒐𝟏
+𝝏𝒘𝟓
+
+07/08/68
+
+41
+
+https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+
+Back
+Propagation
+:
+Output
+Layer
+Click to edit Master title style
+ซึ่งจากกฏของ Chain rule จะสามารถเขียนเปHนสมการคณิตศาสตรGไดAดังนี้
+
+• Edit Master text styles
+
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+𝝏𝑬𝒐𝟏 𝝏𝒐𝒖𝒕𝒐𝟏 𝝏𝒏𝒆𝒕𝒐𝟏
+=
+∗
+∗
+𝝏𝒘𝟓
+𝝏𝒐𝒖𝒕𝒐𝟏 𝝏𝒏𝒆𝒕𝒐𝟏
+𝝏𝒘𝟓
+
+• Second level
+• Third level
+• Fourth level
+• Fifth level
+
+𝝏
+𝟏
+L𝟏 − 𝒐𝒖𝒕𝒐𝟏 𝟐 = −(L𝟏 − 𝒐𝒖𝒕𝒐𝟏 )
+𝝏𝒐𝒖𝒕𝒐𝟏 𝟐
+
+Diff ตัว Error
+
+𝝏
+1
+= 𝒐𝒖𝒕𝒐𝟏 (𝟏 − 𝒐𝒖𝒕𝒐𝟏 )
+2345
+!"
+𝝏𝒏𝒆𝒕𝒐𝟏 1 + 𝑒
+
+Diff ตัว Activation
+Function
+7
+
+*สมมติใช\สมการ Logistic Function: 𝑜𝑢𝑡67 = 𝑓8 (𝑛𝑒𝑡67 ) = 794 #$%&!"
+𝝏
+𝒘𝟓 5 𝒐𝒖𝒕𝒉𝟏 + 𝒘𝟔 5 𝒐𝒖𝒕𝒉𝟐 + 𝒃𝟐 = 𝟏 5 𝒘𝟓 𝟏*𝟏 5 𝒐𝒖𝒕𝒉𝟏 + 𝟎 + 𝟎 = 𝒐𝒖𝒕𝒉𝟏
+𝝏𝒘𝟓
+07/08/68
+
+42
+
+https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+
+Back
+Propagation
+:
+Output
+Layer
+Click to edit Master title style
+ซึ่งจากกฏของ Chain rule จะสามารถเขียนเปHนสมการคณิตศาสตรGไดAดังนี้
+
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+𝝏𝑬𝒐𝟏 𝝏𝒐𝒖𝒕𝒐𝟏 𝝏𝒏𝒆𝒕𝒐𝟏
+=
+∗
+∗
+𝝏𝒘𝟓
+𝝏𝒐𝒖𝒕𝒐𝟏 𝝏𝒏𝒆𝒕𝒐𝟏
+𝝏𝒘𝟓
+
+• Edit Master text styles
+• Second level
+• Third level
+
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+= − L𝟏 − 𝒐𝒖𝒕𝒐𝟏
+𝝏𝒘𝟓
+
+• Fourth level
+• Fifth level
+𝒐𝒖𝒕𝒐𝟏 = 𝟎. 𝟕𝟓
+𝑳𝟏 = 𝟎. 𝟎𝟏
+
+𝒐𝒖𝒕𝒐𝟐 = 𝟎. 𝟕𝟕
+𝑳𝟐 = 𝟎. 𝟗𝟗
+
+07/08/68
+
+∗ 𝒐𝒖𝒕𝒐𝟏 𝟏 − 𝒐𝒖𝒕𝒐𝟏
+
+∗ 𝒐𝒖𝒕𝒉𝟏
+
+𝐟𝐋 (𝐢𝟏 5 𝐰𝟏 + 𝐢𝟐 5 𝐰𝟐 + 𝐛𝟏 )
+
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+= − 𝟎. 𝟎𝟏 − 𝟎. 𝟕𝟓 ∗ 𝟎. 𝟕𝟓 𝟏 − 𝟎. 𝟕𝟓 ∗ 𝟎. 𝟓𝟗
+𝝏𝒘𝟓
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+= 𝟎. 𝟕𝟒 ∗ 𝟎. 𝟏𝟗 ∗ 𝟎. 𝟓𝟗
+𝝏𝒘𝟓
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+= 𝟎. 𝟎𝟖𝟐𝟗𝟓𝟒
+𝝏𝒘𝟓
+43
+
+https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+
+Back
+Propagation
+:
+Output
+Layer
+Click to edit Master title style
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+∴
+= 𝟎. 𝟎𝟖𝟐𝟗𝟓𝟒
+𝝏𝒘𝟓
+
+• Edit Master text styles
+• Second level
+
+นำคNาที่ไดAไปปรับปรุงคNาถNวงน้ำหนัก 𝒘𝟓 จากสมการตNอไปนี้
+
+• Third level
+• Fourth level
+• Fifth level
+
+∗
+𝒐𝒖𝒕𝒐𝟏 = 𝟎. 𝟕𝟓
+𝑳𝟏 = 𝟎. 𝟎𝟏
+
+นำคNาถNวงน้ำหนัก 𝑤D ไปแทนในสมการขAางตAน นอกจากนี้ กำหนดใหA Learning rate คือ 0.5
+∗
+
+𝒐𝒖𝒕𝒐𝟐 = 𝟎. 𝟕𝟕
+
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+𝒘𝟓 = 𝒘𝟓 − 𝒂
+𝝏𝒘𝟓
+
+𝒘𝟓 = 𝟎. 𝟒𝟎 − 𝟎. 𝟓 𝟎. 𝟎𝟖𝟐𝟗𝟓𝟒
+∗
+𝒘𝟓 = 𝟎. 𝟑𝟓𝟖𝟗𝟏𝟔
+
+𝑳𝟐 = 𝟎. 𝟗𝟗
+
+07/08/68
+
+44
+
+https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+
+แบบฝF
+ก
+หั
+ด
+Click to edit Master title style
+• Edit Master text styles
+• Second level
+• Third level
+• Fourth level
+• Fifth level
+𝒐𝒖𝒕𝒐𝟏 = 𝟎. 𝟕𝟓
+𝑳𝟏 = 𝟎. 𝟎𝟏
+
+𝒐𝒖𝒕𝒐𝟐 = 𝟎. 𝟕𝟕
+𝑳𝟐 = 𝟎. 𝟗𝟗
+
+07/08/68
+
+ใหAนักศึกษาลองคำนวณหาคNาถNวงน้ำหนักตNอไปนี้ โดยกำหนดใหA Learning rate คือ 0.5
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+∗
+𝒘𝟔 = 𝒘𝟔 − 𝒂
+𝝏𝒘𝟔
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+∗
+𝒘𝟕 = 𝒘𝟕 − 𝒂
+𝝏𝒘𝟕
+𝝏𝑬
+𝒕𝒐𝒕𝒂𝒍
+∗
+𝒘𝟖 = 𝒘𝟖 − 𝒂
+𝝏𝒘𝟖
+เฉลย
+
+∗
+
+𝒘𝟔 ≈ 𝟎. 𝟒𝟏
+∗
+𝒘𝟕 ≈ 𝟎. 𝟓𝟏
+∗
+𝒘𝟖 ≈ 𝟎. 𝟓𝟔
+
+45
+
+https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+
+Back
+Propagation
+:
+Hidden
+Layer
+Click to edit Master title style
+
+ความตAองการ คือ “เราจะใชPค8าความผิดพลาดทั้งหมดเพื่อใชPในการปรับค8าถ8วงน้ำหนัก ณ ตำแหน8ง w1”
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+
+• Edit Master text styles
+• Second𝒘level
+𝟔
+• Third level
+• Fourth level
+• Fifth level
+
+𝝏𝒘𝟏
+
+คือ การเปลี่ยนแปลงของคNาถNวงน้ำหนักตัวที่ 1 ที่สNงผลตNอคNาความผิดพลาด
+
+จากรูปนักศึกษาจะพบวNาการที่จะใชAคNาความผิดพลาดเพื่อปรับปรุงคNาถNวงน้ำหนักนั้นไมNสามารถคำนวณไดA
+โดยตรง ซึ่งจะพบวNา
+ค"าความผิดพลาด (𝑬𝒕𝒐𝒕𝒂𝒍 )
+¯
+
+ผลลัพธ0ของเครือข"าย (𝒐𝒖𝒕𝒉𝟏 )
+
+คDาความผิดพลาด (𝑬𝒐𝟏 )
++
+คDาความผิดพลาด (𝑬𝒐𝟐 )
+
+¯
+
+ผลลัพธ0ของเลเยอร0ก"อนหน;า (𝒏𝒆𝒕𝒉𝟏 )
+¯
+
+ค"าถ"วงน้ำหนัก (𝒘𝟏 )
+
+ซึ่งจากกฏของ Chain rule จะสามารถเขียนเปHนสมการคณิตศาสตรGไดAดังนี้
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍 𝝏𝒐𝒖𝒕𝒉𝟏 𝝏𝒏𝒆𝒕𝒉𝟏
+=
+∗
+∗
+𝝏𝒘𝟏
+𝝏𝒐𝒖𝒕𝒉𝟏 𝝏𝒏𝒆𝒕𝒉𝟏
+𝝏𝒘𝟏
+07/08/68
+
+=
+
+𝝏𝑬𝒐𝟏
+𝝏𝑬𝒐𝟐
+𝝏𝒐𝒖𝒕𝒉𝟏 𝝏𝒏𝒆𝒕𝒉𝟏
+(𝝏𝒐𝒖𝒕 + 𝝏𝒐𝒖𝒕 ) ∗ 𝝏𝒏𝒆𝒕 ∗ 𝝏𝒘
+𝒉𝟏
+𝒉𝟏
+𝒉𝟏
+𝟏
+46
+
+https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+
+Back
+Propagation
+Click to edit Master title style
+• Edit Master text styles
+• Second level
+• Third level
+𝒘𝟔
+
+• Fourth level
+• Fifth level
+
+ซึ่งจากกฏของ Chain rule จะสามารถเขียนเปHนสมการคณิตศาสตรGไดAดังนี้
+Output Layer
+เชื่อมระหวDาง source node ไป destination node
+
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+𝝏𝑬𝒐𝟏
+=
+𝝏𝒘𝟓
+𝝏𝒐𝒖𝒕𝒐𝟏
+
+เชื่อมระหวDาง
+destination
+node ไป
+คDาถDวงน้ำหนัก
+
+𝝏𝒐𝒖𝒕𝒐𝟏 𝝏𝒏𝒆𝒕𝒐𝟏
+∗
+∗
+𝝏𝒏𝒆𝒕𝒐𝟏
+𝝏𝒘𝟓
+
+Hidden Layer
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+𝝏𝒘𝟏
+
+=(
+
+𝝏𝑬𝒐𝟏
+
+𝝏𝒐𝒖𝒕𝒉𝟏
+
++
+
+𝝏𝑬𝒐𝟐
+𝝏𝒐𝒖𝒕𝒉𝟏
+
+)∗
+
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+𝜹 =
+𝝏𝒏𝒆𝒕
+07/08/68
+
+𝝏𝒐𝒖𝒕𝒉𝟏
+𝝏𝒏𝒆𝒕𝒉𝟏
+
+∗
+
+𝝏𝒏𝒆𝒕𝒉𝟏
+𝝏𝒘𝟏
+
+𝝏𝒏𝒆𝒕
+𝝏𝒘
+47
+
+https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+
+Back
+Propagation
+:
+Hidden
+Layer
+Click to edit Master title style
+𝒘𝟔 styles
+• Edit Master text
+
+• Second level
+
+𝑬𝒕𝒐𝒕𝒂𝒍 = 𝑬𝒐𝟏 + 𝑬𝒐𝟐
+
+• Third level
+• Fourth level
+• Fifth level
+
+ซึ่งจากกฏของ Chain rule จะสามารถเขียนเปHนสมการคณิตศาสตรGไดAดังนี้
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+𝝏𝒘𝟏
+
+=
+
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+𝝏𝒐𝒖𝒕𝒉𝟏
+𝝏𝑬𝒐𝟏
+
+= 𝝏𝒐𝒖𝒕
+=
+07/08/68
+
++
+
+𝒉𝟏
+
+𝝏𝑬𝒐𝟏
+𝝏𝒏𝒆𝒕𝒐𝟏
+∗
+𝝏𝒏𝒆𝒕𝒐𝟏 𝝏𝒐𝒖𝒕𝒉𝟏
+
++
+
+𝝏𝑬𝒐𝟐
+𝝏𝒐𝒖𝒕𝒉𝟏
+𝝏𝑬𝒐𝟐
+𝝏𝒏𝒆𝒕𝒐𝟐
+∗
+𝝏𝒏𝒆𝒕𝒐𝟐 𝝏𝒐𝒖𝒕𝒉𝟏
+
+∗
+
+𝝏𝒐𝒖𝒕𝒉𝟏
+
+∗
+
+𝝏𝒐𝒖𝒕𝒉𝟏
+
+𝝏𝒏𝒆𝒕𝒉𝟏
+
+𝝏𝒏𝒆𝒕𝒉𝟏
+
+𝝏𝒐𝒖𝒕𝒉𝟏
+∗
+𝝏𝒏𝒆𝒕𝒉𝟏
+
+∗
+
+𝝏𝒏𝒆𝒕𝒉𝟏
+
+∗
+
+𝝏𝒏𝒆𝒕𝒉𝟏
+
+𝝏𝒘𝟏
+
+𝝏𝒘𝟏
+
+𝝏𝒏𝒆𝒕𝒉𝟏
+∗
+𝝏𝒘𝟏
+48
+
+https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+
+Back
+Propagation
+:
+Hidden
+Layer
+Click to edit Master title style
+• Edit Master text styles
+• Second level
+• Third level
+𝒘𝟔
+
+• Fourth level
+• Fifth level
+
+ตNอ
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+=
+𝝏𝒘𝟏
+
+=
+
+𝝏𝑬𝒐𝟏 𝝏𝒏𝒆𝒕𝒐𝟏
+∗
+𝝏𝒏𝒆𝒕𝒐𝟏 𝝏𝒐𝒖𝒕𝒉𝟏
+𝝏𝑬𝒐𝟏
+𝝏𝒐𝒖𝒕𝒐𝟏
+
+∗
+
+𝝏𝒐𝒖𝒕𝒐𝟏
+𝝏𝒏𝒆𝒕𝒐𝟏
+
+∗
+
+𝝏𝑬𝒐𝟐 𝝏𝒏𝒆𝒕𝒐𝟐
+∗
+𝝏𝒏𝒆𝒕𝒐𝟐 𝝏𝒐𝒖𝒕𝒉𝟏
+
++
+
+𝝏𝒏𝒆𝒕𝒐𝟏
+𝝏𝒐𝒖𝒕𝒉𝟏
+
+𝝏𝑬𝒐𝟐
+
++
+
+𝝏𝒏𝒆𝒕𝒐𝟐
+
+∗
+
+𝝏𝒏𝒆𝒕𝒐𝟐
+𝝏𝒐𝒖𝒕𝒉𝟏
+
+∗
+
+𝝏𝒐𝒖𝒕𝒉𝟏 𝝏𝒏𝒆𝒕𝒉𝟏
+∗
+∗
+𝝏𝒏𝒆𝒕𝒉𝟏
+𝝏𝒘𝟏
+
+𝝏𝒐𝒖𝒕𝒉𝟏
+𝝏𝒏𝒆𝒕𝒉𝟏
+
+∗
+
+𝝏𝒏𝒆𝒕𝒉𝟏
+𝝏𝒘𝟏
+
+(𝒘𝟓 ∗ 𝒐𝒖𝒕𝒉𝟏 ) + (𝟔 ∗ 𝒐𝒖𝒕𝒉𝟐 ) + 𝒃𝟐 // พอ diff แลdวไดd 𝒘𝟓
+− L𝟏 − 𝒐𝒖𝒕𝒐𝟏
+
+=
+=
+07/08/68
+
+∗ 𝒐𝒖𝒕𝒐𝟏 𝟏 − 𝒐𝒖𝒕𝒐𝟏
+
+𝟎. 𝟕𝟒 ∗ 𝟎. 𝟏𝟗 ∗ 𝟎. 𝟒 +
+0.05624 +
+
+𝝏𝑬𝒐𝟐
+𝝏𝒏𝒆𝒕𝒐𝟐
+
+∗
+
+𝝏𝑬𝒐𝟐
+𝝏𝒏𝒆𝒕𝒐𝟐
+
+𝝏𝒏𝒆𝒕𝒐𝟐
+𝝏𝒐𝒖𝒕𝒉𝟏
+
+∗
+
+𝝏𝒏𝒆𝒕𝒐𝟐
+𝝏𝒐𝒖𝒕𝒉𝟏
+
+∗
+
+𝝏𝒐𝒖𝒕𝒉𝟏
+𝝏𝒏𝒆𝒕𝒉𝟏
+
+∗
+∗
+
+𝝏𝒐𝒖𝒕𝒉𝟏
+𝝏𝒏𝒆𝒕𝒉𝟏
+
+∗
+
+𝝏𝒏𝒆𝒕𝒉𝟏
+𝝏𝒘𝟏
+
+𝝏𝒏𝒆𝒕𝒉𝟏
+𝝏𝒘𝟏
+49
+
+https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+
+Back
+Propagation
+:
+Hidden
+Layer
+Click to edit Master title style
+• Edit Master text styles
+• Second level
+
+ตNอ
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+=
+𝝏𝒘𝟏
+
+• Third level
+𝒘𝟔
+
+𝝏𝑬𝒐𝟏 𝝏𝒏𝒆𝒕𝒐𝟏
+∗
+𝝏𝒏𝒆𝒕𝒐𝟏 𝝏𝒐𝒖𝒕𝒉𝟏
+
+= 0.05624 +
+
+• Fourth level
+• Fifth level
+
+− L𝟐 − 𝒐𝒖𝒕𝒐𝟐
+
++
+
+𝝏𝑬𝒐𝟐 𝝏𝒏𝒆𝒕𝒐𝟐
+∗
+𝝏𝒏𝒆𝒕𝒐𝟐 𝝏𝒐𝒖𝒕𝒉𝟏
+
+𝝏𝒐𝒖𝒕𝒉𝟏 𝝏𝒏𝒆𝒕𝒉𝟏
+∗
+∗
+𝝏𝒏𝒆𝒕𝒉𝟏
+𝝏𝒘𝟏
+
+𝝏𝑬𝒐𝟐
+𝝏𝒐𝒖𝒕𝒐𝟐 𝝏𝒏𝒆𝒕𝒐𝟐
+∗
+∗
+𝝏𝒐𝒖𝒕𝒐𝟐 𝝏𝒏𝒆𝒕𝒐𝟐 𝝏𝒐𝒖𝒕𝒉𝟏
+
+∗ 𝒐𝒖𝒕𝒐𝟐 𝟏 − 𝒐𝒖𝒕𝒐𝟐
+
+(𝒘𝟓 ∗ 𝒐𝒖𝒕𝒉𝟏 ) + (𝒘𝟔 ∗ 𝒐𝒖𝒕𝒉𝟐 ) + 𝒃𝟐
+
+// พอ diff แลdวไดd 𝒘𝟔
+
+= 0.05624 + −𝟎. 𝟐𝟐 ∗ 𝟎. 𝟏771 ∗ 𝟎. 𝟒𝟓
+= 0.05624 + −0.0194 = 0.03684
+∴
+
+07/08/68
+
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+𝝏𝒘𝟏
+
+= 0.03684 ∗
+
+𝝏𝒐𝒖𝒕𝒉𝟏
+𝝏𝒏𝒆𝒕𝒉𝟏
+
+∗
+
+𝝏𝒏𝒆𝒕𝒉𝟏
+𝝏𝒘𝟏
+
+50
+
+https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+
+Back
+Propagation
+:
+Hidden
+Layer
+Click to edit Master title style
+• Edit Master text styles
+
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+∴
+= 0.03684
+𝝏𝒘𝟏
+
+∗
+
+𝝏𝒐𝒖𝒕𝒉𝟏
+𝝏𝒏𝒆𝒕𝒉𝟏
+
+𝝏𝒏𝒆𝒕𝒉𝟏
+𝝏𝒘𝟏
+
+∗
+
+• Second level
+• Third level
+𝒘𝟔
+
+𝝏
+1
+= 𝒐𝒖𝒕𝒉𝟏 𝟏 − 𝒐𝒖𝒕𝒉𝟏
+*234
+%&
+𝝏𝒏𝒆𝒕𝒉𝟏 1 + 𝑒
+
+• Fourth level
+• Fifth level
+
+= 0.593 1 − 0.593
+= 0.2413
+𝝏𝒏𝒆𝒕𝒉𝟏
+= 𝑰𝟏 = 𝟎. 𝟎𝟓
+𝝏𝒘𝟏
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+∴
+= 0.03684
+𝝏𝒘𝟏
+∗
+
+ดังนั้น 𝒘𝟏 = 𝒘𝟏 − 𝒂
+07/08/68
+
+∗
+
+𝝏𝑬𝒕𝒐𝒕𝒂𝒍
+𝝏𝒘𝟏
+
+0.2413
+
+∗
+
+0.05 = 0.0004
+
+= 𝟎. 𝟏𝟓 − 𝟎. 𝟓 𝟎. 𝟎𝟎𝟎𝟒 = 𝟎. 𝟏𝟒𝟗𝟖
+51
+
+https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+
+Back
+Propagation
+:
+Hidden
+Layer
+Click to edit Master title style
+• Edit Master text styles
+
+b1
+
+07/08/68
+
+11
+
+0
+0. 5
+
+0.60
+b2
+
+o1
+
+08
+
+0.35
+
+i2
+
+49
+
+h2
+
+.0 55
+
+o2
+
+8
+
+0. 2
+
+5
+0. 30
+
+Backward
+
+0. 35
+
+9
+
+0. 5
+
+5
+
+0. 2
+
+i2
+
+i1
+
+h1
+
+99
+
+0
+
+0. 2
+
+0. 4
+
+• Fourth level
+• Fifth level
+
+o1
+
+0
+
+1. 49
+
+0. 4
+
+•i1 Third level
+
+0. 40
+
+0. 1
+
+• Second0.15
+level
+
+h1
+
+0. 29
+
+h2
+0.35
+b1
+
+0
+
+1
+6
+.5
+
+o2
+
+0.60
+b2
+
+52
+
+องค$
+ระกอบที
+่ควรรู
+/สำหรับการฝ6กสอนแบบจำลอง
+Clickปto
+edit Master
+title style
+• • Edit
+LossMaster
+Function
+(Objective or Cost Function)
+text styles
+• Second level
+• Optimization
+• Third level
+• Learning Rate
+• Fourth level
+• Fifth level
+
+07/08/68
+
+5353
+
+Learning Rate (α)
+
+าที่ใช\กedit
+ำหนดขนาดในการเปลี
+่ยนแปลงของการเรี
+ยนรู\ในแตNละรอบ
+Clickคือ คNto
+Master
+title style
+
+• Edit Master text styles
+• Second level
+• Third level
+• Fourth level
+• Fifth level
+
+• ถ\า α มีคNาน\อยจะสNงผลให\ใช\เวลาในการประมวลที่นานกวNาคNาของ Objective Function จะเข\าใกล\คNาต่ำสุด
+• ถ\า α มีคNามากอาจกNอให\เกิดการข\ามหรือไมNพบคNาต่ำสุดหรือคNาใกล\เคียงคNาต่ำสุดของ Objective Function
+โดยทั่วไปจะพบวNา Learning rate ที่นิยมในการเรียนรู\ของเครื่องและการเรียนรู\เชิงลึก ได\แกN 0.001, 0.003,
+0.01, 0.03, 0.1, และ 0.3 เปrนต\น
+
+07/08/68
+
+54
+
+อ"างอิง https://medium.com/mmp-li/gradient-descent-คีย>เวิร>ดที่-data-science-ต"องรู"จัก-machine-learning-101-b5c78c1787a0 และ https://towardsdatascience.com/gradient-descent-algorithm-and-its-variants-10f652806a3
+
+Learning Rate & Its Strategies
+
+Click to edit Master title style
+• Edit Master text styles
+• Second level
+• Third level
+• Fourth level
+• Fifth level
+
+อัตราการเรียนรูL (Learning Rate) คือ ไฮเปอร)พารามิเตอร)ที่มีความสำคัญอย8างยิ่ง ในกระบวนการฝ@กโมเดล neural
+network โดยเฉพาะในขั้นตอนการปรับพารามิเตอร)ผ8านเทคนิค Gradient Descent ซึ่งเป[นวิธีการที่ใช^เพื่อลดค8าฟ`งก)ชันความ
+สูญเสีย (Loss Function)
+07/08/68
+
+อ<างอิง https://medium.com/thedeephub/learning-rate-and-its-strategies-in-neural-network-training-270a91ea0e5c
+55
+https://datascience.stackexchange.com/questions/50948/gradient-descent
+
+Learning Rate & Its Strategies
+
+Click to edit Master title style
+• Edit Master text styles
+• Second level
+• Third level
+• Fourth level
+• Fifth level
+
+การเลือกค)าของ learning rate มีผลโดยตรงต)อการเรียนรู>
+• หากกำหนดค)า Learning Rate สูงเกินไป โมเดลจะอัปเดตพารามิเตอรKแบบก>าวกระโดด ทำให>เรียนรู>เร็วขึ้น แต)เสี่ยงต)อการ “เลยจุด
+ที่ดีที่สุด” (Overshooting) ในทางกลับกัน
+• หากกำหนดค)า Learning Rate ต่ำเกินไป การเรียนรู>จะช>าลงมาก และอาจติดอยู)ใน จุดต่ำสุดเฉพาะที่ไม)เหมาะสม (local minima)
+ดังนั้น การตั้งค)า Learning Rate ที่เหมาะสมจึงเปcนสิ่งที่ต>องสร>างสมดุลระหว)างความเร็วในการฝeกและคุณภาพของผลลัพธKที่ได>
+07/08/68
+
+อ<างอิง https://medium.com/thedeephub/learning-rate-and-its-strategies-in-neural-network-training-270a91ea0e5c
+56
+https://datascience.stackexchange.com/questions/50948/gradient-descent
+
+Learning
+Rate
+&
+Its
+Strategies
+Click to edit Master title style
+ความสำคัญของ Learning Rate ไม8ได^มีผลเฉพาะด^านความเร็วในการฝ@กเท8านั้น แต8ยังส8งผลต8อความสามารถในการเรียนรู^และ
+• Edit
+Master
+styles
+การวางตั
+วของโมเดล
+ดังนีtext
+้
+levelการตั้งค8า Learning Rate ที่เหมาะสมช8วยให^โมเดลไม8เรียนรู^รายละเอียดของข^อมูลฝ@กมากเกินไป
+• ปNองกั•น Second
+Overfitting
+• Third level
+จนไม8สามารถใช^•งานกั
+บ
+ข^
+อ
+มู
+ล
+ใหม8
+ไ
+ด^
+Fourth level
+• Fifth
+• ปNองกัน Underfitting
+ถ^าlevel
+Learning Rate ต่ำเกินไป โมเดลอาจเรียนรู^ไม8ทันและไม8เข^าใจรูปแบบของข^อมูลจริงอย8าง
+เพียงพอโดยรวมแล^ว Learning Rate ที่เลือกอย8างถูกต^องจะช8วยให^โมเดล เรียนรู^ได^อย8างมีประสิทธิภาพ และสามารถ
+นำไปใช^กับข^อมูลใหม8ได^ดี (generalization)
+ไม8มีค8า Learning Rate ที่เหมาะสมเพียงค8าเดียวสำหรับทุกสถานการณ) ซึ่งการเลือกค8า Learning Rate มักต^องอาศัยการ
+ทดลองหลายครั้ง (Trial-and-error)
+และขึ้นกับ (1) โครงสร^างของโมเดล (2) ลักษณะของข^อมูล และ (3) เทคนิคการปรับ
+พารามิเตอร)ที่ใช^ (เช8น SGD, Adam)
+07/08/68
+
+57
+อ<างอิง https://medium.com/thedeephub/learning-rate-and-its-strategies-in-neural-network-training-270a91ea0e5c และ https://datascience.stackexchange.com/questions/50948/gradient-descent
+
+Learning
+Rate
+&
+Its
+Strategies
+Click to edit Master title style
+• Edit Master text styles
+
+การเปลี่ยนแปลงของค;าถ;วงน้ำหนัก (Weight)
+ที่ส;งผลต;อค;าความผิดพลาด (Error)
+
+• Second level
+• Third level
+• Fourth level
+• Fifth level
+
+07/08/68
+
+58
+
+อ"างอิง https://hmkcode.com/ai/backpropagation-step-by-step/
+
+Game 1
+
+Click to edit Master title style
+• Edit Master text styles
+• Second level
+• Third level
+• Fourth level
+• Fifth level
+
+07/08/68
+
+??
+59
+
+Game 2
+
+Click to edit Master title style
+• Edit Master text styles
+• Second level
+• Third level
+• Fourth level
+• Fifth level
+
+07/08/68
+
+??
+60
+
+Learning
+Rate
+&
+Its
+Strategies
+Click to edit Master title style
+• Edit Master text styles
+• Second level
+• Third level
+• Fourth level
+• Fifth level
+
+07/08/68
+
+แนวทางในการปรับคAา Learning Rate
+• Fixed Learning Rate
+• Time-Based Decay
+• Step Decay
+• Exponential Decay
+• Adaptive Learning Rate
+(Adagrad, RMSprop, Adam)
+• Learning Rate Warm-up
+
+61
+อ<างอิง https://medium.com/thedeephub/learning-rate-and-its-strategies-in-neural-network-training-270a91ea0e5c และ https://neptune.ai/blog/how-to-choose-a-learning-rate-scheduler
+
+อัตราการเรียนรูZคงที่ (Fixed Learning Rate)
+• เปDนแนวทางที่กำหนดให8 ค;า Learning Rate คงที่ตลอดการฝBก เช;น 0.01 และไม;เปลี่ยนแปลงตามรอบการฝBก
+• Edit Master text
+styles
+(epoch)
+• Second level
+• ทำให8ใช8งานง;าย ไม;ซับซ8อน และทำให8การฝBกมีเสถียรภาพในระดับหนึ่ง
+• Third level
+• แต;ไม;ยืดหยุ;นต;อความต8องการของแต;ละช;วงการฝBก และอาจได8ผลลัพธqที่ไม;ดีที่สุด เนื่องจาก Learning Rate ที่
+• Fourth level
+เหมาะสมในช;
+ว
+งต8
+น
+กั
+บ
+ช;
+ว
+งปลายของการฝB
+ก
+อาจต;
+า
+งกั
+น
+•
+Fifth
+level
+Epochs
+ลดคAาอัตราการเรียนรูZตามเวลา (Time-Based Decay)
+• เปDนแนวทางที่ปรับลดค;า Learning Rate (LR) ตามจำนวนรอบการฝBก (epoch) โดยทั่วไปใช8สูตรที่ลดค;า LR แบบ
+ผกผันกับเวลา เช;น
+
+Learning Rate
+
+Learning Rate
+
+Learning
+Rate
+&
+Its
+Strategies
+Click to edit Master title style
+
+1
+𝐿𝑅 = 𝐿𝑅-.-/ ×
+1 + 𝑘 R 𝑒𝑝𝑜𝑐ℎ
+
+Epochs
+07/08/68
+
+• ทำให8โมเดลเรียนรู8เร็วในช;วงต8น (ก8าวใหญ;) แล8วค;อย ๆ ปรับละเอียดเมื่อเข8าใกล8ค;าที่เหมาะสม และปรับค;า
+Learning Rate ตามความคืบหน8าของการเรียนรู8
+• แต;ต8องปรับพารามิเตอรq decay rate (เช;นค;า k) ให8เหมาะสม ซึ่งหากตั้งค;าไม;ดี อาจลดเร็วหรือช8าเกินไป
+
+62
+
+อ<างอิง https://medium.com/thedeephub/learning-rate-and-its-strategies-in-neural-network-training-270a91ea0e5c
+
+ลดคAาอัตราการเรียนรูZเป_นชAวง (Step Decay)
+• เปDนแนวทางการลดค;า Learning Rate แบบก8าว (step) โดยกำหนดให8ลดลงทีละช;วงเวลา เช;น ลดลงครึ่งหนึ่งทุก
+• Edit Master text
+stylesเช;น เริ่มต8นที่ 0.1, หลัง 10 epochs → ลดเปDน 0.05, หลัง 20 epochs → ลดเปDน 0.025
+ๆ 10 epochs
+• Second level
+• ใช8งานง;าย และเหมาะสมกับการผสมผสานการเรียนรู8เร็วในช;วงต8น และการปรับละเอียดในช;วงหลังได8ดี
+• Third level
+• แต;ต8องกำหนด “ช;วงเวลา” ที่จะลด Learning Rate และ “อัตราการลด” ไว8ล;วงหน8า ทำให8อาจไม;ยืดหยุ;นหาก
+• Fourth level
+โครงสร8
+า
+งข8
+อ
+มู
+ล
+เปลี
+ย
+่
+น
+•
+Fifth
+level
+Epochs
+ลดคAาอัตราการเรียนรูZแบบเอ็กซcโพเนนเชียล (Exponential Decay)
+• มีหลักการคล8ายกับ time-based decay แต;ลดลงในอัตราเอ็กซqโพเนนเชียล ซึ่งลดเร็วกว;า time-based โดยอาศัย
+สูตร
+01234567
+𝐿𝑅 = 𝐿𝑅 ×𝑒
+
+Learning Rate
+
+Learning Rate
+
+Learning
+Rate
+&
+Its
+Strategies
+Click to edit Master title style
+
+-.-/
+
+Epochs
+07/08/68
+
+• เช;น ถ8า k = 0.1, LR_initial = 0.01 จะได8 Epoch 0: 0.01, Epoch 1: 0.00905, Epoch 10: 0.0037
+• ทำให8โมเดลเข8าใกล8ค;าที่เหมาะสมได8เร็ว (เร็วกว;า time-based) จึงเหมาะกับกรณีที่ต8องการ convergence เร็ว
+• แต;การลดที่เร็วเกินไปอาจทำให8โมเดลหยุดเรียนรู8ก;อน และต8องระวังไม;ให8ค;า LR ลดต่ำเกินจนเรียนรู8หยุดนิ่ง
+63
+
+อ<างอิง https://medium.com/thedeephub/learning-rate-and-its-strategies-in-neural-network-training-270a91ea0e5c
+
+Learning
+Rate
+&
+Its
+Strategies
+Click to edit Master title style
+
+การปรับอัตราการเรียนรูZแบบอัตโนมัติ (Adaptive Learning Rate)
+เปDนการที่อัลกอริธึมปรับค;า Learning Rate โดยอัตโนมัติสำหรับแต;ละพารามิเตอรq ตามค;ากราเดียนตqหรือสถิติที่เกิดขึ้นระหว;างการฝBก
+•
+Edit
+Master
+text
+styles
+โดยไม;ต8องตั้งค;า LR คงที่หรือกำหนด decay แบบชัดเจน ตัวอย;างอัลกอริธึมยอดนิยม ได8แก;
+• Second level
+
+• Third level
+
+กอริธึม level
+•อัลFourth
+• Fifth level
+
+รายละเอียด
+
+• Stochastic Gradient Descent (SGD)
+
+ใชA learning rate คงที่
+
+• Adaptive Gradient (AdaGrad)
+
+ปรับ learning rate ตามคNาสะสมของสะสมกราเดียนตG (ลดเร็วเกินไป ทำใหAหยุดเรียนรูAเร็ว)
+
+• Root Mean Square Propagation (RMSProp) ปรับ learning rate ตามคNาเฉลี่ยของกราเดียนตG
+
+07/08/68
+
+64
+
+อ<างอิง https://medium.com/thedeephub/learning-rate-and-its-strategies-in-neural-network-training-270a91ea0e5c
+
+Learning
+Rate
+&
+Its
+Strategies
+Click to edit Master title style
+
+Adaptive Gradient (AdaGrad) Optimizer
+
+เปHนการปรับคNา Learning Rate แยกสำหรับแตNละพารามิเตอรG โดยพิจารณาจากคNากราเดียนตGสะสม ที่เกิดขึ้นระหวNางการฝŒก เพื่อใหAพารามิเตอรGที่มีการ
+Edit
+Master
+text
+styles
+เปลี่ย •
+นแปลงบN
+อย (gradient
+สูง) ไดAเ
+รียนรูAนAอ
+ยลง และพารามิเตอรGที่เปลี่ยนแปลงนAอยไดAเรียนรูAมากขึ้น ซึ่งเหมาะสมกับขAอมูลที่ feature มีความไมNสมดุล
+• Second level
+
+ขั้นตอนการทำงาน• Third level
+
+• Fourth level
+Step 1: กำหนดค;าเริ่มต2น (Initialize
+Variables)
+• Fifth level
+• กำหนดพารามิเตอรG 𝑤N เริ่มตAน ไดAแกN น้ำหนัก (weights) และ
+
+ไบแอส (biases)
+• กำหนดคNาคงที่ขนาดเล็ก 𝜖 (เชNน 1e-8) เพื่อป`องกันการหารดAวยศูนยG
+• สรAางตัวแปร 𝑣N ซึ่งเก็บผลรวมของคNากราเดียนตGยกกำลังสอง โดยเริ่ม
+จากคNา 0
+Step 2: คำนวณกราเดียนตn (Calculate Gradients)
+• คำนวณกราเดียนตG ∇ ของฟYงกGชัน loss ที่มีตNอพารามิเตอรGแตNละตัว
+07/08/68
+
+Step 3: สะสมค;ากราเดียนตnกำลังสอง (Accumulate Squared Gradients)
+• สำหรับพารามิเตอรGแตNละตัว โดยอาศัยสมการดังนี้
+𝑣= = 𝑣=>? + ∇𝑤=
+
+@
+
+Step 4: ปรับค;าพารามิเตอรn (Update Parameters)
+• ใชA learning rate ที่ปรับตามคNาของ โดยอาศัยสมการดังนี้
+𝑤/89 = 𝑤/ −
+
+𝐿𝑅
+∇𝑤/
+𝑣/ + 𝜖
+
+65
+
+อ<างอิง https://medium.com/thedeephub/learning-rate-and-its-strategies-in-neural-network-training-270a91ea0e5c
+
+Learning
+Rate
+&
+Its
+Strategies
+Click to edit Master title style
+
+Root Mean Square Propagation (RMSProp) Optimizer
+
+เปHนการปรับคNาอัตราการเรียนรูAที่ถูกออกแบบมาเพื่อเพิ่มประสิทธิภาพและความเร็วในการฝŒกโมเดล Deep Learning โดย RMSProp เปHนการปรับปรุงจาก
+• Edit
+Master
+styles
+Gradient
+Descent
+โดยปรับคNาtext
+learning
+rate แยกสำหรับแตNละพารามิเตอรG และพิจารณาคNาเฉลี่ยของกราเดียนตG เพื่อใหAการอัปเดตมีความเหมาะสมมาก
+ขึ้นในแตNละพารามิ
+เตอรG level
+• Second
+• Third level
+
+ขั้นตอนการทำงาน • Fourth level
+• Fifth level
+Step 1: กำหนดค;าเริ่มต2น (Initialize Variables)
+• กำหนดพารามิเตอรG 𝑤N เริ่มตAน ไดAแกN น้ำหนัก (weights) และ
+ไบแอส (biases)
+• กำหนดคNาคงที่ขนาดเล็ก 𝜖 เพื่อป`องกันการหารดAวยศูนยG
+• สรAางตัวแปร 𝑣N ซึ่งเก็บผลรวมของคNากราเดียนตGยกกำลังสอง โดยเริ่ม
+จากคNา 0
+Step 2: คำนวณกราเดียนตn (Calculate Gradients)
+• คำนวณกราเดียนตG ∇ ของฟYงกGชัน loss ที่มีตNอพารามิเตอรGแตNละตัว
+07/08/68
+
+Step 3: สะสมค;ากราเดียนตnกำลังสอง (Accumulate Squared
+Gradients)
+• สำหรับพารามิเตอรGแตNละตัว โดยอาศัยสมการดังนี้
+(สะสม)
+
+(ลDาสุด)
+
+𝑣= = γ K 𝑣=>? + (1− γ) K ∇𝑤=
+
+@
+
+• 𝛾 คือ อัตราการคงอยูN (decay rate) เชNน 0.9
+Step 4: ปรับค;าพารามิเตอรn (Update Parameters)
+• ใชA learning rate ที่ปรับตามคNาของ โดยอาศัยสมการดังนี้
+𝑤/89 = 𝑤/ −
+
+𝐿𝑅
+∇𝑤/
+𝑣/ + 𝜖
+
+66
+อ<างอิง https://www.geeksforgeeks.org/rmsprop-optimizer-in-deep-learning/
+
+Learning
+Rate
+&
+Its
+Strategies
+Click to edit Master title style
+Learning Rate
+War
+m-u
+p
+
+Learning Rate Warm-up Optimizer
+
+Sche
+• Edit Master d
+text
+uler styles
+
+• Second level
+
+• Third level
+• Epochs
+Fourth level
+
+• Fifth level
+
+คือ การเริ่มตAนฝŒกโมเดลดAวยคNา learning rate ที่นAอย ๆ แลAวคNอย ๆ เพิ่มขึ้นไปสูNคNาที่ตั้งใจ การใชA
+งานเทคนิคนี้ชNวยใหAโมเดลไมNปรับพารามิเตอรGมากเกินไปในชNวงแรก เพื่อหลีกเลี่ยง exploding
+gradients และทำใหA optimizers อยNาง Adam, RMSProp, SGD มีเวลาสรAางคNาเฉลี่ยเคลื่อนที่ที่
+เสถียรกNอนเริ่มฝŒกสอนโมเดล
+Guideline สำหรับการใช2งาน Learning Rate Warm-up
+Ø กำหนดคNา Learning Rate เริ่มตAนต่ำมาก ๆ อาทิเชNน 0 หรือ 1e-6 เพื่อใหAชNวงตAนของการฝŒก
+โมเดลมีความนิ่งและไมNปรับพารามิเตอรGรุนแรง
+Ø กำหนดชNวง Warm-up (warm-up steps หรือ warm-up epochs)
+กรณีใชdงาน
+ใชRกับ batch-level (steps)
+ใชRกับ epoch-level
+
+แนวทางแนะนำ
+กำหนดคCา warmup steps ประมาณ 500 - 1000 ที่มีการใชRงาน mini-batches
+กำหนดคCา warmup epochs ประมาณ 3 – 5 จากทั้งหมด 30 – 100 epochs
+
+หมายเหตุ ชHวง Warm-up ไมHมีคHาตายตัว ต"องปรับตามขนาดข"อมูลและความลึกของโมเดล
+อ"างอิง https://img2022.cnblogs.com/blog/1043283/202204/1043283-20220410160951248-172810455.png /
+
+07/08/68
+
+67
+
+Learning
+Rate
+&
+Its
+Strategies
+Click to edit Master title style
+
+q Exploding Gradients
+
+คือ ปรากฏการณXที่คNากราเดียนตX (gradients) ที่ได\จากการคำนวณย\อนกลับ (backpropagation) มีค"ากราเดียนต0มากกว"าปกติ จนทำให\การอัปเดตพารามิเตอรXของ
+โมเดลมากเกินไป สNงผลให\ (1) คNาพารามิเตอรX (weights) เพิ่มขึ้นเร็วผิดปกติ และ (2) คNาความสูญเสีย (loss) ไมNลดลงหรือเพิ่มขึ้นทันที การเกิดเหตุการณX Exploding
+•
+Edit
+Master
+text
+styles
+Gradients มักเกิดในโมเดลที่มีโครงสร\างลึกมาก (deep) หรือมีลักษณะลำดับตNอเนื่อง เชNน RNN, LSTM เปrนต\น
+• Second level
+สัญญาณที่บ"งชี้ว"าเกิ• ด Third
+Exploding
+Gradients
+level
+Ø คNา loss เพิ่มขึ้น•ทันFourth
+ทีแบบไมNมlevel
+ีเหตุผล
+Ø คNา weights กลายเปrน•คNาFifth
+NaN หรื
+อ infinity
+level
+Ø โมเดลไมN converge หรือ converge ได\ชั่วคราวแล\วหลุด
+
+q Vanishing Gradients
+
+คือ ปWญหาที่เกิดขึ้นในโมเดลที่มีหลายชั้น (deep networks) หรือโมเดลที่ใช\กับข\อมูลลำดับ เชNน RNN, LSTM เปrนต\น ซึ่งคNากราเดียนตX (gradient) ที่ได\จากการทำ
+backpropagation มีค"ากราเดียนต0น;อยมากจนเกือบเป`นศูนย0 สNงผลให\ (1) โมเดลไมNสามารถอัปเดตพารามิเตอรXในชั้นต\น ๆ ได\ และ (2) การฝ†กเปrนไปอยNางช\ามากหรือ
+แทบไมNมีการเรียนรู\
+สัญญาณที่พบเมื่อเกิด Vanishing Gradients
+Ø Training loss ลดช\า หรือไมNลดเลย
+Ø Accuracy ไมNเพิ่ม
+Ø Weights ของชั้นต\น ๆ ไมNเปลี่ยนแปลงเลย
+07/08/68
+
+68
+
+Learning
+Rate
+&
+Its
+Strategies
+Click to edit Master title style
+
+ตารางเปรียบเทียบ Vanishing Gradients กับ Exploding Gradients
+ด2าน Master text styles
+Vanishing Gradients
+• Edit
+• Second level
+
+ลักษณะ
+สNงผล
+
+แนวทางแกA
+
+07/08/68
+
+คNากราเดียนตGใกลAศูนยG
+
+• Third level
+
+• Fourth level
+• Fifth level
+
+Exploding Gradients
+คNากราเดียนตGมีคNาสูงมาก
+
+โมเดลเรียนรูAไมNไดA
+
+Loss พุNงสูง ทำใหAโมเดลไมNเสถียร
+
+• ใชA Activation Function ที่ลดการสูญหายของ
+คNากราเดียนตGหายไป อาทิเชNน ReLU
+• ใชA Residual Connection
+• ใชA Batch Normalization
+• ใชA Weight Initialization ที่ดี (โหลด Pretrain)
+
+• ใชAเทคนิค Gradient Clipping
+• ใชA Optimizer แบบ Adaptive
+• ใชA Learning Rate Warm-up
+• ใชA Batch Normalization
+• ใชA Weight Initialization ที่ดี (โหลด Pretrain)
+
+69
+
+ตัวอย7างการใช>งานเทคนิค Linear Warm-up & Linear Decay
+
+Click to edit Master title style
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
+import math
+• Second level
+
+• Edit Master text styles
+
+# โมเดล CNN แบบง7าย• Third level
+class SimpleCNN(nn.Module):
+• Fourth level
+def __init__(self):
+• Fifth level
+...
+def forward(self, x):
+...
+
+class SimpleCNN(nn.Module):
+def __init__(self):
+super().__init__()
+self.features = nn.Sequential(
+nn.Conv2d(1, 32, 3, 1),
+nn.ReLU(),
+nn.MaxPool2d(2),
+nn.Conv2d(32, 64, 3, 1),
+nn.ReLU(),
+nn.MaxPool2d(2)
+)
+self.classifier = nn.Sequential(
+nn.Flatten(),
+nn.Linear(64 * 5 * 5, 128),
+nn.ReLU(),
+nn.Linear(128, 10)
+)
+def forward(self, x):
+x = self.features(x)
+return self.classifier(x)
+
+# ข;อมูล MNIST
+transform = transforms.ToTensor()
+train_data = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
+train_loader = DataLoader(train_data, batch_size=64, shuffle=True)
+07/08/68
+
+70
+
+ตัวอย7างการใช>งานเทคนิค Linear Warm-up & Linear Decay
+
+Click to edit Master title style
+
+# พารามิเตอรBสำหรับ Warm-up และ Linear Decay
+total_epochs = 20
+warmup_epochs = 5
+lr_start = 0.0
+lr_max = 0.1
+lr_end = •0.001
+Second level
+
+• Edit Master text styles
+
+• Third level
+device = torch.device('cuda:0'
+if torch.cuda.is_available() else 'cpu')
+model =
+SimpleCNN().to(device)
+•
+Fourth level
+• Fifth level
+
+optimizer = optim.Adam(model.parameters(), lr=lr_max)
+criterion = nn.CrossEntropyLoss()
+# สร;าง scheduler แบบ custom โดยที&
+# Epoch 0– 4: 0.0 → 0.1
+เพิ&มขึ-นแบบ linear warm-up
+# Epoch 5–34: 0.1 → 0.001 ลดลงแบบ linear decay
+def lr_lambda(current_epoch):
+if current_epoch < warmup_epochs:
+return lr_start + (lr_max - lr_start) * (current_epoch / warmup_epochs)
+else:
+decay_epochs = total_epochs - warmup_epochs
+decay_progress = (current_epoch - warmup_epochs) / decay_epochs
+return lr_max - (lr_max - lr_end) * decay_progress
+07/08/68
+
+scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda epoch: lr_lambda(epoch))
+
+71
+
+ตัวอย7างการใช>งานเทคนิค Linear Warm-up & Linear Decay
+
+Click to edit Master title style
+
+# Training loop
+for epoch in range(total_epochs):
+model.train()
+total_loss = 0.0
+for images, labels in train_loader:
+images,
+labels
+• Second
+level= images.to(device), labels.to(device)
+
+• Edit Master text styles
+
+• Third level
+optimizer.zero_grad()
+outputs = • Fourth
+model(images)
+level
+loss = criterion(outputs,
+• Fifth level labels)
+loss.backward()
+optimizer.step()
+total_loss += loss.item()
+# ปรับ LR ตาม epoch
+scheduler.step()
+# ดึงค่าปัจจุบ ันของ LR
+current_lr = scheduler.get_last_lr()[0]
+print(f"Epoch {epoch+1:02d}/{total_epochs} | LR: {current_lr:.6f} | Loss: {total_loss:.4f}")
+
+07/08/68
+
+72
+
+ตัวอย7างการใช>งานเทคนิค RMSprop กับ StepLR
+
+Click to edit Master title style
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
+
+• Edit Master text styles
+• Second level
+
+# โมเดล CNN แบบง7าย• Third level
+class SimpleCNN(nn.Module):
+• Fourth level
+def __init__(self):
+• Fifth level
+...
+def forward(self, x):
+...
+
+class SimpleCNN(nn.Module):
+def __init__(self):
+super().__init__()
+self.features = nn.Sequential(
+nn.Conv2d(1, 32, 3, 1),
+nn.ReLU(),
+nn.MaxPool2d(2),
+nn.Conv2d(32, 64, 3, 1),
+nn.ReLU(),
+nn.MaxPool2d(2)
+)
+self.classifier = nn.Sequential(
+nn.Flatten(),
+nn.Linear(64 * 5 * 5, 128),
+nn.ReLU(),
+nn.Linear(128, 10)
+)
+def forward(self, x):
+x = self.features(x)
+return self.classifier(x)
+
+# ข;อมูล MNIST
+transform = transforms.ToTensor()
+train_data = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
+train_loader = DataLoader(train_data, batch_size=64, shuffle=True)
+07/08/68
+
+73
+
+ตัวอย7างการใช>งานเทคนิค RMSprop กับ StepLR
+
+Click to edit Master title style
+
+# อุปกรณ์ค ํานวณ
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = SimpleCNN().to(device)
+
+• Edit Master text styles
+
+# RMSProp Optimizer + StepLR Scheduler
+optimizer• =Second
+optim.RMSprop(model.parameters(),
+lr=0.01, alpha=0.9, eps=1e-08)
+level
+scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.5)
+
+• Third level
+
+# ลด LR ลงครึ&งหนึ& งทุก 2 •epochs
+Fourth level
+# scheduler จะลด learning
+ratelevel
+• Fifth
+# RMSprop จะไม่ลด learning rate อัตโนมัติ เพียงแค่ปรับ "นํ-าหนักของการอัปเดต" โดยใช้ค่าเฉลี&ยของกราเดียนต์ แต่ค่า LR ที&ต ั -งไว้ (lr=0.01) จะคงที&ตลอด
+# ยกเว้น คุณใช้ scheduler ร่วมด้วย
+criterion = nn.CrossEntropyLoss()
+
+07/08/68
+
+74
+
+ตัวอย7างการใช>งานเทคนิค RMSprop กับ StepLR
+
+Click to edit Master title style
+
+# Training Loop
+total_epochs = 20
+for epoch in range(total_epochs):
+model.train()
+running_loss = 0.0
+for images,
+labels
+• Second
+levelin train_loader:
+images, labels = images.to(device), labels.to(device)
+
+• Edit Master text styles
+• Third level
+
+optimizer.zero_grad()
+•
+Fourth level
+outputs = model(images)
+• Fifth level
+
+loss = criterion(outputs, labels)
+loss.backward()
+optimizer.step()
+running_loss += loss.item()
+# อัปเดต learning rate ทุก epoch *****
+scheduler.step()
+# แสดงค่า learning rate ปัจจุบ ัน
+current_lr = optimizer.param_groups[0]['lr']
+print(f"Epoch {epoch+1:02d}/{total_epochs} | LR: {current_lr:.6f} | Loss: {running_loss:.4f}")
+
+07/08/68
+
+75
+
+ตัวอย7างการใช>งานเทคนิค RMSprop
+
+Click to edit Master title style
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
+
+• Edit Master text styles
+• Second level
+
+# โมเดล CNN แบบง7าย• Third level
+class SimpleCNN(nn.Module):
+• Fourth level
+def __init__(self):
+• Fifth level
+...
+def forward(self, x):
+...
+
+class SimpleCNN(nn.Module):
+def __init__(self):
+super().__init__()
+self.features = nn.Sequential(
+nn.Conv2d(1, 32, 3, 1),
+nn.ReLU(),
+nn.MaxPool2d(2),
+nn.Conv2d(32, 64, 3, 1),
+nn.ReLU(),
+nn.MaxPool2d(2)
+)
+self.classifier = nn.Sequential(
+nn.Flatten(),
+nn.Linear(64 * 5 * 5, 128),
+nn.ReLU(),
+nn.Linear(128, 10)
+)
+def forward(self, x):
+x = self.features(x)
+return self.classifier(x)
+
+# ข;อมูล MNIST
+transform = transforms.ToTensor()
+train_data = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
+train_loader = DataLoader(train_data, batch_size=64, shuffle=True)
+07/08/68
+
+76
+
+ตัวอย7างการใช>งานเทคนิค RMSprop
+
+Click to edit Master title style
+
+# อุปกรณ์
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = SimpleModel().to(device)
+
+• Edit Master text styles
+
+# ใช้ RMSProp
+optimizer• =Second
+optim.RMSprop(model.parameters(),
+lr=0.01)
+level
+
+• Third level
+criterion = nn.CrossEntropyLoss()
+• Fourth level
+• Fifth level
+
+07/08/68
+
+77
+
+ตัวอย7างการใช>งานเทคนิค RMSprop
+
+Click to edit Master title style
+
+# Training Loop
+total_epochs = 20
+for epoch in range(total_epochs):
+model.train()
+total_loss = 0.0
+for images,
+labels
+• Second
+levelin train_loader:
+images, labels = images.to(device), labels.to(device)
+
+• Edit Master text styles
+• Third level
+
+optimizer.zero_grad()
+•
+Fourth level
+outputs = model(images)
+• Fifth level
+
+loss = criterion(outputs, labels)
+loss.backward()
+optimizer.step()
+total_loss += loss.item()
+# แสดงค่า learning rate และ loss
+current_lr = optimizer.param_groups[0]['lr']
+print(f"Epoch {epoch+1}: LR = {current_lr:.6f}, Loss = {total_loss:.4f}")
+
+07/08/68
+
+78
+
+Learning
+Rate
+&
+Its
+Strategies
+Click to edit Master title style
+
+ตารางแสดงการเปรียบเทียบ Scheduler ทางเลือกอื่นที่ลด Learning Rate ให8อัตโนมัติ
+• Edit
+คำสั่งMaster
+Scheduler text styles
+
+ลักษณะการปรับเปลี่ยนคDา Learning Rate
+
+• Second
+StepLR level
+
+ปรับคCา Learning Rate ลดแบบขั้นบันได (ทุก N epoch)
+
+ExponentialLR
+
+ปรับคCา Learning Rate ลดลงแบบ Exponential หรือยิ่งลดยิ่งเร็ว
+
+• Third level
+
+• Fourth level
+บคCา Learning Rate ลดแบบ Cosine หรือแบบโคRง ซึ่งเหมาะกับ fine-tuning
+CosineAnnealingLR
+• Fifthปรัlevel
+ReduceLROnPlateau
+LambdaLR
+
+ปรับคCา Learning Rate ลด เมื่อ loss ไมCลดลง
+ปรับคCา Learning Rate ดRวยฟ…งกeชันที่เรากำหนดเอง
+
+สามารถดูรายละเอียดของ Scheduler แต;ละตัว รวมถึง Scheduler อื่น ๆ ได8ที่เอกสารประกอบของ PyTorch ตามลิงกqนี้
+https://pytorch.org/docs/stable/optim.html
+
+07/08/68
+
+79
+อ-างอิง https://docs.pytorch.org/docs/stable/optim.html
+
+ตัวอย7างโปรแกรมโครงข7ายประสาทเทียม
+
+Click
+to
+edit
+Master
+title
+style
+import numpy as np
+import pandas as pd
+import torch
+
+• Edit Master text styles
+
+# load the training dataset and convert it into torch format
+train = pd.read_csv('C:/Users/Bank/Desktop/py/week9/data1.csv')
+• Second level
+train.head()
+
+• Third level
+featureTr = np.array([train['x1'],train['x2']]).T
+labelTr
+=
+np.array([[1,0,0],[1,0,0],[1,0,0],[1,0,0],[1,0,0],[1,0,0],[0,1,0],[0,1,0],[0,1,0],[0,1,0],
+• Fourth level
+[0,1,0],[0,1,0],[0,1,0],[0,1,0],[0,0,1],[0,0,1],[0,0,1],[0,0,1],[0,0,1],[0,0,1],[0,0,1]])
+• Fifth level
+featureTr = torch.from_numpy(featureTr).to(torch.float32)
+labelTr = labelTr.astype(int);
+labelTr = torch.from_numpy(labelTr).to(torch.float32)
+# Use the nn package to define our model.
+model = torch.nn.Sequential(
+torch.nn.Linear(2, 3),
+torch.nn.Linear(3, 3)
+)
+# Define the loss function.
+loss_fn = torch.nn.MSELoss(reduction='sum')
+
+07/08/68
+
+81
+
+ตัวอย7างโปรแกรมโครงข7ายประสาทเทียม
+
+Click
+to
+edit
+Master
+title
+style
+# Define the learning rate.
+learning_rate = 1e-3
+
+# Define the optimizer
+optimizer = torch.optim.RMSprop(model.parameters(), lr=learning_rate)
+
+• Edit Master text styles
+
+for t in range(2000):
+• Second level
+# Forward pass: compute predicted y by passing x to the model.
+• Third level
+y_pred = model(featureTr)
+
+• Fourth level
+# Compute and print• loss.
+Fifth level
+
+loss = loss_fn(y_pred, labelTr)
+# Clear buffers
+optimizer.zero_grad()
+# Backward pass: compute gradient of the loss with respect to model
+loss.backward()
+# Calling the step function on an Optimizer makes an update to its
+optimizer.step()
+
+07/08/68
+
+82
+
+ตัวอย7างโปรแกรมโครงข7ายประสาทเทียม
+
+Click
+to
+edit
+Master
+title
+style
+# converting testing data into torch format
+
+featureTs = np.array([[13,6]])
+featureTs = torch.from_numpy(featureTs).to(torch.float32)
+
+• Edit Master text styles
+
+# generating predictions for test set
+with torch.no_grad():
+•
+Second
+level
+output = model(featureTs)
+
+• Third level
+
+softmax = torch.exp(output).cpu()
+• Fourth level
+prob = list(softmax.numpy())
+•
+Fifth
+level
+predictions = np.argmax(prob, axis=1)
+print('output is ', predictions, ' \n Prob : ', output)
+
+07/08/68
+
+83
+
+
