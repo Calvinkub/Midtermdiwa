@@ -92,7 +92,7 @@
   <p><b>Deep Learning for Image &amp; Video Understanding</b> · KMITL · 06016389 / 06026163</p>
   <p>ผศ.ดร.ธราวิเชษฐ์ ธิติจรูญโรจน์ · ผศ.ดร.พรสุรีย์ แจ่มศรี</p>
   <div class="format">
-    <b>รูปแบบ:</b> ตอนที่ 1 ปรนัย (กา) 40 ข้อ = 20 คะแนน · ตอนที่ 2 อัตนัย (เขียน) 3 ข้อ = 10 คะแนน
+    <b>รูปแบบ:</b> ตอนที่ 1 ปรนัย (กา) 48 ข้อ = 20 คะแนน · ตอนที่ 2 อัตนัย (เขียน) 3 ข้อ = 10 คะแนน
     (2 คำนวณ + 1 อธิบาย) · จด cheat sheet ได้ 1 หน้า A4 · <b>Backprop ไม่ออกสอบ</b><br>
     <span class="note">วิธีใช้: เลือกคำตอบแต่ละข้อ แล้วกด "ตรวจคะแนน" หรือกด "เฉลย" ทีละข้อ · แนะนำให้ลองทำจับเวลาก่อนดูเฉลย</span>
   </div>
@@ -103,10 +103,10 @@
   <button onclick="hideAll()">🙈 ซ่อนเฉลยทั้งหมด</button>
   <button onclick="gradeAll()">✅ ตรวจคะแนน</button>
   <button onclick="resetAll()">♻️ ล้างคำตอบ</button>
-  <span class="score">คะแนน: <span class="n" id="scoreVal">–</span> / 40</span>
+  <span class="score">คะแนน: <span class="n" id="scoreVal">–</span> / 48</span>
 </div>
 
-<h2 style="font-size:18px;color:var(--blue);margin:6px 0 4px;">ตอนที่ 1 — ปรนัย (กา) 40 ข้อ</h2>
+<h2 style="font-size:18px;color:var(--blue);margin:6px 0 4px;">ตอนที่ 1 — ปรนัย (กา) 48 ข้อ (รวม Chapter 01)</h2>
 <div id="mcq"></div>
 
 <hr>
@@ -123,9 +123,10 @@
 </div>
 
 <script>
-// ===== ตอนที่ 1: MCQ 40 ข้อ (choices เรียง ก ข ค ง = index 0-3; correct = index ของคำตอบถูก) =====
+// ===== ตอนที่ 1: MCQ 48 ข้อ (ข้อ 1-40 = Ch.02-07, ข้อ 41-48 = Ch.01 Healthcare Data) (choices เรียง ก ข ค ง = index 0-3; correct = index ของคำตอบถูก) =====
 const LETTERS = ["ก","ข","ค","ง"];
 const WEEKS = [
+  {name:"📓 W0 · Healthcare Data — ภาพแพทย์ / DICOM / EHR / ICD (ข้อ 41–48)", range:[41,48]},
   {name:"📘 W1 · Image Processing (ข้อ 1–6)", range:[1,6]},
   {name:"📗 W2 · Python / OpenCV / numpy (ข้อ 7–13)", range:[7,13]},
   {name:"📙 W3 · Padding &amp; Convolution (ข้อ 14–18)", range:[14,18]},
@@ -260,6 +261,31 @@ const Q = [
 {n:40, correct:1, stem:"อาการของ Overfitting และวิธีแก้ที่ถูกต้องคือข้อใด?",
  c:["train acc ต่ำ / val acc สูง; แก้ด้วยการเพิ่มความซับซ้อนของโมเดล","train acc สูง / val (test) acc ต่ำ (ช่องว่างกว้าง); แก้ด้วย Dropout / BatchNorm / Data Augmentation","train และ val acc ต่ำทั้งคู่; แก้ด้วย Dropout","train acc สูง / val acc สูง; ไม่ต้องแก้ไข"],
  r:"Overfitting: train acc สูงมาก แต่ val/test acc ต่ำ (ช่องว่างกว้าง) · แก้ด้วย Dropout, BatchNorm, Data Augmentation"},
+
+{n:41, correct:2, stem:"ข้อใดกล่าวถูกต้องเกี่ยวกับความต่างของ Medical Imaging และ Biomedical Imaging?",
+ c:["Medical Imaging ครอบคลุมทั้งงานคลินิกและงานวิจัยพื้นฐาน","Biomedical Imaging เน้นเฉพาะงานวิจัย ไม่ใช้ทางคลินิก","Biomedical Imaging ครอบคลุมทั้งงานคลินิก (Clinical Use) และงานวิจัยพื้นฐานทางชีววิทยา (Research Use)","ทั้งสองคำใช้แทนกันได้ ไม่มีความต่าง"],
+ r:"Biomedical Imaging กว้างกว่า = คลินิก + วิจัย; Medical Imaging เน้นคลินิกเป็นหลัก"},
+{n:42, correct:3, stem:"ข้อใดเป็นเทคนิคการสร้างภาพที่ 'ไม่ใช้รังสี' (radiation)?",
+ c:["X-ray","CT Scan","PET Scan","MRI"],
+ r:"ไม่ใช้รังสี = MRI, MRA, Ultrasound · ใช้รังสี = X-ray, CT, PET, Mammography"},
+{n:43, correct:0, stem:"การสร้างภาพด้วยแสงที่มองเห็น (Visible Light Imaging) ใช้ช่วงความยาวคลื่นประมาณเท่าใด?",
+ c:["400–700 นาโนเมตร","10–100 นาโนเมตร","700–1000 นาโนเมตร","1–10 ไมโครเมตร"],
+ r:"ช่วงที่ตามนุษย์มองเห็นได้ ประมาณ 400–700 nm"},
+{n:44, correct:1, stem:"ข้อใดถูกต้องเกี่ยวกับ CT Scan และ MRI?",
+ c:["CT ไม่ใช้รังสี ส่วน MRI ใช้รังสีเอกซ์","MRI เหมาะกับเนื้อเยื่ออ่อน (soft tissue) ส่วน CT เหมาะกับกระดูก/ภาวะฉุกเฉิน","ทั้ง CT และ MRI ใช้คลื่นเสียงความถี่สูง","CT ให้ภาพเชิงการทำงาน ส่วน MRI ให้ภาพโครงสร้าง"],
+ r:"MRI = ไม่ใช้รังสี เก่งเนื้อเยื่ออ่อน · CT = ใช้รังสี เร็ว เหมาะฉุกเฉิน/กระดูก"},
+{n:45, correct:2, stem:"ในไฟล์ DICOM ส่วน Preamble และ Prefix มีขนาดเท่าใดตามลำดับ?",
+ c:["4 Bytes และ 128 Bytes","64 Bytes และ 8 Bytes","128 Bytes และ 4 Bytes","256 Bytes และ 16 Bytes"],
+ r:"Preamble = 128 Bytes (ถ้าไม่ใช้ตั้ง 00H), Prefix = 4 Bytes อักขระ 'DICM'"},
+{n:46, correct:0, stem:"มาตรฐาน DICOM ถูกพัฒนาโดยองค์กรใด?",
+ c:["NEMA (National Electrical Manufacturers Association)","WHO (องค์การอนามัยโลก)","IHE (Integrating the Healthcare Enterprise)","ITU-R"],
+ r:"DICOM พัฒนาโดย NEMA · WHO = ICD · IHE = ส่งเสริมการใช้ร่วมกัน"},
+{n:47, correct:1, stem:"ข้อใดกล่าวถูกต้องเกี่ยวกับ EHR และ EMR?",
+ c:["EHR เก็บโดยผู้ให้บริการรายเดียว ส่วน EMR เก็บจากหลายราย","EHR เก็บจากผู้ให้บริการหลายราย ส่วน EMR เก็บโดยผู้ให้บริการ/สถาบันเดียว","ทั้งสองเก็บเฉพาะภาพถ่ายทางการแพทย์เท่านั้น","EMR เป็นมาตรฐานสากล ส่วน EHR ใช้เฉพาะในไทย"],
+ r:"EHR = หลายผู้ให้บริการ (กว้าง) · EMR = ผู้ให้บริการ/สถาบันเดียว"},
+{n:48, correct:2, stem:"ข้อใดถูกต้องเกี่ยวกับระบบ ICD?",
+ c:["ICD-9-CM ใช้ให้รหัสโรค ส่วน ICD-10 ใช้ให้รหัสหัตถการ","ICD พัฒนาโดย NEMA","ICD-10 ใช้ให้รหัสโรค ส่วน ICD-9-CM ใช้ให้รหัสหัตถการ/ผ่าตัด","รหัส P ใช้สำหรับหญิงตั้งครรภ์"],
+ r:"ICD (โดย WHO): ICD-10 = โรค, ICD-9-CM = หัตถการ · รหัส O = ตั้งครรภ์, P = ทารกแรกเกิด"},
 ];
 
 // ===== ตอนที่ 2: เขียน 3 ข้อ =====

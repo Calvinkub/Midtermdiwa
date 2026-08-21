@@ -23,6 +23,12 @@
 | **[CODE-EXAM-GUIDE.md](CODE-EXAM-GUIDE.md)** | คู่มือข้อสอบโค้ด (OpenCV/numpy/PyTorch) + กับดักโค้ด | ฝึกอ่าน/ทายผลลัพธ์โค้ด |
 | **[STUDY-PLAN.md](STUDY-PLAN.md)** | แผนอ่าน + ตารางคู่สับสน (confusable pairs) + กลยุทธ์วันสอบ | วางแผนเวลาอ่าน |
 
+## 📖 ครอบคลุม 7 บท
+- **Chapter 01** 📓 Healthcare Data (ภาพชีวการแพทย์ modalities, DICOM, PACS, EHR/EMR, ICD-10) — เนื้อหาแนวคิด/นิยาม, ข้อกาล้วน
+- **Chapter 02-03** 📘📗 Image Processing + Python/OpenCV/numpy
+- **Chapter 05** 📕📓 Distance/Normalization/ANN + Forward Prop/Loss/Optimization
+- **Chapter 07** 📔 CNN + Lab 3-7
+
 ## 🎯 หัวข้อที่ควรแม่นที่สุด (มีตัวอย่างคำนวณจริงในสไลด์ → โอกาสเป็นข้อเขียน)
 1. ⭐⭐ **Padding + Convolution ด้วยมือ** (W3) — ต้อง**พลิก kernel 180°**ก่อน; Lab 4 มีเฉลยเทียบแล้ว
 2. ⭐⭐ **Forward Propagation** (W5) — net → activation → output; เลือกคลาสที่ค่ามากกว่า

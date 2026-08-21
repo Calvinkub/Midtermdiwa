@@ -98,6 +98,12 @@
 | 18 | **RGB vs YCbCr/HSV** | RGB **ปนแสงกับสี ไม่แยก** / YCbCr (Y=แสง) และ HSV (V=แสง) **แยกแสงออกจากสีชัดเจน** |
 | 19 | **#kernel vs #filter (Conv layer)** | จำนวน kernel/filter = **จำนวน channel ของ input** / ความลึก feature map ถัดไป = **จำนวน filter** |
 | 20 | **MSE vs MAE (Regression loss)** | MSE (L2) **ไวต่อ outlier** (ยกกำลังสอง) / MAE (L1) **ทนต่อ outlier** กว่า แต่เทรนช้ากว่า |
+| 21 | 📓 **ใช้รังสี vs ไม่ใช้รังสี** (W0) | ใช้รังสี = **X-ray, CT, PET, Mammography** / ไม่ใช้ = **MRI, MRA, Ultrasound** (สารทึบรังสี ≠ รังสี) |
+| 22 | 📓 **CT vs MRI** (W0) | CT = ใช้รังสี, เร็ว, กระดูก/ฉุกเฉิน / MRI = ไม่ใช้รังสี, เนื้อเยื่ออ่อน (PET = ภาพเชิงการทำงาน) |
+| 23 | 📓 **DICOM Preamble vs Prefix** (W0) | Preamble = **128 Bytes** (00H) / Prefix = **4 Bytes** ('DICM') · DICOM โดย NEMA |
+| 24 | 📓 **EHR vs EMR** (W0) | EHR = **หลายผู้ให้บริการ** / EMR = **ผู้ให้บริการ/สถาบันเดียว** |
+| 25 | 📓 **ICD-10 vs ICD-9-CM** (W0) | ICD-10 = **รหัสโรค** / ICD-9-CM = **รหัสหัตถการ/ผ่าตัด** (ICD โดย WHO; รหัส O=ตั้งครรภ์, P=ทารก, C/D=มะเร็ง) |
+| 26 | 📓 **Medical vs Biomedical Imaging** (W0) | Medical = **คลินิก** / Biomedical = **คลินิก + วิจัย** |
 
 ---
 

@@ -13,12 +13,90 @@
 5. ⭐ **หลักการ CNN (Shared weights, Pooling, Dropout, Batch Norm) — ข้ออธิบายเหตุผล** (W6)
 
 ## สารบัญ
+- [W0 📓 — Healthcare Data (Chapter 01: ภาพชีวการแพทย์/DICOM/EHR/ICD)](#week-0)
 - [W1 📘 — Image Processing พื้นฐาน (11 ข้อโดยประมาณ)](#week-1)
 - [W2 📗 — Python/OpenCV/numpy/matplotlib (6 ข้อโดยประมาณ)](#week-2)
 - [W3 📙 — Padding & Convolution (Lab 4) (3 ข้อ + มีสิทธิ์เป็นข้อเขียน)](#week-3)
 - [W4 📕 — Distance, Normalization, ANN พื้นฐาน, Activation Function (9 ข้อ)](#week-4)
 - [W5 📓 — Forward Propagation, Loss Function, Optimization, Learning Rate (8 ข้อ)](#week-5)
 - [W6 📔 — Convolutional Neural Network (9 ข้อ)](#week-6)
+
+---
+
+<a name="week-0"></a>
+# 📓 W0 — Healthcare Data (Chapter 01: Introduction to Healthcare Data)
+**เนื้อหาแนวคิด/นิยาม/ข้อเท็จจริง — ไม่มีคำนวณ เหมาะกับข้อกาล้วน ๆ (โดยเฉพาะ "ข้อใดถูก/ผิด")** · 46 สไลด์ มีคู่สับสนเยอะ ⭐
+
+## 0.1 Medical Imaging vs Biomedical Imaging — [1-2 ข้อ]
+- **Medical Imaging (ภาพทางการแพทย์):** เน้นใช้ **ทางคลินิก (Clinical Use)** เพื่อวินิจฉัย/รักษา (เช่น X-ray, CT, MRI, Ultrasound)
+- **Biomedical Imaging (ภาพชีวการแพทย์):** ใช้ทั้ง **คลินิก + งานวิจัยพื้นฐานทางชีววิทยา (Research Use)** เช่น กล้องจุลทรรศน์ขั้นสูงศึกษาระดับเซลล์/โมเลกุล
+> **กับดัก:** Biomedical Imaging ครอบคลุมกว้างกว่า (คลินิก **และ** วิจัย); Medical Imaging เน้นคลินิกเป็นหลัก
+
+## 0.2 Visible vs Invisible Light Imaging — [1 ข้อ]
+- **Visible Light (แสงที่มองเห็น):** ช่วง **400–700 nm** ใช้กล้องทั่วไป/สมาร์ตโฟน ถ่ายภายนอกร่างกาย (ผื่น แผล จุดด่างดำ) ต้นทุนต่ำ ไม่ต้องเครื่องมือพิเศษ แต่ตรวจได้แค่อาการภายนอก
+- **Invisible Light / Radiology (รังสีวิทยา):** ใช้รังสี/คลื่นแม่เหล็กไฟฟ้านอกช่วงตามองเห็น (X-ray, MRI, Ultrasound, Nuclear) ตรวจอวัยวะภายใน ต้องเครื่องมือเฉพาะ + ผู้เชี่ยวชาญ (Radiographer/Radiologic Technologist/Radiologist)
+
+## 0.3 เทคนิคการสร้างภาพทางการแพทย์ (Imaging Modalities) — [2-3 ข้อ] ⭐⭐
+| เทคนิค | หลักการ | รังสี? | เหมาะกับ |
+|---|---|---|---|
+| **X-ray** | ฉายรังสีเอกซ์ผ่านร่างกาย ดูการดูดซับ | **ใช้รังสี** | กระดูก, ปอด, ฟัน (เร็ว ต้นทุนต่ำ คัดกรองเบื้องต้น) |
+| **CT Scan** | รังสีเอกซ์หมุนรอบตัว + คอมพิวเตอร์ → ภาพตัดขวาง 2D/3D | **ใช้รังสี** | ภาวะฉุกเฉิน, เลือดออกภายใน, เนื้องอก, กระดูกหัก (เร็ว คมชัด) |
+| **MRI** | สนามแม่เหล็กแรงสูง + คลื่นวิทยุ | **ไม่ใช้รังสี** | **เนื้อเยื่ออ่อน (soft tissue)**, สมอง, ไขสันหลัง (axial/coronal/sagittal) |
+| **MRA** | MRI + ฉีดสารทึบรังสี | **ไม่ใช้รังสี** | หลอดเลือด (สมอง, หัวใจ) |
+| **Ultrasound** | คลื่นเสียงความถี่สูง สะท้อนกลับ | **ไม่ใช้รังสี** | ทารกในครรภ์, หัวใจ (real-time, ปลอดภัยกับหญิงตั้งครรภ์) |
+| **PET Scan** | สารกัมมันตรังสี (tracer) ปล่อย positron → gamma ray | **ใช้รังสี** | มะเร็ง, สมอง (Alzheimer/Parkinson) — **ภาพเชิงการทำงาน (functional)** ไม่ใช่แค่โครงสร้าง |
+| **Mammography** | X-ray เฉพาะเต้านม (2 มุม: MLO, CC) | **ใช้รังสี** | คัดกรองมะเร็งเต้านม (ก้อน/ถุงน้ำ/แคลเซียม) |
+| **Microscopy** | กล้องจุลทรรศน์ (แสง/เรืองแสง/อิเล็กตรอน/คอนโฟคอล) | — | เซลล์, แบคทีเรีย, ไวรัส (ชีววิทยา/พยาธิวิทยา) |
+
+- อื่น ๆ: **EEG** (คลื่นไฟฟ้าสมอง), **MEG** (คลื่นแม่เหล็กสมอง)
+> **กับดัก 1:** **ใช้รังสี = X-ray, CT, PET, Mammography** · **ไม่ใช้รังสี = MRI, MRA, Ultrasound** — ข้อสอบชอบถาม "ข้อใดไม่ใช้รังสี"
+> **กับดัก 2:** **สารทึบรังสี (contrast agent) ไม่ใช่รังสี** — MRA ฉีดสารทึบแต่ยังจัดเป็น "ไม่ใช้รังสี"
+> **กับดัก 3:** MRI เก่งเรื่อง **เนื้อเยื่ออ่อน**, CT เก่งเรื่อง **กระดูก/ฉุกเฉิน (เร็ว)**; PET ให้ภาพ **เชิงการทำงาน** ไม่ใช่โครงสร้าง
+
+## 0.4 DICOM — [2 ข้อ] ⭐⭐
+- **DICOM** (Digital Imaging and Communications in Medicine) = โปรโตคอลมาตรฐานพัฒนาโดย **NEMA** (National Electrical Manufacturers Association) เพื่อ **interoperability** ระหว่างอุปกรณ์/ซอฟต์แวร์ต่างผู้ผลิต
+- มี 2 องค์ประกอบหลัก: **File Format** (จัดเก็บภาพ+ข้อมูลผู้ป่วย) และ **Network Protocol** (ส่งภาพในเครือข่าย)
+- **File Header** = 2 ส่วน:
+  | ส่วน | ขนาด | รายละเอียด |
+  |---|---|---|
+  | **Preamble** | **128 Bytes** | ค่าอะไรก็ได้ ถ้าไม่ใช้ตั้งเป็น **00H** ทั้งหมด, ไม่มี Tag/Length |
+  | **Prefix** | **4 Bytes** | อักขระคงที่ **'D','I','C','M'** ระบุว่าเป็นไฟล์ DICOM (เข้ารหัส ISO 8859) |
+- **Data Set:** 1 ไฟล์มี **Data Set เดียว** (แทน 1 Instance, อาจหลายเฟรม) ประกอบด้วยหลาย **Data Element** (ค่า Attribute นิยามใน **IOD** = Information Object Definitions); ไม่ระบุขนาดรวม จุดจบไฟล์ = จุดจบ Data Set
+- ไทยใช้ DICOM ตั้งแต่ **พ.ศ. 2538** · องค์กร **IHE** (Integrating the Healthcare Enterprise) ส่งเสริมการใช้ร่วมกับมาตรฐานอื่น
+> **กับดัก:** Preamble = **128 bytes**, Prefix = **4 bytes** ('DICM') — สลับตัวเลข/ขนาดกันได้ง่ายในตัวเลือก
+
+## 0.5 PACS & การจัดการภาพ — [1-2 ข้อ]
+- **PACS** (Picture Archiving & Communication System) = ระบบเก็บภาพถาวร + สื่อสาร; 3 กระบวนการ: **Archiving (จัดเก็บ), Transmission (ส่งผ่าน), Data Retrieval (ค้นคืน)**
+- ปัญหา: ภาพใหญ่มาก — X-ray ปอด >10 MB, แมมโมแกรม 2 ข้าง ~250 MB, ต่อปีถึงระดับ **terabyte** → ต้องบีบอัด (compression) + เครือข่ายเร็ว
+- ส่งภาพใช้ไฟล์ทั่วไป (Bitmap/TIFF/GIF) ไม่พอ เพราะต้องแนบ metadata (อุปกรณ์, เจ้าของภาพ, ชื่อ/อายุ/เพศผู้ป่วย)
+- **CBIR** (Content-Based Image Retrieval) = ค้นภาพจาก **เนื้อหา** ด้วย **QBE** (Query by Example: ใช้ "ตัวอย่างภาพ" เป็นคำค้น) — ต่างจากค้นด้วย metadata ตัวอักษร/ตัวเลข (alphanumeric)
+> **กับดัก:** CBIR = ค้นด้วย**เนื้อหาภาพ (QBE)** ไม่ใช่ค้นด้วยชื่อ/รหัสผู้ป่วย (นั่นคือ alphanumeric metadata)
+
+## 0.6 EHR vs EMR & ประเภทข้อมูลสุขภาพ — [1-2 ข้อ] ⭐
+- **EHR** (Electronic Health Records) = เก็บจาก **ผู้ให้บริการหลายราย** ตลอดเวลา (ครอบคลุมกว้าง)
+- **EMR** (Electronic Medical Records) = เก็บโดย **ผู้ให้บริการ/สถาบันเดียว**
+- **8 ประเภทข้อมูลสุขภาพ:** EHR/EMR, Clinical Trial Data, Administrative Data, PGHD (Patient-Generated Health Data), Public Health Data, Genomic Data, Imaging Data, Claims Data (เคลมประกัน)
+- **เอกสารเวชระเบียน:** Discharge Summary (สรุปเมื่อออก รพ.), Admission Note (รับเข้า), Operation Note (ผ่าตัด), Consultation Form (ปรึกษาผู้เชี่ยวชาญ), Doctor Order (คำสั่งแพทย์), Progression Note (ติดตามอาการ)
+> **กับดัก:** **EHR = หลายผู้ให้บริการ** · **EMR = ผู้ให้บริการเดียว** — จำง่าย ๆ "H=Health รวมทุกที่, M=Medical ที่เดียว"
+
+## 0.7 ICD (International Classification of Diseases) — [1-2 ข้อ] ⭐
+- **ICD** = ระบบจำแนก/ให้รหัสโรค พัฒนาโดย **WHO** (องค์การอนามัยโลก); มีรหัสมากถึง **~155,000 รหัส**
+- **ICD-10** เผยแพร่ **พ.ศ. 2535** เริ่มใช้ **พ.ศ. 2537**; ไทยใช้ ICD ครั้งแรกฉบับ **ICD-7 (พ.ศ. 2493)**; ไทยเป็น **1 ใน 3 ประเทศแรก**ของโลกที่ใช้ ICD-10 (ร่วมกับเดนมาร์ก + เชโกสโลวาเกีย)
+- **ICD-10 = ให้รหัสโรค** · **ICD-9-CM = ให้รหัสหัตถการ/ผ่าตัด** · **ICD-10-TM** = ฉบับดัดแปลงของไทย · เป็นพื้นฐานของ **DRG** (Diagnosis Related Group) สำหรับเบิกจ่าย
+- **หลักจัดรหัส ICD-10 (ตามลำดับ):**
+  - ขั้น 1 ลักษณะผู้ป่วย: **O** = หญิงตั้งครรภ์/คลอด, **P** = ทารกแรกเกิด
+  - ขั้น 2 จำแนกตามสาเหตุ: **A, B** = โรคติดเชื้อ, **C, D** = เนื้องอก/มะเร็ง, **Q** = พิการแต่กำเนิด, **S, T** = การบาดเจ็บ
+  - ขั้น 3 จำแนกตามระบบอวัยวะ · ขั้น 4 กรณีอื่น
+> **กับดัก:** **ICD-10 = โรค**, **ICD-9-CM = หัตถการ** (สลับกันได้ง่าย); และรหัสตัวอักษร O/P/A-B/C-D/Q/S-T จับคู่ผิดได้ง่าย
+
+### ✅ Checklist ก่อนจบ W0
+- [ ] แยก Medical vs Biomedical Imaging และ Visible vs Invisible light ได้
+- [ ] จำได้ว่าเทคนิคใด**ใช้/ไม่ใช้รังสี** (X-ray/CT/PET/Mammo ใช้; MRI/MRA/US ไม่ใช้) ⭐⭐
+- [ ] แยก CT (กระดูก/ฉุกเฉิน) vs MRI (เนื้อเยื่ออ่อน) และรู้ว่า PET = ภาพเชิงการทำงาน
+- [ ] DICOM: NEMA, Preamble 128 bytes vs Prefix 4 bytes ('DICM'), Data Set/Data Element/IOD ⭐⭐
+- [ ] PACS 3 กระบวนการ + CBIR/QBE
+- [ ] EHR (หลายราย) vs EMR (รายเดียว) + 8 ประเภทข้อมูลสุขภาพ
+- [ ] ICD: WHO, ICD-10=โรค/ICD-9-CM=หัตถการ, รหัส O/P/A-B/C-D/Q/S-T, DRG
 
 ---
 
@@ -579,6 +657,7 @@ xᵢ' = xᵢ − α·∇f(xᵢ)     α = Learning Rate (step size), ∇f = gradi
 ## 🗂️ ตารางสรุปน้ำหนักโดยประมาณ (สำหรับวางแผนเวลาอ่าน)
 | สัปดาห์ | หัวข้อ | น้ำหนักโดยประมาณ | มีโอกาสเป็นข้อเขียน? |
 |---|---|---|---|
+| W0 📓 | Healthcare Data (ภาพแพทย์/DICOM/EHR/ICD) | ~5-6 ข้อ | ไม่ใช่ (ข้อกา "ถูก/ผิด") ⭐ |
 | W1 📘 | Image Processing พื้นฐาน | ~5 ข้อ | ไม่น่าใช่ |
 | W2 📗 | Python/OpenCV/numpy | ~6 ข้อ | ไม่น่าใช่ (เป็นข้อกาแบบทายผลลัพธ์โค้ด) |
 | W3 📙 | Padding & Convolution | ~3 ข้อ | **สูงมาก** ⭐⭐ |

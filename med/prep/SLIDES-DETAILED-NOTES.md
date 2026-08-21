@@ -5,6 +5,7 @@
 > ⚠️ Backpropagation (chain rule) ไม่ออกสอบ
 
 **สารบัญ**
+0. [Ch.01 — Healthcare Data](#ch01)
 1. [Ch.02 — Image Processing](#ch02)
 2. [Ch.03 — Python/OpenCV/numpy/matplotlib](#ch03)
 3. [Ch.05 Part 1 — Distance, Normalization, ANN, Activation](#ch05a)
@@ -12,6 +13,52 @@
 5. [Ch.07 — CNN](#ch07)
 6. [Lab 3-7 (แบบฝึกปฏิบัติ)](#labs)
 7. [Quick Reference — สูตร/ค่าที่ออกสอบ](#quickref)
+
+---
+<a name="ch01"></a>
+# 📓 Ch.01 — Introduction to Healthcare Data
+
+### ความรู้พื้นฐานภาพชีวการแพทย์
+- **Medical Imaging** = เน้น Clinical Use (วินิจฉัย/รักษา) · **Biomedical Imaging** = Clinical + Research Use (ศึกษาเซลล์/โมเลกุล เช่น advanced microscopy)
+- **Visible Light Imaging:** 400–700 nm, กล้องทั่วไป, ถ่ายภายนอก (ผื่น/แผล), ต้นทุนต่ำ, ตรวจได้แค่ภายนอก
+- **Invisible Light / Radiology:** รังสี/คลื่นนอกช่วงตามองเห็น (X-ray/MRI/US/Nuclear), ตรวจภายใน, ต้องผู้เชี่ยวชาญ
+
+### เงื่อนไขภาพทางการแพทย์ที่ดี (3 ข้อ)
+- แสดงกายวิภาคถูกต้อง · เป็นวิธีมาตรฐานที่ยอมรับ · แสดงข้อมูลเชิงวิเคราะห์ภายในชัดเจน
+- ต้องจับคู่ diagnostic question กับ measurement value ให้เหมาะสม
+
+### Imaging Modalities (ตารางสำคัญ)
+| เทคนิค | หลักการ | รังสี? | เด่น |
+|---|---|---|---|
+| X-ray | รังสีเอกซ์ผ่านตัว ดูการดูดซับ | ใช้ | กระดูก/ปอด/ฟัน, เร็ว ถูก |
+| CT | X-ray หมุนรอบ + คอมพิวเตอร์ | ใช้ | ตัดขวาง 2D/3D, ฉุกเฉิน, เลือดออกใน |
+| MRI | สนามแม่เหล็ก + คลื่นวิทยุ | **ไม่ใช้** | เนื้อเยื่ออ่อน, สมอง, ไขสันหลัง (axial/coronal/sagittal) |
+| MRA | MRI + สารทึบรังสี | **ไม่ใช้** | หลอดเลือด |
+| Ultrasound | คลื่นเสียงสะท้อน | **ไม่ใช้** | ทารกในครรภ์, หัวใจ, real-time, ปลอดภัย |
+| PET | tracer กัมมันตรังสี → gamma | ใช้ | มะเร็ง/สมอง, ภาพเชิงการทำงาน |
+| Mammography | X-ray เต้านม (MLO+CC) | ใช้ | คัดกรองมะเร็งเต้านม |
+| Microscopy | กล้องจุลทรรศน์ | — | เซลล์/แบคทีเรีย/ไวรัส |
+- อื่น ๆ: EEG (คลื่นไฟฟ้าสมอง), MEG (คลื่นแม่เหล็กสมอง)
+> **จุดสำคัญ:** ใช้รังสี = X-ray/CT/PET/Mammo; ไม่ใช้รังสี = MRI/MRA/US · สารทึบรังสี ≠ รังสี · PET = functional
+
+### DICOM
+- มาตรฐานโดย **NEMA**, เน้น interoperability · 2 องค์ประกอบ: **File Format** + **Network Protocol**
+- Header = **Preamble (128 bytes, 00H)** + **Prefix (4 bytes 'DICM', ISO 8859)**
+- 1 ไฟล์ = 1 **Data Set** (1 Instance) → หลาย **Data Element** (นิยามใน **IOD**) · ไทยใช้ตั้งแต่ พ.ศ. 2538 · องค์กร IHE
+
+### PACS & Image Management
+- **PACS** = Archiving + Transmission + Data Retrieval · X-ray ปอด >10MB, แมมโมแกรม ~250MB → terabyte/ปี → ต้อง compression
+- **CBIR** (ค้นจากเนื้อหา) ด้วย **QBE** (Query by Example) ≠ ค้นด้วย alphanumeric metadata
+
+### EHR/EMR & ประเภทข้อมูล
+- **EHR** = หลายผู้ให้บริการ · **EMR** = ผู้ให้บริการเดียว
+- 8 ประเภท: EHR/EMR, Clinical Trial, Administrative, PGHD, Public Health, Genomic, Imaging, Claims
+- เอกสาร: Discharge Summary, Admission Note, Operation Note, Consultation Form, Doctor Order, Progression Note
+
+### ICD
+- **WHO**, ~155,000 รหัส · ICD-10 เผยแพร่ พ.ศ. 2535 ใช้ พ.ศ. 2537 · ไทยเริ่ม ICD-7 (พ.ศ. 2493), เป็น 1 ใน 3 ประเทศแรกที่ใช้ ICD-10 (+เดนมาร์ก+เชโกสโลวาเกีย)
+- **ICD-10 = โรค** · **ICD-9-CM = หัตถการ** · ICD-10-TM (ไทย) · ฐานของ **DRG**
+- รหัส: O=ตั้งครรภ์, P=ทารกแรกเกิด, A/B=ติดเชื้อ, C/D=มะเร็ง, Q=พิการแต่กำเนิด, S/T=บาดเจ็บ → แล้วจำแนกตามระบบอวัยวะ
 
 ---
 <a name="ch02"></a>
