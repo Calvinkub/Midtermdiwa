@@ -217,6 +217,86 @@ $$X(\omega)=(e^{j2\omega}+e^{-j2\omega})+2(e^{j\omega}+e^{-j\omega})+3 = 2\cos2\
 
 ---
 
+# ⬛ ชุด G — Forward Pass (Neural Network)
+
+> ⚠️ **หมายเหตุ:** เรื่องนี้ **ไม่มีในสไลด์ L01–L06** ที่ใช้ทำไฟล์นี้ — ใส่เพิ่มเพราะคาดว่าจะออกสอบ ถ้าอาจารย์ให้แนวมาต่างจากนี้ให้ยึดแนวอาจารย์
+> ทำเป็น "โจทย์แสดงวิธี" แบบตอน 3 ได้เลย เพราะเป็นการแทนเลขทีละชั้น
+
+## G0 — แนวคิด: forward pass คืออะไร (อ่านก่อนทำ)
+**Forward pass** = เอา input เดินหน้าผ่านโครงข่ายทีละชั้น จนได้ output ทุก neuron ทำ 2 ขั้นเสมอ:
+
+$$\underbrace{z = \sum_i w_i x_i + b}_{\text{ขั้น 1: weighted sum (pre-activation)}} \qquad\longrightarrow\qquad \underbrace{a = \varphi(z)}_{\text{ขั้น 2: activation}}$$
+
+- $x_i$ = input, $w_i$ = **น้ำหนัก (weight)** ของแต่ละเส้น, $b$ = **bias** (บวกทีหลัง 1 ตัวต่อ neuron)
+- $\varphi$ = **activation function** (ตัวบีบค่า ทำให้ network เรียนรู้ของไม่เชิงเส้นได้)
+- output ของชั้นหนึ่ง = input ของชั้นถัดไป → ทำซ้ำจนถึงชั้น output
+
+**รูปเมทริกซ์ (เขียนสั้นได้ทั้งชั้นทีเดียว):** $\ \mathbf{z} = W\mathbf{x} + \mathbf{b},\quad \mathbf{a} = \varphi(\mathbf{z})$
+โดยแถวที่ $j$ ของ $W$ = weight ของ neuron ตัวที่ $j$
+
+### 🔑 Activation ที่ต้องจำ (เขียนหัวกระดาษ)
+| ชื่อ | สูตร | ช่วงค่า | ค่าที่ควรจำ |
+|---|---|---|---|
+| **Sigmoid** | $\sigma(z)=\dfrac{1}{1+e^{-z}}$ | $(0,1)$ | $\sigma(0)=0.5,\ \sigma(1)\!\approx\!0.73,\ \sigma(-1)\!\approx\!0.27$ |
+| **ReLU** | $\max(0,z)$ | $[0,\infty)$ | ลบ→0, บวก→ค่าเดิม (คิดในหัวได้) |
+| **tanh** | $\dfrac{e^{z}-e^{-z}}{e^{z}+e^{-z}}$ | $(-1,1)$ | $\tanh(0)=0$ |
+| **Softmax** | $\dfrac{e^{z_j}}{\sum_k e^{z_k}}$ | รวม$=1$ | ใช้ที่ชั้น output หลายคลาส (ได้ความน่าจะเป็น) |
+
+> 💡 ในห้องสอบ ถ้าให้ ReLU จะคิดเลขไว (แค่ตัดค่าลบ) ถ้าให้ sigmoid ต้องมี $e^{-z}$ — จำ $e\approx2.718$
+
+---
+
+## G1 ⭐⭐ [ตัวอย่างแม่แบบ] โครงข่าย 2–2–1 (input 2, hidden 2 ตัว, output 1)
+**โจทย์:** input $\mathbf{x}=[2,\,3]$ · hidden ใช้ **ReLU** · output ใช้ **sigmoid**
+น้ำหนัก: hidden $h_1:\ \mathbf{w}=[0.5,-0.5],\ b=1$ · $h_2:\ \mathbf{w}=[-1,1],\ b=0$ · output $o:\ \mathbf{w}=[1,2],\ b=-1$
+
+**วิธีทำ:**
+**ขั้น 1 — ชั้น hidden (weighted sum ก่อน):**
+$$z_1 = (0.5)(2)+(-0.5)(3)+1 = 1-1.5+1 = 0.5$$
+$$z_2 = (-1)(2)+(1)(3)+0 = -2+3 = 1$$
+
+**ขั้น 2 — activation ชั้น hidden (ReLU $=\max(0,z)$):**
+$$h_1=\max(0,\,0.5)=0.5 \qquad h_2=\max(0,\,1)=1$$
+
+**ขั้น 3 — ชั้น output (เอา $h_1,h_2$ เป็น input ต่อ):**
+$$z_o = (1)(h_1)+(2)(h_2)+(-1) = (1)(0.5)+(2)(1)-1 = 0.5+2-1 = 1.5$$
+
+**ขั้น 4 — activation ชั้น output (sigmoid):**
+$$\hat{y}=\sigma(1.5)=\frac{1}{1+e^{-1.5}}=\frac{1}{1+0.2231}=\frac{1}{1.2231}\approx \mathbf{0.8176}$$
+
+**ตอบ:** $\hat{y}\approx 0.82$ (ตีความ: ถ้า sigmoid output > 0.5 → ทำนายคลาส 1)
+
+> 💡 **เช็ค:** ReLU ที่ค่าบวกจะ "ปล่อยผ่าน" ค่าเดิม → $h_1=z_1,\ h_2=z_2$ พอดี (เพราะทั้งคู่บวก)
+> ✍️ เขียน pre-activation ($z$) แยกจาก activation ($a$) ทุกชั้น — ได้คะแนนวิธีทำแม้ตัวเลขปลายทางพลาด
+
+---
+
+## G2 ⭐ [ฝึกเอง] single neuron + sigmoid
+**โจทย์:** $\mathbf{x}=[1,-2]$, $\mathbf{w}=[3,1]$, $b=2$, activation = sigmoid หา output
+<details><summary>👉 เฉลย</summary>
+
+$$z=(3)(1)+(1)(-2)+2 = 3-2+2 = 3 \qquad \sigma(3)=\frac{1}{1+e^{-3}}=\frac{1}{1+0.0498}\approx\mathbf{0.9526}$$
+</details>
+
+## G3 ⭐ [ฝึกเอง] ชั้น output แบบ softmax (หลายคลาส)
+**โจทย์:** logits (ค่า $z$ ก่อน softmax) $=[2.0,\,1.0,\,0.1]$ หาความน่าจะเป็นแต่ละคลาส
+<details><summary>👉 เฉลย</summary>
+
+$$e^{2.0}=7.389,\ e^{1.0}=2.718,\ e^{0.1}=1.105 \qquad \sum = 11.212$$
+$$\text{softmax}=\Big[\tfrac{7.389}{11.212},\ \tfrac{2.718}{11.212},\ \tfrac{1.105}{11.212}\Big]=[\mathbf{0.659},\ 0.242,\ 0.099]$$
+รวม $=1$ ✓ · คลาสแรกความน่าจะเป็นสูงสุด → ทำนายคลาส 1
+</details>
+
+## G4 [ฝึกเอง] เทียบ activation ตัวเดียวกันด้วยหลายฟังก์ชัน
+**โจทย์:** ถ้า $z=-1$ ค่า activation เป็นเท่าไรสำหรับ ReLU, sigmoid, tanh?
+<details><summary>👉 เฉลย</summary>
+
+ReLU $=\max(0,-1)=\mathbf{0}$ · sigmoid $=\frac{1}{1+e^{1}}\approx\mathbf{0.269}$ · $\tanh(-1)\approx\mathbf{-0.762}$
+> จุดสับสน: ReLU ตัดค่าลบเป็น 0 แต่ sigmoid/tanh ยังให้ค่า (ไม่เป็น 0)
+</details>
+
+---
+
 ## 📋 สรุปเช็คลิสต์ก่อนเข้าห้อง (ตอน 3)
 - [ ] 4-point DFT มือ: ทำ A1, A2, A3 ได้ไม่ดูเฉลย
 - [ ] $(-j)^m$ mod 4 คล่อง · หาขนาด $\sqrt{x^2+y^2}$ + เฟสถูก quadrant
@@ -224,5 +304,6 @@ $$X(\omega)=(e^{j2\omega}+e^{-j2\omega})+2(e^{j\omega}+e^{-j\omega})+3 = 2\cos2\
 - [ ] FFT: bit-reversal input, จำนวน stage $=\log_2 N$, butterfly 2-pt $=$ บวก/ลบ
 - [ ] FS: ดู even/odd ก่อน (ตัดพจน์ทิ้งได้ครึ่ง), square→sin คี่
 - [ ] เช็คเร็ว $X[0]=\sum x[n]$, $X[N/2]=\sum(-1)^n x[n]$ เสมอ
+- [ ] **Forward pass:** แต่ละ neuron = $z=\sum w_i x_i + b$ แล้ว $a=\varphi(z)$ · จำ ReLU/sigmoid/softmax · ทำ G1 ได้ไม่ดูเฉลย
 
 *ทำซ้ำ A1 จนเขียนได้ใน 3 นาที = ตอน 3 ผ่านสบาย 🍀*
